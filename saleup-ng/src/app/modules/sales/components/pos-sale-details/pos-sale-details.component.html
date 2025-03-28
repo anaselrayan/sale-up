@@ -1,0 +1,83 @@
+<p-card [style]="{ minWidth: '40rem', overflow: 'hidden'}">
+    <div class="search-customers mb-8">
+        <div class="flex flex-col gap-2 mb-4">
+            <div class="text-lg">Customer Details</div>
+            <p-autocomplete [style]="{width: '100%'}" [dropdown]="true" optionLabel="phone" [(ngModel)]="cart.customer" [suggestions]="customers" (completeMethod)="searchCustomers($event)" >
+                <ng-template let-item pTemplate="item"> 
+                    <div class="flex gap-2 items-center">
+                        <p-avatar [label]="item.firstName.toUpperCase()[0] + item.lastName.toUpperCase()[0]" shape="circle" />
+                        <div>{{ item.phone }}</div><span class="font-sm">( {{item.firstName + ' ' + item.lastName}} )</span> 
+                    </div> 
+                </ng-template> 
+            </p-autocomplete>
+        </div>
+        <p-button (onClick)="addCustomerDialog = true" [style]="{width: '100%', border: '1px dashed'}" label="Add new customer" icon="pi pi-plus" outlined="true" />
+    </div>
+    <div class="order-details">
+        <div class="mb-4 text-lg flex justify-between"> 
+            <span>Order Details</span>
+            <p-button *ngIf="cart.items?.length" severity="danger" label="Empty cart" icon="pi pi-shopping-cart" class="mr-2" [text]="true" (onClick)="cart.empty()" />
+        </div>
+        <div *ngIf="!cart.items || !cart.items.length" class="no-items text-center text-surface-600">
+            Empty cart!
+        </div>
+        <div class="order-items overflow-auto flex flex-col gap-2 mb-6" style="max-height: 20rem;">
+            <div *ngFor="let item of cart.items" class="order-item flex gap-4 items-center justify-between">
+                <img class="rounded w-full"
+                        [src]="getProductImageSrc(item.product!)"
+                        [alt]="item.product!.basicDetails.productName"
+                        style="width: 50px; height: 50px; object-fit: cover;" />
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex flex-col">
+                        <div style="width: 12rem;" class="mb-2 text-max-lines-1" tooltipPosition="top" [pTooltip]="item.product?.basicDetails?.productName">
+                            {{ item.product?.basicDetails?.productName }}
+                        </div>
+                        <span class="text-primary">{{ item.product?.priceDetails?.priceWithDiscount | sCurrency }}</span>
+                    </div>
+                    <div class="item-actions ml-1 mr-1">
+                        <p-inputnumber 
+                            [(ngModel)]="item.quantity" readonly="true" min="1" [max]="item.product?.basicDetails?.quantity || 99"
+                            [showButtons]="true" buttonLayout="horizontal" spinnerMode="horizontal" [inputStyle]="{ width: '3rem' }">
+                            <ng-template #incrementbuttonicon>
+                                <span class="w-full h-full flex items-center justify-center" (click)="increaseQty(item)">
+                                    <span class="pi pi-plus"></span>
+                                </span>
+                            </ng-template>
+                            <ng-template #decrementbuttonicon>
+                                <span class="w-full h-full flex items-center justify-center" (click)="decreaseQty(item)">
+                                    <span class="pi pi-minus"></span>
+                                </span>
+                            </ng-template>
+                        </p-inputnumber>
+                    </div>
+                    <div style="min-width: 3rem;" class="w-3rem text-primary">{{ cartService.getItemTotal(item) | sCurrency }}</div>
+                </div>
+                <p-button (onClick)="removeItem(item)" icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" />
+            </div>
+        </div>
+        <div class="total">
+            <div class="flex justify-between">
+                <div class="mb-4 text-surface-400"> Subtotal </div>
+                <span>{{ cart.subTotal | sCurrency }}</span>
+            </div>
+            <div class="flex justify-between">
+                <div class="mb-4 text-surface-400"> Discount </div>
+                <span>{{ cart.discount }}</span>
+            </div>
+            <hr class="border-dashed" />
+            <div class="flex justify-between">
+                <div class="mb-4 font-bold text-lg"> Total Amount </div>
+                <span class="text-lg">{{ cart.grandTotal | sCurrency}}</span>
+            </div>
+        </div>
+    </div>
+    
+    <ng-template #footer>
+        <div class="payment text-lg">
+            <p-button (onClick)="submitOrder()" [loading]="orderLoading" [style]="{width: '100%'}" label="PROCESS ORDER" [disabled]="!cart.items || !cart.items.length" />
+        </div>
+    </ng-template>
+</p-card>
+<p-toast></p-toast>
+
+<app-customer-create-dialog [visible]="addCustomerDialog"></app-customer-create-dialog>

@@ -1,0 +1,20 @@
+package com.anaselrayan.springcashiero.features.settings.constant;
+
+public class Settings {
+    public static String COMPANY_NAME = "Elrayan Sales";
+    public static String COMPANY_DESCRIPTION = "Elrayan Sales | Ultimate Inventory With POS";
+    public static String COMPANY_PHONE = "";
+    public static String COMPANY_ADDRESS = "";
+    public static String COMPANY_EMAIL = "";
+
+    public static String APP_LOGO = "";
+    public static String APP_ICON = "";
+    public static String APP_FOOTER = "";
+    public static String APP_DEFAULT_CURRENCY = "";
+    public static String APP_DEFAULT_LANGUAGE = "";
+
+    public static String RECEIPT_FOOTER = "Thank you!";
+    public static String RECEIPT_SHOW_FOOTER = "true";
+    public static String RECEIPT_SHOW_LOGO = "true";
+    public static String RECEIPT_SHOW_SELLER = "true";
+}

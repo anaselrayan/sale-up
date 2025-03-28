@@ -1,0 +1,88 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedUnits()" [disabled]="!selectedUnits || !selectedUnits.length" />
+    </ng-template>
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" severity="secondary" />
+    </ng-template>
+</p-toolbar>
+
+<p-table
+    #dt
+    [value]="unitList"
+    [rows]="10"
+    [columns]="cols"
+    [loading]="loading"
+    [globalFilterFields]="['name', 'description']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedUnits"
+    [rowHover]="true"
+    dataKey="unitOfMeasureId"
+    paginator="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} units"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]">
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">{{'PRODUCT_BRANDS' | translate}}</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th pSortableColumn="code">
+                {{'CODE'| translate}}
+                <p-sortIcon field="code" />
+            </th>
+            <th pSortableColumn="name">
+                {{'NAME'| translate}}
+                <p-sortIcon field="name" />
+            </th>
+            <th></th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-unit>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="unit" />
+            </td>
+            <td>
+                {{ unit.code }}
+            </td>
+            <td>
+                {{ unit.name }}
+            </td>
+            <td>
+                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editUnit(unit)" />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteUnit(unit)" />
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="unitDialog" [style]="{ width: '450px' }" [header]="dialogHeader" [modal]="true">
+    <form [formGroup]="unitForm" (ngSubmit)="onSaveUnit()">
+        <div class="flex items-center gap-4 mb-4">
+            <label for="code" class="font-semibold w-24">{{'CODE' | translate }}</label>
+            <input formControlName="code" pInputText id="code" class="flex-auto" autocomplete="off" />
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+            <label for="name" class="font-semibold w-24">{{'NAME' | translate }}</label>
+            <input formControlName="name" pInputText id="name" class="flex-auto" autocomplete="off" />
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Cancel" severity="secondary" (click)="unitDialog = false" />
+            <p-button label="Save" [loading]="saveLoading" type="submit" />
+        </div>
+    </form>
+</p-dialog>
+<p-toast></p-toast>
+<p-confirm-dialog />

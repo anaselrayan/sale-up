@@ -1,0 +1,126 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
+import { DashboardService } from '../services/dashboard.service';
+import { BestSellingProductResponse } from '../models/best-selling-product-response';
+import { Skeleton } from 'primeng/skeleton';
+import { Select } from 'primeng/select';
+import { Product } from '@module/products/models/product.model';
+import { ProductUtils } from 'src/app/utils/product.utils';
+import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
+
+@Component({
+    standalone: true,
+    selector: 'app-best-selling-widget',
+    imports: [CommonModule, ButtonModule, MenuModule, Skeleton, Select, SCurrencyPipe],
+    template: ` <div class="card">
+        <div class="flex justify-between items-center mb-6">
+            <div class="font-semibold text-xl">Best Selling Products</div>
+            <p-select [disabled]="loading" [options]="options" (onChange)="onChangeCriteria($event)" class="mb-4" />
+        </div>
+        <ul *ngIf="loading" class="list-none p-0 m-0">
+            <li class="mb-6">
+                <div class="flex">
+                    <p-skeleton shape="circle" size="4rem" styleClass="mr-2" />
+                    <div class="self-center" style="flex: 1">
+                        <p-skeleton width="100%" styleClass="mb-2" />
+                        <p-skeleton width="75%" />
+                    </div>
+                </div>
+            </li>
+            <li class="mb-6">
+                <div class="flex">
+                    <p-skeleton shape="circle" size="4rem" styleClass="mr-2" />
+                    <div class="self-center" style="flex: 1">
+                        <p-skeleton width="100%" styleClass="mb-2" />
+                        <p-skeleton width="75%" />
+                    </div>
+                </div>
+            </li>
+            <li class="mb-6">
+                <div class="flex">
+                    <p-skeleton shape="circle" size="4rem" styleClass="mr-2" />
+                    <div class="self-center" style="flex: 1">
+                        <p-skeleton width="100%" styleClass="mb-2" />
+                        <p-skeleton width="75%" />
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <ul *ngIf="!loading" class="list-none p-0 m-0">
+            <li *ngFor="let item of model" class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <div class="flex items-center gap-2">
+                    <img width="50px" [src]="getProductImageSrc(item.product)" alt="">
+                    <div>
+                        <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">{{ item.product.basicDetails.productName }}</span>
+                        <div class="mt-1 text-muted-color">{{ item.product.basicDetails.productCategory?.name }}</div>
+                    </div>
+                </div>
+                <div class="mt-2 md:mt-0 flex items-center">
+                    <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
+                        <div class="bg-orange-500 h-full" [ngClass]="[getQuantitySeverity(item.totalSold).severity]" [style]="{width: getQuantitySeverity(item.totalSold).width}"></div>
+                    </div>
+                    <span class="ml-4 font-medium">{{ item.totalSold | sCurrency }}</span>
+                </div>
+            </li>
+        </ul>
+    </div>`
+})
+export class BestSellingWidget {
+
+    model: BestSellingProductResponse[] = [];
+    loading = false;
+    maxQuantity = 0;
+
+    constructor(private dashboardService: DashboardService) {}
+
+    options = [
+        {label: 'Last Week', value: 'week'},
+        {label: 'Last Month', value: 'month'},
+        {label: 'Last Year', value: 'year'},
+    ]
+
+    ngOnInit() {
+       this.getData('week');
+    }
+
+    getData(type: string) {
+        this.loading = true;
+        this.dashboardService.getTopSellingProducts()
+            .subscribe(res => {
+                if (res.success) {
+                    this.model = res.data;
+                    this.setMaxQuantity();
+                }
+                this.loading = false;
+            })
+    }
+
+    setMaxQuantity() {
+        this.model.forEach(m => {
+            if (m.totalSold > this.maxQuantity)
+                this.maxQuantity = m.totalSold;
+        })
+    }
+
+    onChangeCriteria(e: any) {
+        this.getData(e.value)
+    }
+
+    getProductImageSrc(product: Product) {
+        return ProductUtils.getFirstImageSrc(product);
+    }
+
+    getQuantitySeverity(qty: number) {
+        const width = (qty / this.maxQuantity * 100);
+        
+        if (width < 90) return {width: width + '%', severity: 'bg-green-600'}
+        if (width < 75) return {width: width + '%', severity: 'bg-green-500'}
+        if (width < 60) return {width: width + '%', severity: 'bg-green-400'}
+        if(width < 50) return {width: width + '%', severity: 'bg-green-300'}
+        if (width < 30) return {width: width + '%', severity: 'bg-green-200'}
+        else return {width: width + '%', severity: 'bg-green-700'};
+    }
+
+}

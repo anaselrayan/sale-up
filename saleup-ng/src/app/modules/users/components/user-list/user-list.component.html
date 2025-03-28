@@ -1,0 +1,143 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedUsers()" [disabled]="!selectedUsers || !selectedUsers.length" />
+    </ng-template>
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" severity="secondary" />
+    </ng-template>
+</p-toolbar>
+
+<p-table
+    #dt
+    [value]="userList"
+    [rows]="10"
+    [columns]="cols"
+    [loading]="loading"
+    [globalFilterFields]="['username', 'phone', 'email']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedUsers"
+    [rowHover]="true"
+    dataKey="userId">
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">Users</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th>
+                Image
+            </th>
+            <th pSortableColumn="username">
+                {{'USERNAME'| translate}}
+                <p-sortIcon field="username" />
+            </th>
+            <th pSortableColumn="role">
+                {{'ROLE'| translate}}
+                <p-sortIcon field="role" />
+            </th>
+            <th pSortableColumn="phone">
+                {{'PHONE'| translate}}
+                <p-sortIcon field="phone" />
+            </th>
+            <th pSortableColumn="email">
+                {{'EMAIL'| translate}}
+                <p-sortIcon field="email" />
+            </th>
+            <th pSortableColumn="lastLoginTime">
+                {{'LAST_LOGIN'| translate}}
+                <p-sortIcon field="lastLoginTime" />
+            </th>
+            <th pSortableColumn="locked">
+                {{'IS_LOCKED'| translate}}
+                <p-sortIcon field="locked" />
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-user>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="user.userId" />
+            </td>
+            <td>
+                <p-avatar [label]="'US'"  />
+            </td>
+            <td>
+                {{ user.username }}
+            </td>
+            <td>
+                {{ user.role.roleName }}
+            </td>
+            <td>
+                {{ user.phone }}
+            </td>
+            <td>
+                {{ user.email }}
+            </td>
+            <td>
+                {{ user.lastLoginTime }}
+            </td>
+            <td>
+                {{ user.locked ? ('YES' | translate) : ('NO' | translate) }}
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+<p-paginator
+    (onPageChange)="onPageChange($event)"
+    [first]="pageReq.page * pageReq.size"
+    [rows]="pageReq.size"
+    [totalRecords]="pageDetails?.totalElements || 0"
+    [showCurrentPageReport]="true"
+    [showJumpToPageDropdown]="false"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
+
+<p-dialog [(visible)]="userDialog" [style]="{ width: '450px' }" [header]="dialogHeader" [modal]="true">
+    <form [formGroup]="userForm" (ngSubmit)="onSaveUser()">
+        <div class="flex items-center gap-4 mb-4">
+            <label for="username" class="font-semibold w-24">{{'USERNAME' | translate }}</label>
+            <input formControlName="username" pInputText id="username" class="flex-auto" autocomplete="off" />
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+            <label for="role" class="font-semibold w-24">{{'ROLE' | translate }}</label>
+            <p-multiselect id="role" [options]="roles" [filter]="true" 
+                optionLabel="roleName" optionValue="roleId" 
+                placeholder="Select options" selectionLimit="1"
+                formControlName="roleId"/>
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+            <label for="password" class="font-semibold w-24">{{'PASSWORD' | translate }}</label>
+            <p-password formControlName="password" [toggleMask]="true" />
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+            <label for="passwordConfirm" class="font-semibold w-24">{{'PASSWORD_CONFIRM' | translate }}</label>
+            <p-password formControlName="passwordConfirm" [toggleMask]="true" [feedback]="false" />
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+            <label for="phone" class="font-semibold w-24">{{'PHONE' | translate }}</label>
+            <input formControlName="phone" pInputText id="phone" class="flex-auto" autocomplete="off" />
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+            <label for="email" class="font-semibold w-24">{{'EMAIL' | translate }}</label>
+            <input formControlName="email" pInputText id="email" class="flex-auto" autocomplete="off" />
+        </div>
+        <div class="flex items-center gap-4 mb-8">
+            <label for="userImage" class="font-semibold w-24">{{'IMAGE' | translate }}</label>
+            <p-fileupload mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="userImage" accept="image/*" maxFileSize="1000000" (onSelect)="onSelectImage($event)" />
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Cancel" severity="secondary" (click)="userDialog = false" />
+            <p-button label="Save" type="submit" />
+        </div>
+    </form>
+</p-dialog>
+<p-toast></p-toast>

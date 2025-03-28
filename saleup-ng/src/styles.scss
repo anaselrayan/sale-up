@@ -1,0 +1,45 @@
+/* You can add global styles to this file, and also import other style files */
+@use './tailwind.css';
+@use './assets/layout/layout.scss';
+@use 'primeicons/primeicons.css';
+@use './assets/demo/demo.scss';
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('assets/fonts/poppins/Poppins-Regular.ttf') format('truetype'),
+        url('assets/fonts/poppins/Poppins-Italic.ttf') format('truetype'),
+        url('assets/fonts/poppins/Poppins-Medium.ttf') format('truetype'),
+        url('assets/fonts/poppins/Poppins-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Almarai';
+    src: url('assets/fonts/almarai/Almarai-Regular.ttf') format('truetype'),
+        url('assets/fonts/almarai/Almarai-ExtraBold.ttf') format('truetype'),
+        url('assets/fonts/almarai/Almarai-Light.ttf') format('truetype'),
+        url('assets/fonts/almarai/Almarai-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Poppins', 'Almarai', sans-serif;
+}
+
+.text-max-lines-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+            line-clamp: 2; 
+    -webkit-box-orient: vertical;
+}
+
+.text-max-lines-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+            line-clamp: 1; 
+    -webkit-box-orient: vertical;
+}

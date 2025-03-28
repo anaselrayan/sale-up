@@ -1,0 +1,79 @@
+<div class="flex gap-2 h-full w-full">
+    <app-pos-sale-details (success)="orderSuccess($event)"></app-pos-sale-details>
+    <p-card>
+        <p-dataview #dv [value]="products" layout="grid">
+            <ng-template #header>
+                <div class="flex items-center justify-between">
+                    <p-iconfield>
+                        <p-inputicon styleClass="pi pi-barcode" />
+                        <input pInputText class="w-80" [formControl]="globalSearchControl" type="text"
+                            placeholder="Search products..." />
+                    </p-iconfield>
+                    <p-paginator
+                    (onPageChange)="onPageChange($event)"
+                    [first]="pageReq.page * pageReq.size"
+                    [rows]="pageReq.size"
+                    [totalRecords]="pageDetails?.totalElements || 0"
+                    [showCurrentPageReport]="true"
+                    [showPageLinks]="false"
+                    [showJumpToPageDropdown]="false"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
+                </div>
+            </ng-template>
+            <ng-template #grid let-items>
+                <div class="grid grid-cols-12 gap-4">
+                    <div *ngFor="let product of items"
+                        class="col-span-6 sm:col-span-3 md:col-span-3 xl:col-span-3 p-2">
+                        <div
+                            class="p-3 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
+                            <div class="bg-surface-50 flex justify-center rounded p-1">
+                                <div class="relative mx-auto">
+                                    <img class="rounded w-full"
+                                        [src]="getProductImageSrc(product)"
+                                        [alt]="product.basicDetails?.productName"
+                                        style="width: 20rem; height: 8rem; object-fit: cover;" />
+                                    <p-tag [value]="'QTY: ' + product.basicDetails.quantity" [severity]="getQuantitySeverity(product)" class="absolute absolute top-0 left-0"
+                                        styleClass="dark:!bg-surface-900"  />
+                                </div>
+                            </div>
+                            <div class="pt-4">
+                                <div>
+                                    <div class="text-right text-red-300">
+                                        {{ product.basicDetails?.productCategory?.name }}
+                                    </div>
+                                    <div tooltipPosition="top" [pTooltip]="product.basicDetails?.productName" class="mt-1 text-overflow-ellipsis	overflow-hidden text-max-lines-2">
+                                        {{ product.basicDetails.productName }}
+                                    </div>
+                                </div>
+                                
+                                <div class="flex flex-col gap-6 mt-6">
+                                    <div class="flex gap-3">
+                                        <span class="text-sm text-surface-400 line-through">
+                                            {{ product.priceDetails.sellingPrice | sCurrency }}
+                                        </span>
+                                        <span class="font-semibold">
+                                            {{ product.priceDetails.priceWithDiscount | sCurrency }}
+                                        </span>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button pButton icon="pi pi-shopping-cart" label="Buy Now" (click)="addProductToCart(product)"
+                                            class="flex-auto whitespace-nowrap" outlined="true"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-dataview>
+    </p-card>
+</div>
+
+<barcode-scanner-livestream
+    type="code_128"
+    (started)="onStarted($event)"
+    (valueChanges)="onValueChanges($event)"
+></barcode-scanner-livestream>
+<div [hidden]="!barcodeValue">
+    {{ barcodeValue }}
+</div>

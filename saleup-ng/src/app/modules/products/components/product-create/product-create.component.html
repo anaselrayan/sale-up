@@ -1,0 +1,111 @@
+<p-fluid>
+    <form (ngSubmit)="submit()" [formGroup]="productForm">
+        <div class="flex mt-8">
+            <div class="card flex flex-col gap-6 w-full">
+                <div class="font-semibold text-xl">{{ getHeader()}}</div>
+                <div class="flex justify-center gap-2 w-full" *ngIf="mode==='edit'">
+                    <p-galleria [value]="product.basicDetails.productImages" [responsiveOptions]="[]" style="width: 40%;">
+                        <ng-template #item let-item>
+                            <img [src]="getProductImageSrc(product.productId, item)" style="width: 300px; display: block;" />
+                        </ng-template>
+                        <ng-template #thumbnail let-item>
+                            <img [src]="getProductImageSrc(product.productId, item)" style="width: 60px;display: block;" />
+                        </ng-template>
+                        <ng-template #caption let-item>
+                            <div class="flex justify-between">
+                                <p-button *ngIf="!item.isPrimary" label="Set as primary" (onClick)="setImageAsPrimary(item)" text />
+                                <p-tag *ngIf="item.isPrimary" value="PRIMARY" severity="success"/>
+                                <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteImage($event, item)" rounded />
+                            </div>
+                        </ng-template>
+                    </p-galleria>
+                    <p-fileupload name="files[]" [url]="getUploadPath()" (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="10000000" mode="advanced">
+                        <ng-template #empty>
+                            <div>Drag and drop files to here to upload.</div>
+                        </ng-template>
+                        <ng-template #content>
+                            <ul *ngIf="uploadedFiles.length">
+                                <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+                            </ul>
+                        </ng-template>
+                    </p-fileupload>
+                </div>
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="productName">{{'PRODUCT_NAME' | translate }}</label>
+                        <input pInputText id="productName" type="text" formControlName="productName" />
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="barcode">{{'BARCODE' | translate }}</label>
+                        <input pInputText id="barcode" type="text" formControlName="barcode" />
+                    </div>
+                </div>
+    
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-col flex-wrap gap-2 w-full">
+                        <label for="category">{{'CATEGORY' | translate }}</label>
+                        <p-multiselect id="category" [options]="categoryList" [filter]="true" 
+                            optionLabel="name" optionValue="productCategoryId" 
+                            placeholder="Select options" selectionLimit="1"
+                            formControlName="productCategoryId"
+                        />
+                    </div>
+                    <div class="flex flex-col flex-wrap gap-2 w-full">
+                        <label for="brand">{{'BRAND' | translate }}</label>
+                        <p-multiselect id="brand" [options]="brandList" [filter]="true" 
+                            optionLabel="name" optionValue="productBrandId" 
+                            placeholder="Select options" selectionLimit="1"
+                            formControlName="productBrandId"
+                        />
+                    </div>
+                </div>
+    
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="costPrice">{{'COST' | translate }}</label>
+                        <p-inputnumber id="costPrice" formControlName="costPrice" mode="currency" currency="USD" showButtons ></p-inputnumber>
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="sellingPrice">{{'PRICE' | translate }}</label>
+                        <p-inputnumber id="sellingPrice" formControlName="sellingPrice" mode="currency" currency="USD" showButtons ></p-inputnumber>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-col flex-wrap gap-2 w-full">
+                        <label for="productUnit">{{'PRODUCT_UNIT' | translate }}</label>
+                        <p-multiselect id="productUnit" [options]="unitList" [filter]="true" 
+                            optionLabel="name" optionValue="unitOfMeasureId" 
+                            placeholder="Select options" selectionLimit="1"
+                            formControlName="unitOfMeasureId"
+                        />
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full">
+                        <label for="quantity">{{'QUANTITY' | translate }}</label>
+                        <p-inputnumber id="quantity" formControlName="quantity" showButtons mode="decimal"></p-inputnumber>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex flex-col flex-wrap gap-2 w-full">
+                        <label for="desc">{{'DESCRIPTION' | translate }}</label>
+                        <textarea formControlName="description" pTextarea id="desc" rows="5"></textarea>
+                    </div>
+                    <div *ngIf="mode==='new'" class="flex flex-col flex-wrap gap-2 w-full">
+                        <label for="productImages">{{'PRODUCT_IMAGES' | translate }}</label>
+                        <p-fileupload [fileLimit]="5" (onSelect)="handleImageSelection($event)" [showUploadButton]="false" [multiple]="true" accept="image/*" maxFileSize="10000000" mode="advanced">
+                            <ng-template #empty>
+                                <div>Drag and drop files to here to upload.</div>
+                            </ng-template>
+                        </p-fileupload>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row gap-6">
+                    <p-button [loading]="loading" type="submit" label="Save" icon="pi pi-check" />
+                </div>
+            </div>
+        </div>
+    </form>
+</p-fluid>
+<p-toast></p-toast>
+<p-confirmpopup />

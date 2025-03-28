@@ -1,0 +1,86 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedRoles()" [disabled]="!selectedRoles || !selectedRoles.length" />
+    </ng-template>
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" severity="secondary" />
+    </ng-template>
+</p-toolbar>
+
+<p-table
+    #dt
+    [value]="roleList"
+    [rows]="10"
+    [columns]="cols"
+    [loading]="loading"
+    [globalFilterFields]="['roleName']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedRoles"
+    [rowHover]="true"
+    dataKey="roleId"
+    paginator="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} roles"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]">
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">Roles</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th pSortableColumn="roleName">
+                {{'TITLE'| translate}}
+                <p-sortIcon field="roleName" />
+            </th>
+            <th pSortableColumn="description">
+                {{'DESCRIPTION'| translate}}
+                <p-sortIcon field="description" />
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-role>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="role" />
+            </td>
+            <td>
+                {{ role.roleName }}
+            </td>
+            <td>
+                {{ role.description }}
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="roleDialog" [style]="{ width: '450px' }" [header]="dialogHeader" [modal]="true">
+    <form [formGroup]="roleForm" (ngSubmit)="onSaveRole()">
+        <div class="flex items-center gap-4 mb-4">
+            <label for="roleName" class="font-semibold w-24">{{'TITLE' | translate }}</label>
+            <input formControlName="roleName" pInputText id="roleName" class="flex-auto" autocomplete="off" />
+        </div>
+        <div class="flex items-center gap-4 mb-6">
+            <label for="description" class="font-semibold w-24">{{'DESCRIPTION' | translate }}</label>
+            <input formControlName="description" pInputText id="description" class="flex-auto" autocomplete="off" />
+        </div>
+        <div class="mb-4">
+            <label class="font-semibold w-24">{{'PERMISSIONS' | translate }}</label>
+            <p-tree [value]="permList" selectionMode="checkbox" styleClass="w-full md:w-[30rem]" [(selection)]="selectedPerms" />
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Cancel" severity="secondary" (click)="roleDialog = false" />
+            <p-button label="Save" [loading]="saveLoading" type="submit" />
+        </div>
+    </form>
+</p-dialog>
+<p-toast></p-toast>

@@ -1,0 +1,24 @@
+<p-dialog (onHide)="cancel()" [visible]="visible" [style]="{ width: '40rem' }" [header]="header" [modal]="true">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="flex items-center gap-2 mb-4">
+            <label for="type" class="font-semibold">{{'DISCOUNT_ACTIVE' | translate }}</label>
+            <p-inputSwitch formControlName="active" />
+        </div>
+        <div class="flex flex-col justify-center gap-2 mb-4">
+            <label for="type" class="font-semibold">{{'DISCOUNT_TYPE' | translate }}</label>
+            <p-select formControlName="type" [options]="discountTypes"/>
+        </div>
+        <div class="flex flex-col justify-center gap-2 mb-4">
+            <label for="amount" class="font-semibold">{{'DISCOUNT_AMOUNT' | translate }}</label>
+            <p-inputnumber id="amount" formControlName="amount" mode="currency" currency="USD" showButtons ></p-inputnumber>
+        </div>
+        <div class="flex flex-col justify-center gap-2 mb-4">
+            <label for="range" class="font-semibold">{{'ACTIVE_RANGE' | translate }}</label>
+            <p-datePicker [style]="{width: '100%'}" id="range" [showTime]="true" formControlName="range" appendTo="body" selectionMode="range"/>
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Cancel" severity="secondary" (onClick)="cancel()" />
+            <p-button label="Save" [disabled]="form.invalid" [loading]="loading" type="submit" />
+        </div>
+    </form>
+</p-dialog>

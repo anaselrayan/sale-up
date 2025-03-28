@@ -1,0 +1,96 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedCustomers || !selectedCustomers.length" />
+    </ng-template>
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" severity="secondary" />
+    </ng-template>
+</p-toolbar>
+
+<p-table
+    #dt
+    [value]="customerList"
+    [rows]="10"
+    [columns]="cols"
+    [loading]="loading"
+    [paginator]="true"
+    [globalFilterFields]="['phone', 'firstName', 'lastName']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedCustomers"
+    [rowHover]="true"
+    dataKey="customerId"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} customers"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">Customers</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            <th>
+                
+            </th>
+            <th pSortableColumn="phone">
+                {{'PHONE'| translate}}
+                <p-sortIcon field="phone" />
+            </th>
+            <th pSortableColumn="firstName">
+                {{'NAME'| translate}}
+                <p-sortIcon field="firstName" />
+            </th>
+            <th pSortableColumn="email">
+                {{'EMAIL'| translate}}
+                <p-sortIcon field="email" />
+            </th>
+            <th pSortableColumn="address">
+                {{'ADDRESS'| translate}}
+                <p-sortIcon field="address" />
+            </th>
+            <th pSortableColumn="country">
+                {{'COUNTRY'| translate}}
+                <p-sortIcon field="country" />
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-customer>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="customer" />
+            </td>
+            <td>
+                <p-avatar [label]="customer.firstName.toUpperCase()[0] + customer.lastName.toUpperCase()[0]"  />
+            </td>
+            <td>
+                {{ customer.phone }}
+            </td>
+            <td>
+                {{ customer.firstName + ' ' + customer.lastName }}
+            </td>
+            <td>
+                {{ customer.email }}
+            </td>
+            <td>
+                {{ customer.address }}
+            </td>
+            <td>
+                {{ customer.country }}
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<app-customer-create-dialog [visible]="customerDialog"></app-customer-create-dialog>
+
+<p-toast></p-toast>
