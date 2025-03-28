@@ -1,6 +1,6 @@
 <div class="card">
     <div class="font-semibold text-xl mb-4">{{'SYSTEM_SETTINGS' | translate}}</div>
-    <p-tabs (valueChange)="onChangeTab($event)" value="0">
+    <p-tabs (valueChange)="onChangeTab($event)" value="setting.app">
         <p-tablist>
             <p-tab value="setting.app">
                 <span class="pi pi-cog"></span>
@@ -15,109 +15,110 @@
                 {{'POS_SETTINGS' | translate}}
             </p-tab>
         </p-tablist>
+        <p-progressbar *ngIf="loading" class="mt-1" mode="indeterminate" [style]="{height: '3px'}"/>
         <p-tabpanels>
             <p-tabpanel value="setting.app">
                 <div class="p-grid p-dir-col">
                     <div *ngFor="let setting of settings">
-                        <div class="p-field flex flex-col gap-2 mb-4" style="width: 30%;">
-                            <label [for]="setting.key">{{ setting.key | translate }}</label>
+                        <div class="p-field flex gap-4 items-center mb-4">
+                            <label style="width: 12rem;" class="cursor-pointer" [for]="setting.key">{{ setting.key | translate }}</label>
 
                             <!-- Render input type based on setting type -->
                             <ng-container [ngSwitch]="setting.type">
 
                                 <!-- Text Input -->
-                                <input *ngSwitchCase="'string'" pInputText [(ngModel)]="setting.value"
+                                <input style="width: 100%;" [id]="setting.key" *ngSwitchCase="'string'" pInputText [(ngModel)]="setting.value"
                                     (ngModelChange)="settingChange(setting)" [attr.id]="setting.key"
                                     class="p-inputtext p-component" />
 
                                 <!-- Number Input -->
-                                <input *ngSwitchCase="'number'" pInputText type="number" [(ngModel)]="setting.value"
+                                <input [id]="setting.key" *ngSwitchCase="'number'" pInputText type="number" [(ngModel)]="setting.value"
                                     (ngModelChange)="settingChange(setting)" [attr.id]="setting.key"
                                     class="p-inputtext p-component" />
 
                                 <!-- Boolean Toggle -->
-                                <p-checkbox *ngSwitchCase="'boolean'" [(ngModel)]="setting.value"
-                                    (ngModelChange)="settingChange(setting)" [attr.id]="setting.key" binary="true"
-                                    label="Enabled"></p-checkbox>
+                                <p-checkbox [id]="setting.key" *ngSwitchCase="'boolean'" [falseValue]="'false'" [trueValue]="'true'" 
+                                    [(ngModel)]="setting.value"
+                                    (ngModelChange)="settingChange(setting)" [attr.id]="setting.key" binary="true"></p-checkbox>
 
-                                <p-fileupload *ngSwitchCase="'file'" mode="basic" chooseLabel="Choose"
+                                <p-fileupload [id]="setting.key" *ngSwitchCase="'file'" mode="basic" chooseLabel="Choose"
                                     chooseIcon="pi pi-upload" name="file" (onSelect)="onSelectFile(setting, $event)"
                                     [url]="getUploadPath()" maxFileSize="10000000" />
 
                             </ng-container>
                         </div>
                     </div>
-                    <button pButton label="Save All" (click)="saveSettings()" [loading]="loading" icon="pi pi-save" class="p-button-primary">
+                    <button pButton label="Save All" (click)="saveSettings()" [loading]="saveLoading" icon="pi pi-save" class="p-button-primary">
                     </button>
                 </div>
             </p-tabpanel>
             <p-tabpanel value="setting.company">
                 <div class="p-grid p-dir-col">
                     <div *ngFor="let setting of settings">
-                        <div class="p-field flex flex-col gap-2 mb-4" style="width: 30%;">
-                            <label [for]="setting.key">{{ setting.key | translate }}</label>
+                        <div class="p-field flex gap-4 items-center mb-4">
+                            <label style="width: 12rem;" class="cursor-pointer" [for]="setting.key">{{ setting.key | translate }}</label>
 
                             <!-- Render input type based on setting type -->
                             <ng-container [ngSwitch]="setting.type">
 
                                 <!-- Text Input -->
-                                <input *ngSwitchCase="'string'" pInputText [(ngModel)]="setting.value"
+                                <input style="width: 100%;"  [id]="setting.key" *ngSwitchCase="'string'" pInputText [(ngModel)]="setting.value"
                                     (ngModelChange)="settingChange(setting)" [attr.id]="setting.key"
                                     class="p-inputtext p-component" />
 
                                 <!-- Number Input -->
-                                <input *ngSwitchCase="'number'" pInputText type="number" [(ngModel)]="setting.value"
+                                <input [id]="setting.key" *ngSwitchCase="'number'" pInputText type="number" [(ngModel)]="setting.value"
                                     (ngModelChange)="settingChange(setting)" [attr.id]="setting.key"
                                     class="p-inputtext p-component" />
 
                                 <!-- Boolean Toggle -->
-                                <p-checkbox *ngSwitchCase="'boolean'" [(ngModel)]="setting.value"
-                                    (ngModelChange)="settingChange(setting)" [attr.id]="setting.key" binary="true"
-                                    label="Enabled"></p-checkbox>
+                                <p-checkbox [id]="setting.key" *ngSwitchCase="'boolean'" [falseValue]="'false'" [trueValue]="'true'" 
+                                    [(ngModel)]="setting.value"
+                                    (ngModelChange)="settingChange(setting)" [attr.id]="setting.key" binary="true"></p-checkbox>
 
-                                <p-fileupload *ngSwitchCase="'file'" mode="basic" chooseLabel="Choose"
+                                <p-fileupload [id]="setting.key" *ngSwitchCase="'file'" mode="basic" chooseLabel="Choose"
                                     chooseIcon="pi pi-upload" name="file" (onSelect)="onSelectFile(setting, $event)"
                                     [url]="getUploadPath()" maxFileSize="10000000" />
 
                             </ng-container>
                         </div>
                     </div>
-                    <button pButton label="Save All" (click)="saveSettings()" [loading]="loading" icon="pi pi-save" class="p-button-primary">
+                    <button pButton label="Save All" (click)="saveSettings()" [loading]="saveLoading" icon="pi pi-save" class="p-button-primary">
                     </button>
                 </div>
             </p-tabpanel>
             <p-tabpanel value="setting.pos">
                 <div class="p-grid p-dir-col">
                     <div *ngFor="let setting of settings">
-                        <div class="p-field flex flex-col gap-2 mb-4" style="width: 30%;">
-                            <label [for]="setting.key">{{ setting.key | translate }}</label>
+                        <div class="p-field flex gap-4 items-center mb-4">
+                            <label style="width: 12rem;" class="cursor-pointer" [for]="setting.key">{{ setting.key | translate }}</label>
 
                             <!-- Render input type based on setting type -->
                             <ng-container [ngSwitch]="setting.type">
 
                                 <!-- Text Input -->
-                                <input *ngSwitchCase="'string'" pInputText [(ngModel)]="setting.value"
+                                <input style="width: 100%;" [id]="setting.key" *ngSwitchCase="'string'" pInputText [(ngModel)]="setting.value"
                                     (ngModelChange)="settingChange(setting)" [attr.id]="setting.key"
                                     class="p-inputtext p-component" />
 
                                 <!-- Number Input -->
-                                <input *ngSwitchCase="'number'" pInputText type="number" [(ngModel)]="setting.value"
+                                <input [id]="setting.key" *ngSwitchCase="'number'" pInputText type="number" [(ngModel)]="setting.value"
                                     (ngModelChange)="settingChange(setting)" [attr.id]="setting.key"
                                     class="p-inputtext p-component" />
 
                                 <!-- Boolean Toggle -->
-                                <p-checkbox *ngSwitchCase="'boolean'" [(ngModel)]="setting.value"
-                                    (ngModelChange)="settingChange(setting)" [attr.id]="setting.key" binary="true"
-                                    label="Enabled"></p-checkbox>
+                                <p-checkbox [id]="setting.key" *ngSwitchCase="'boolean'" [falseValue]="'false'" [trueValue]="'true'" 
+                                    [(ngModel)]="setting.value"
+                                    (ngModelChange)="settingChange(setting)" [attr.id]="setting.key" binary="true"></p-checkbox>
 
-                                <p-fileupload *ngSwitchCase="'file'" mode="basic" chooseLabel="Choose"
+                                <p-fileupload [id]="setting.key" *ngSwitchCase="'file'" mode="basic" chooseLabel="Choose"
                                     chooseIcon="pi pi-upload" name="file" (onSelect)="onSelectFile(setting, $event)"
                                     [url]="getUploadPath()" maxFileSize="10000000" />
 
                             </ng-container>
                         </div>
                     </div>
-                    <button pButton label="Save All" (click)="saveSettings()" [loading]="loading" icon="pi pi-save" class="p-button-primary">
+                    <button pButton label="Save All" (click)="saveSettings()" [loading]="saveLoading" icon="pi pi-save" class="p-button-primary">
                     </button>
                 </div>
             </p-tabpanel>

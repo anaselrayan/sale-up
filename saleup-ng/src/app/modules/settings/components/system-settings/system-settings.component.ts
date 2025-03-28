@@ -15,6 +15,7 @@ import { FileUploadModule, UploadEvent } from 'primeng/fileupload';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { ProgressBar } from 'primeng/progressbar';
 import { TabsModule } from 'primeng/tabs';
 import { ToastModule } from 'primeng/toast';
 import { forkJoin, map } from 'rxjs';
@@ -33,7 +34,8 @@ import { forkJoin, map } from 'rxjs';
     DropdownModule,
     ToastModule,
     FileUploadModule,
-    Checkbox
+    Checkbox,
+    ProgressBar
   ],
   templateUrl: './system-settings.component.html',
   styleUrl: './system-settings.component.scss'
@@ -43,6 +45,7 @@ export class SystemSettingsComponent {
   settings: Setting[] = [];
   payloads: SettingRequest[] = [];
   settingFiles: {key: string, file: File}[] = [];
+  saveLoading = false;
   loading = false;
   settingCategory: string | number = "setting.app";
 
@@ -57,12 +60,13 @@ export class SystemSettingsComponent {
   }
 
   loadCategorySettings() {
+    this.loading = true;
     this.settingService.getSettingsByCategory(this.settingCategory.toString())
     .subscribe(res => {
       if (res.success) {
-        console.log(res.data)
         this.settings = res.data;
       }
+      this.loading = false;
     })
   }
 
@@ -79,7 +83,7 @@ export class SystemSettingsComponent {
   }
 
   saveSettings() {
-    this.loading = true;
+    this.saveLoading = true;
   
     // If there are no setting files, directly update the settings
     if (!this.settingFiles || this.settingFiles.length === 0) {
@@ -117,7 +121,7 @@ export class SystemSettingsComponent {
         this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
         window.location.reload();
       }
-      this.loading = false;
+      this.saveLoading = false;
     });
   }
 
@@ -135,7 +139,8 @@ export class SystemSettingsComponent {
   }
 
   onChangeTab(cat: any) {
-    console.log(cat)
+    this.payloads = [];
+    this.settingFiles = [];
     this.settingCategory = cat;
     this.loadCategorySettings();
   }
