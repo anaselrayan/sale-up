@@ -17,4 +17,7 @@ public class Settings {
     public static String RECEIPT_SHOW_FOOTER = "true";
     public static String RECEIPT_SHOW_LOGO = "true";
     public static String RECEIPT_SHOW_SELLER = "true";
+    public static String RECEIPT_SHOW_COMPANY_PHONE = "true";
+    public static String RECEIPT_SHOW_COMPANY_ADDRESS = "true";
+    public static String RECEIPT_SHOW_CUSTOMER = "true";
 }

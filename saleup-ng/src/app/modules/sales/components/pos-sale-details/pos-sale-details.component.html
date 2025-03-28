@@ -1,7 +1,7 @@
 <p-card [style]="{ minWidth: '40rem', overflow: 'hidden'}">
     <div class="search-customers mb-8">
         <div class="flex flex-col gap-2 mb-4">
-            <div class="text-lg">Customer Details</div>
+            <div class="text-lg">{{'CUSTOMER_DETAILS' | translate }}</div>
             <p-autocomplete [style]="{width: '100%'}" [dropdown]="true" optionLabel="phone" [(ngModel)]="cart.customer" [suggestions]="customers" (completeMethod)="searchCustomers($event)" >
                 <ng-template let-item pTemplate="item"> 
                     <div class="flex gap-2 items-center">
@@ -15,11 +15,11 @@
     </div>
     <div class="order-details">
         <div class="mb-4 text-lg flex justify-between"> 
-            <span>Order Details</span>
+            <span>{{'ORDER_DETAILS' | translate }}</span>
             <p-button *ngIf="cart.items?.length" severity="danger" label="Empty cart" icon="pi pi-shopping-cart" class="mr-2" [text]="true" (onClick)="cart.empty()" />
         </div>
         <div *ngIf="!cart.items || !cart.items.length" class="no-items text-center text-surface-600">
-            Empty cart!
+            {{'EMPTY_CART' | translate }}
         </div>
         <div class="order-items overflow-auto flex flex-col gap-2 mb-6" style="max-height: 20rem;">
             <div *ngFor="let item of cart.items" class="order-item flex gap-4 items-center justify-between">
@@ -57,16 +57,16 @@
         </div>
         <div class="total">
             <div class="flex justify-between">
-                <div class="mb-4 text-surface-400"> Subtotal </div>
+                <div class="mb-4 text-surface-400"> {{'SUB_TOTAL' | translate }} </div>
                 <span>{{ cart.subTotal | sCurrency }}</span>
             </div>
             <div class="flex justify-between">
-                <div class="mb-4 text-surface-400"> Discount </div>
+                <div class="mb-4 text-surface-400"> {{'DISCOUNT' | translate }} </div>
                 <span>{{ cart.discount }}</span>
             </div>
             <hr class="border-dashed" />
             <div class="flex justify-between">
-                <div class="mb-4 font-bold text-lg"> Total Amount </div>
+                <div class="mb-4 font-bold text-lg"> {{'TOTAL_AMOUNT' | translate }} </div>
                 <span class="text-lg">{{ cart.grandTotal | sCurrency}}</span>
             </div>
         </div>

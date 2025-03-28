@@ -41,10 +41,6 @@ public class SaleReceiptService {
         try {
             String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/" + sale.getCustomer().getPhone();
             String companyName = settingService.getSetting("company.name").getValue();
-            String companyTel = settingService.getSetting("company.phone").getValue();
-            String companyAddr = settingService.getSetting("company.address").getValue();
-            String customerName = sale.getCustomer().getFirstName() + " " + sale.getCustomer().getLastName();
-            String staffName = sale.getCreatedBy();
 
             Files.createDirectories(Paths.get(receiptPath));
 
@@ -56,13 +52,13 @@ public class SaleReceiptService {
             Map<String, Object> params = new HashMap<>();
             params.put("PRODUCT_LIST", new JRBeanCollectionDataSource(productList));
             params.put("companyName", companyName);
-            params.put("companyTel", companyTel);
-            params.put("companyAddr", companyAddr);
-            params.put("customerName", customerName);
-            params.put("staffName", staffName);
+            params.put("companyTel", getCompanyPhone());
+            params.put("companyAddr", getCompanyAddress());
+            params.put("customerName", getCustomer(sale));
+            params.put("staffName", getSeller(sale));
             params.put("subTotal", sale.getSubTotal());
             params.put("total", sale.getGrandTotal());
-            params.put("billFooter", "THANK YOU!");
+            params.put("billFooter", getReceiptFooter());
             params.put("logoImage", getLogoImageBytes());
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
             params.put("currentDate", timestamp);
@@ -77,6 +73,7 @@ public class SaleReceiptService {
             log.info("Receipt exported successfully to path: " + receiptFilePath);
             return receiptFilePath;
         } catch (Exception ex) {
+            ex.printStackTrace();
             log.error("Couldn't export the receipt: " + ex.getMessage());
             return null;
         }
@@ -89,6 +86,9 @@ public class SaleReceiptService {
     }
 
     private ByteArrayInputStream getLogoImageBytes() {
+        if ("false".equals(settingService.getSetting("pos.receipt.showLogo").getValue()))
+            return null;
+
         try {
             String logo = settingService.getSetting("app.logo").getValue();
             ResponseEntity<Resource> res = uploadService.downloadResource(Upload.UPLOAD_STATIC_RESOURCES, logo);
@@ -99,6 +99,36 @@ public class SaleReceiptService {
             log.error(e.getMessage());
             return null;
         }
+    }
+
+    private String getReceiptFooter() {
+        if ("true".equals(settingService.getSetting("pos.receipt.showFooter").getValue()))
+            return settingService.getSetting("pos.receipt.footer").getValue();
+        else return null;
+    }
+
+    private String getSeller(Sale sale) {
+        if ("true".equals(settingService.getSetting("pos.receipt.showSeller").getValue()))
+            return sale.getCreatedBy();
+        else return null;
+    }
+
+    private String getCustomer(Sale sale) {
+        if ("true".equals(settingService.getSetting("pos.receipt.showCustomer").getValue()))
+            return sale.getCustomer().getFirstName() + " " + sale.getCustomer().getLastName();
+        else return null;
+    }
+
+    private String getCompanyPhone() {
+        if ("true".equals(settingService.getSetting("pos.receipt.showCompanyPhone").getValue()))
+            return settingService.getSetting("company.phone").getValue();
+        else return null;
+    }
+
+    private String getCompanyAddress() {
+        if ("true".equals(settingService.getSetting("pos.receipt.showCompanyAddress").getValue()))
+            return settingService.getSetting("company.address").getValue();
+        else return null;
     }
 
 }

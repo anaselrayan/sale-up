@@ -14,6 +14,7 @@ import com.anaselrayan.springcashiero.features.sales.repository.SaleItemReposito
 import com.anaselrayan.springcashiero.features.sales.repository.SaleRepository;
 import com.anaselrayan.springcashiero.features.sales.request.SaleItemRequest;
 import com.anaselrayan.springcashiero.features.sales.request.SaleRequest;
+import com.anaselrayan.springcashiero.features.sales.util.SaleUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -49,10 +50,12 @@ public class SaleService {
                     .discount(request.getDiscount())
                     .build();
             Sale savedSale = saleRepository.save(toSave);
+            savedSale.setBarcode(SaleUtil.generateBarcode(savedSale));
             List<SaleItem> savedItems = new ArrayList<>();
             request.getSaleItems().forEach(req -> savedItems.add(this.saveSaleItem(req, savedSale)));
             this.updateQuantityAfterSale(savedItems);
             savedSale.setSaleItems(savedItems);
+            saleRepository.save(savedSale);
             this.saleReceiptService.generateSaleReceipt(savedSale);
             return new ApiResponse(SaleConverter.convert(savedSale), StatusCode.CREATED);
         } catch (Exception ex) {

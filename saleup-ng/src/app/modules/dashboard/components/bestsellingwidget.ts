@@ -115,12 +115,12 @@ export class BestSellingWidget {
     getQuantitySeverity(qty: number) {
         const width = (qty / this.maxQuantity * 100);
         
-        if (width < 90) return {width: width + '%', severity: 'bg-green-600'}
-        if (width < 75) return {width: width + '%', severity: 'bg-green-500'}
-        if (width < 60) return {width: width + '%', severity: 'bg-green-400'}
-        if(width < 50) return {width: width + '%', severity: 'bg-green-300'}
-        if (width < 30) return {width: width + '%', severity: 'bg-green-200'}
-        else return {width: width + '%', severity: 'bg-green-700'};
+        if (width < 90) return {width: width + '%', severity: 'bg-primary-300'}
+        if (width < 75) return {width: width + '%', severity: 'bg-primary-400'}
+        if (width < 60) return {width: width + '%', severity: 'bg-primary-500'}
+        if(width < 50) return {width: width + '%', severity: 'bg-primary-600'}
+        if (width < 30) return {width: width + '%', severity: 'bg-primary-700'}
+        else return {width: width + '%', severity: 'bg-primary-200'};
     }
 
 }

@@ -31,4 +31,6 @@ public class Sale extends BaseModel {
 
     private Double discount;
 
+    private String barcode;
+
 }

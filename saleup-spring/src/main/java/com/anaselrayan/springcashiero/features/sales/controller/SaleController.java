@@ -37,7 +37,7 @@ public class SaleController {
     @GetMapping("/{saleId}")
     public ResponseEntity<ApiResponse> getSaleById(@PathVariable Long saleId) {
         ApiResponse res = saleService.getSaleById(saleId);
-        return ResponseEntity.status(res.getCode()).body(res);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping("/receipt/{saleId}")

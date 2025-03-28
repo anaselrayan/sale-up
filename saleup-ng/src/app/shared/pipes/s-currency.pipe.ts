@@ -9,7 +9,7 @@ export class SCurrencyPipe implements PipeTransform {
   transform(value: number | undefined | null, ...args: string[]): unknown {
     if (value)
       return '$' + value.toFixed(2);
-    else return '$$';
+    else return '$0.0';
   }
 
 }

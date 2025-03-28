@@ -8,6 +8,7 @@ export interface Sale {
     subTotal: number;
     grandTotal: number;
     discount: number;
+    barcode: string;
     createdAt: Date;
     createdBy: string;
 }
@@ -16,4 +17,6 @@ export interface SaleItem {
     saleItemId: number;
     product: Product;
     quantity: number;
+    unitPrice: number;
+    subTotal: number;
 }

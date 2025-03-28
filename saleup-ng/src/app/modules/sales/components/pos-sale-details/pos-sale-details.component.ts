@@ -21,10 +21,8 @@ import { ToastService } from '@shared/services/toast.service';
 import { Toast } from 'primeng/toast';
 import { CustomerCreateDialogComponent } from "@module/customers/components/customer-create-dialog/customer-create-dialog.component";
 import { Tooltip } from 'primeng/tooltip';
-import { Sale } from '@module/sales/models/sale.model';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
-import { TranslateService } from '@ngx-translate/core';
-
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-pos-sale-details',
@@ -42,7 +40,8 @@ import { TranslateService } from '@ngx-translate/core';
     Toast,
     CustomerCreateDialogComponent,
     Tooltip,
-    SCurrencyPipe
+    SCurrencyPipe,
+    TranslateModule
 ],
   templateUrl: './pos-sale-details.component.html',
   styleUrl: './pos-sale-details.component.scss'

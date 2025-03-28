@@ -42,7 +42,10 @@ public class SettingSeeds {
                 new Setting("pos.receipt.footer", Settings.RECEIPT_FOOTER, "string", category),
                 new Setting("pos.receipt.showFooter", Settings.RECEIPT_SHOW_FOOTER, "boolean", category),
                 new Setting("pos.receipt.showLogo", Settings.RECEIPT_SHOW_LOGO, "boolean", category),
-                new Setting("pos.receipt.showSeller", Settings.RECEIPT_SHOW_SELLER, "boolean", category)
+                new Setting("pos.receipt.showSeller", Settings.RECEIPT_SHOW_SELLER, "boolean", category),
+                new Setting("pos.receipt.showCompanyPhone", Settings.RECEIPT_SHOW_COMPANY_PHONE, "boolean", category),
+                new Setting("pos.receipt.showCompanyAddress", Settings.RECEIPT_SHOW_COMPANY_ADDRESS, "boolean", category),
+                new Setting("pos.receipt.showCustomer", Settings.RECEIPT_SHOW_CUSTOMER, "boolean", category)
         );
     }
     

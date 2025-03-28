@@ -16,7 +16,9 @@ public class SaleConverter {
                 .customer(CustomerConverter.convert(from.getCustomer()))
                 .saleItems(from.getSaleItems().stream().map(SaleItemConverter::convert).toList())
                 .grandTotal(from.getGrandTotal())
+                .subTotal(from.getSubTotal())
                 .discount(from.getDiscount())
+                .barcode(from.getBarcode())
                 .build();
     }
 }

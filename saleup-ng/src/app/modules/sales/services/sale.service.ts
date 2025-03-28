@@ -24,6 +24,10 @@ export class SaleService {
         return this.http.get<any>(`${this.basUrl}?page=${pr.page}&size=${pr.size}`)
     }
 
+    public getSaleById(saleId: number): Observable<ApiResponse<Sale>> {
+        return this.http.get<any>(`${this.basUrl}/${saleId}`)
+    }
+
     public getSaleReceipt(saleId: number): Observable<any> {
         return this.http.get(`${this.basUrl}/receipt/${saleId}`, { responseType: 'blob' });
     }

@@ -19,6 +19,7 @@ import { MenuItem } from 'primeng/api';
 import { Page } from '@shared/models/page-response.mdel';
 import { Paginator } from 'primeng/paginator';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-sales-list',
@@ -36,7 +37,8 @@ import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
     InputIcon,
     Menu,
     Paginator,
-    SCurrencyPipe
+    SCurrencyPipe,
+    RouterModule
   ],
   templateUrl: './sales-list.component.html',
   styleUrl: './sales-list.component.scss'
@@ -56,7 +58,8 @@ export class SalesListComponent {
 
   constructor(
     private saleService: SaleService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -87,8 +90,8 @@ export class SalesListComponent {
 
   getMenuItems(sale: Sale) {
     this.menuItems =  [
-      { label: 'Sale details', icon: 'pi pi-eye' },
-      { label: 'Sale return', icon: 'pi pi-undo' },
+      { label: 'Sale details', icon: 'pi pi-eye', command: ()=> { this.saleDetails(sale) } },
+      { label: 'Sale return', icon: 'pi pi-undo', command: ()=> { this.saleReturn(sale) } },
       { label: 'Download receipt', icon: 'pi pi-print', command: () => { this.saleService.previewSaleReceipt(sale) } }
     ];
   }
@@ -104,5 +107,14 @@ export class SalesListComponent {
   downloadReceipt(sale: Sale) {
     this.saleService.previewSaleReceipt(sale);
   }
+
+  saleDetails(sale: Sale) {
+    this.router.navigate(['sales/detail', sale.saleId])
+  }
+
+  saleReturn(sale: Sale) {
+    this.router.navigate(['sales/return', sale.saleId])
+  }
+
 
 }
