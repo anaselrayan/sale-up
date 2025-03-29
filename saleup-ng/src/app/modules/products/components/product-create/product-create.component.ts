@@ -169,7 +169,7 @@ export class ProductCreateComponent implements OnInit {
     data.append('costPrice', formVal['costPrice'])
     data.append('quantity', formVal['quantity'])
     data.append('sellingPrice', formVal['sellingPrice'])
-    data.append('lowStockPoint', formVal['lowStockPoint'])
+    data.append('lowStockPoint', '0')
     this.imagesFiles.forEach(file => {
       data.append('imageFiles', file, file.name);
     });

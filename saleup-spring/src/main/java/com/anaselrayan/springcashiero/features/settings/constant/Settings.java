@@ -20,4 +20,5 @@ public class Settings {
     public static String RECEIPT_SHOW_COMPANY_PHONE = "true";
     public static String RECEIPT_SHOW_COMPANY_ADDRESS = "true";
     public static String RECEIPT_SHOW_CUSTOMER = "true";
+    public static String RECEIPT_SHOW_BARCODE = "true";
 }

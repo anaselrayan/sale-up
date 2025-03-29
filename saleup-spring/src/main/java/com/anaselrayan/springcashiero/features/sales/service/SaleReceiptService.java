@@ -24,7 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -60,6 +63,7 @@ public class SaleReceiptService {
             params.put("total", sale.getGrandTotal());
             params.put("billFooter", getReceiptFooter());
             params.put("logoImage", getLogoImageBytes());
+            params.put("barcode", sale.getBarcode());
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
             params.put("currentDate", timestamp);
 
@@ -73,7 +77,6 @@ public class SaleReceiptService {
             log.info("Receipt exported successfully to path: " + receiptFilePath);
             return receiptFilePath;
         } catch (Exception ex) {
-            ex.printStackTrace();
             log.error("Couldn't export the receipt: " + ex.getMessage());
             return null;
         }

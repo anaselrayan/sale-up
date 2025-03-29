@@ -45,7 +45,8 @@ public class SettingSeeds {
                 new Setting("pos.receipt.showSeller", Settings.RECEIPT_SHOW_SELLER, "boolean", category),
                 new Setting("pos.receipt.showCompanyPhone", Settings.RECEIPT_SHOW_COMPANY_PHONE, "boolean", category),
                 new Setting("pos.receipt.showCompanyAddress", Settings.RECEIPT_SHOW_COMPANY_ADDRESS, "boolean", category),
-                new Setting("pos.receipt.showCustomer", Settings.RECEIPT_SHOW_CUSTOMER, "boolean", category)
+                new Setting("pos.receipt.showCustomer", Settings.RECEIPT_SHOW_CUSTOMER, "boolean", category),
+                new Setting("pos.receipt.showBarcode", Settings.RECEIPT_SHOW_BARCODE, "boolean", category)
         );
     }
     

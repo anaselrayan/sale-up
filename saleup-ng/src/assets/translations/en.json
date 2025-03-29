@@ -76,6 +76,7 @@
     "pos.receipt.showCompanyPhone": "Show company phone",
     "pos.receipt.showCompanyAddress": "Show company address",
     "pos.receipt.showCustomer": "Show customer",
+    "pos.receipt.showBarcode": "Show barcode",
     "app.defaultCurrency": "Default currency",
     "app.defaultLanguage": "Default language",
     "app.logo": "App logo",

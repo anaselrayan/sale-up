@@ -14,6 +14,7 @@ import { NgxBarcode6Module } from 'ngx-barcode6';
 import { TranslateModule } from '@ngx-translate/core';
 import { TableModule } from 'primeng/table';
 import { Skeleton } from 'primeng/skeleton';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-sale-details',
@@ -29,7 +30,8 @@ import { Skeleton } from 'primeng/skeleton';
     NgxBarcode6Module,
     TranslateModule,
     TableModule,
-    Skeleton
+    Skeleton,
+    Tooltip
   ],
   templateUrl: './sale-details.component.html',
   styleUrl: './sale-details.component.scss'
@@ -66,6 +68,10 @@ export class SaleDetailsComponent {
           })
       }
     }
+  }
+
+  printReceipt() {
+    this.saleService.previewSaleReceipt(this.sale);
   }
 
 }

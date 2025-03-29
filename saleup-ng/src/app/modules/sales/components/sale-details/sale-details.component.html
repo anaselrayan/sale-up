@@ -12,7 +12,7 @@
                 <span>{{ 'SALE_DETAILS' | translate }}</span>: 
                 <span class="text-primary">{{ ' ' + sale.barcode + ' ' }}</span>
             </div>
-            <div>HI</div>
+            <p-button tooltipPosition="top" pTooltip="Print receipt" (onClick)="printReceipt()" icon="pi pi-print" [rounded]="true" [text]="true" severity="success" />
         </div>
         <div class="mb-4">
             <span class="font-md text-surface-400">{{ ('TIMESTAMP' | translate) + ': '}}</span>
@@ -96,9 +96,12 @@
             <span class="font-md text-surface-400">{{ ('CREATED_BY' | translate) + ': '}}</span>
             <span>{{ sale.createdBy }}</span>
         </div>
-        <ngx-barcode6
-        [bc-format]="'CODE128'"
-        [bc-value]="sale.barcode"
-        [bc-display-value]="true" />
+        <div class="flex justify-center w-full">
+            <ngx-barcode6
+                [bc-width]="3"
+                [bc-format]="'CODE128'"
+                [bc-value]="sale.barcode"
+                [bc-display-value]="true" />
+        </div>
     </div>
 </p-card>

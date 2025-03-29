@@ -14,13 +14,14 @@ import { CardModule } from 'primeng/card';
 import { PosSaleDetailsComponent } from "../pos-sale-details/pos-sale-details.component";
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { CartService } from '@module/sales/services/cart.service';
-import { debounceTime, switchMap } from 'rxjs';
+import { debounceTime, finalize, switchMap } from 'rxjs';
 import { BarcodeScannerLivestreamComponent, BarcodeScannerLivestreamModule } from "ngx-barcode-scanner";
 import { PaginatorModule } from 'primeng/paginator';
 import { Page } from '@shared/models/page-response.mdel';
 import { Tooltip } from 'primeng/tooltip';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { LayoutService } from '@layout/service/layout.service';
+import { Skeleton } from 'primeng/skeleton';
 
 
 @Component({
@@ -40,7 +41,8 @@ import { LayoutService } from '@layout/service/layout.service';
     BarcodeScannerLivestreamModule,
     PaginatorModule,
     Tooltip,
-    SCurrencyPipe
+    SCurrencyPipe,
+    Skeleton
 ],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.scss'
@@ -50,6 +52,7 @@ export class PosComponent {
   pageReq = new PageRequest(0, 8);
   pageDetails?: Page;
   products: Product[] = [];
+  loading = false;
 
   @ViewChild(BarcodeScannerLivestreamComponent)
   barcodeScanner!: BarcodeScannerLivestreamComponent;
@@ -87,24 +90,30 @@ export class PosComponent {
 
   subscribeForGlobalSearch() {
     this.pageReq = new PageRequest(0, 8);
+    this.loading = true;
     this.globalSearchControl.valueChanges.pipe(
       debounceTime(300),
-      switchMap((searchTerm) => this.productService.searchByKeyword(searchTerm || '', this.pageReq))
+      switchMap((searchTerm) => this.productService.searchByKeyword(searchTerm || '', this.pageReq)
+      .pipe(finalize(() => this.loading = false))
+    )
     ).subscribe(res => {
       if (res.success) {
         this.products = res.data.content;
         this.pageDetails = res.data.page;
       }
+      this.loading = false;
     });
   }
   
   getProducts() {
+    this.loading = true;
     this.productService.getProductsPage(this.pageReq)
     .subscribe(res => {
       if (res.success) {
         this.products = res.data.content;
         this.pageDetails = res.data.page;
       }
+      this.loading = false;
     })
   }
 
