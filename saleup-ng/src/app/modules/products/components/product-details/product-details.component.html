@@ -1,0 +1,157 @@
+<p-card>
+    <div *ngIf="loading" class="flex gap-4">
+        <p-skeleton width="40rem" height="30rem" />
+        <div>
+            <p-skeleton width="20rem" height="2rem" styleClass="mb-2" />
+            <p-skeleton width="10rem" styleClass="mb-2" />
+            <p-skeleton width="5rem" styleClass="mb-2" />
+            <p-skeleton width="5rem" styleClass="mb-2" />
+            <p-skeleton width="5rem" styleClass="mb-2" />
+            <p-skeleton width="20rem" styleClass="mb-2" />
+            <p-skeleton width="20rem" styleClass="mb-2" />
+            <p-skeleton width="10rem" height="3rem" styleClass="mb-2" />
+        </div>
+    </div>
+    <div *ngIf="product && !loading" class="product-details w-full mb-4">
+        <div class="flex gap-4">
+            <div class="image-slider" style="width: 50%;">
+                <img *ngIf="!product.basicDetails.productImages?.length" [src]="getPrimaryImageSrc(product)" alt="">
+                <p-galleria [value]="product.basicDetails.productImages" [showItemNavigators]="true" [responsiveOptions]="responsiveOptions" [circular]="true" [numVisible]="5">
+                    <ng-template #item let-item>
+                        <img [src]="getProductImageSrc(product.productId, item)" style="height: 20rem; object-fit: cover; display: block;" />
+                    </ng-template>
+                    <ng-template #thumbnail let-item>
+                        <img [src]="getProductImageSrc(product.productId, item)" style="width: 3rem; display: block;" />
+                    </ng-template>
+                </p-galleria>
+            </div>
+            <div class="basic" style="width: 50%;">
+                <div class="actions flex items-center justify-between">
+                    <div [routerLink]="['/products/list']" class="back flex gap-2 items-center cursor-pointer mb-2 text-surface-300">
+                        <span class="pi pi-arrow-left"></span>
+                        <span>Back to list</span>
+                    </div>
+                    <div class="flex gap-1 justify-between">
+                        <p-button [routerLink]="['/products/edit', product.productId]" tooltipPosition="top" pTooltip="Edit" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" />
+                        <p-button tooltipPosition="top" pTooltip="Delete" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" />
+                    </div>
+                </div>
+                <div class="text-lg font-bold">
+                    {{ product.basicDetails.productName }}
+                </div>
+                <div class="flex gap-6 mb-4">
+                    <div *ngIf="product.basicDetails.productCategory" class="ml-2 text-surface-500 text-sm flex gap-2 items-center">
+                        <i class="pi pi-clone"></i>
+                        <span>{{ product.basicDetails.productCategory.name }}</span>
+                    </div>
+                    <div *ngIf="product.basicDetails.productBrand" class="ml-2 text-surface-500 text-sm flex gap-2 items-center">
+                        <i class="pi pi-tags"></i>
+                        <span>{{ product.basicDetails.productBrand.name }}</span>
+                    </div>
+                    <div *ngIf="product.basicDetails.unitOfMeasure" class="ml-2 text-surface-500 text-sm flex gap-2 items-center">
+                        <i class="pi pi-gauge"></i>
+                        <span>{{ product.basicDetails.unitOfMeasure.name }}</span>
+                    </div>
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'QUANTITY' | translate }}:</span>
+                    <p-tag [value]="product.basicDetails.quantity + ''" [severity]="getQuantitySeverity(product)" />
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'COST' | translate }}:</span>
+                    <span>{{ product.priceDetails.costPrice | sCurrency }}</span>
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'PRICE' | translate }}:</span>
+                    <span>{{ product.priceDetails.sellingPrice | sCurrency }}</span>
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'DISCOUNT' | translate }}:</span>
+                    <span class="text-orange-500">{{ getDiscountLabel(product) }}</span>
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'DISCOUNT_ACTIVE' | translate }}:</span>
+                    <span>{{ product.priceDetails.discountRangeActive ? 'YES' : 'NO' }}</span>
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'PRICE_AFTER_DISCOUNT' | translate }}:</span>
+                    <span class="text-primary">{{ product.priceDetails.priceWithDiscount | sCurrency }}</span>
+                </div>
+                <div class="flex gap-2 items-center mb-2 mt-6">
+                    <span class="pi pi-barcode"></span>
+                    <span>{{ product.basicDetails.barcode }}</span>
+                </div>
+                <div class="barcode">
+                    <ngx-barcode6
+                        [bc-width]="2"
+                        [bc-height]="30"
+                        [bc-format]="'CODE128'"
+                        [bc-value]="product.basicDetails.barcode" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="statistics mt-4">
+        <div class="title flex gap-6">
+            <div class="text-lg font-bold">
+                <i class="pi pi-chart-line"></i>
+                {{ 'STATISTICS' | translate }}
+            </div>
+            <p-select [disabled]="statLoading" [options]="stOptions" (onChange)="onChangeCriteria($event)" class="mb-4" />
+        </div>
+        <div *ngIf="statLoading" class="flex gap-4">
+            <p-skeleton width="12rem" height="5rem" />
+            <p-skeleton width="12rem" height="5rem" />
+            <p-skeleton width="12rem" height="5rem" />
+            <p-skeleton width="12rem" height="5rem" />
+        </div>
+        <div *ngIf="!statLoading" class="flex gap-4">
+            <div class="st-card p-4 rounded-border bg-surface-100 dark:bg-surface-800">
+                <div class="flex gap-4 justify-between">
+                    <span class="block text-muted-color">{{ 'SOLD_UNITS' | translate }}</span>
+                    <div class="flex items-center justify-center bg-blue-200 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
+                    </div>
+                </div>
+                <div class="val ml-2">
+                    <span>{{ productStat?.totalSoldUnits || 0}}</span>
+                    <span class="ml-1 text-sm text-muted-color">{{ product.basicDetails.unitOfMeasure?.code}}</span>
+                </div>
+            </div>
+            <div class="st-card p-4 rounded-border bg-surface-100 dark:bg-surface-800">
+                <div class="flex gap-4 justify-between">
+                    <span class="block text-muted-color">{{ 'TOTAL_SALES' | translate }}</span>
+                    <div class="flex items-center justify-center bg-yellow-200 dark:bg-yellow-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-dollar text-yellow-500 !text-xl"></i>
+                    </div>
+                </div>
+                <div class="val ml-2">
+                    <span>{{ (productStat?.totalSoldAmount || 0.0) | sCurrency }}</span>
+                </div>
+            </div>
+            <div class="st-card p-4 rounded-border bg-surface-100 dark:bg-surface-800">
+                <div class="flex gap-4 justify-between">
+                    <span class="block text-muted-color">{{ 'TOTAL_REVENUE' | translate }}</span>
+                    <div class="flex items-center justify-center bg-green-200 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-arrow-right-arrow-left text-green-500 !text-xl"></i>
+                    </div>
+                </div>
+                <div class="val ml-2">
+                    <span>{{ (productStat?.totalRevenue || 0.0) | sCurrency }}</span>
+                </div>
+            </div>
+            <div class="st-card p-4 rounded-border bg-surface-100 dark:bg-surface-800">
+                <div class="flex gap-4 justify-between">
+                    <span class="block text-muted-color">{{ 'TOTAL_COST' | translate }}</span>
+                    <div class="flex items-center justify-center bg-orange-200 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                    </div>
+                </div>
+                <div class="val ml-2">
+                    <span>{{ (productStat?.totalCost || 0.0) | sCurrency }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</p-card>

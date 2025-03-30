@@ -13,6 +13,7 @@ public class SaleItemConverter {
                 .saleItemId(from.getId())
                 .quantity(from.getQuantity())
                 .unitPrice(from.getUnitPrice())
+                .unitCost(from.getUnitCost())
                 .subTotal(from.getSubTotal())
                 .product(ProductConverter.convert(from.getProduct()))
                 .build();

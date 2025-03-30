@@ -122,6 +122,7 @@ public class SaleService {
                 .product(product)
                 .quantity(req.getQuantity())
                 .unitPrice(unitPrice)
+                .unitCost(product.getProductPrice().getCostPrice())
                 .subTotal(req.getQuantity() * unitPrice)
                 .build();
         return saleItemRepository.save(toSave);

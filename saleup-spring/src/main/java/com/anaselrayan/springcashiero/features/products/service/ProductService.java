@@ -201,7 +201,7 @@ public class ProductService {
             if (!ProductUtils.validDiscountAmount(req.getDiscountAmount(), req.getDiscountType(), product.getProductPrice()))
                 return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid discount amount!");
 
-            product.getProductPrice().setDiscountActive(req.getDiscountActive());
+            product.getProductPrice().setDiscountDisabled(!req.getDiscountActive());
             product.getProductPrice().setDiscountType(req.getDiscountType());
             product.getProductPrice().setDiscountAmount(req.getDiscountAmount());
             product.getProductPrice().setDiscountStartDate(req.getDiscountStartDate());

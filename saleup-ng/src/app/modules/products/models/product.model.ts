@@ -24,7 +24,8 @@ export interface ProductPrice {
     sellingPrice: number,
     discountAmount: number,
     discountType: DiscountType,
-    discountActive: boolean,
+    discountDisabled: boolean,
+    discountRangeActive: boolean,
     discountStartDate: Date,
     discountEndDate: Date,
     priceWithDiscount: number
@@ -68,4 +69,11 @@ export interface ProductBrand {
 export enum DiscountType {
     FIXED = 'FIXED', 
     PERCENT = 'PERCENT'
+}
+
+export interface ProductStatisticsSummary {
+    totalCost: number,
+    totalRevenue: number,
+    totalSoldAmount: number,
+    totalSoldUnits: number
 }

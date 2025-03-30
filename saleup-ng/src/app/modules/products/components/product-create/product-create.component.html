@@ -6,10 +6,10 @@
                 <div class="flex justify-center gap-2 w-full" *ngIf="mode==='edit'">
                     <p-galleria [value]="product.basicDetails.productImages" [responsiveOptions]="[]" style="width: 40%;">
                         <ng-template #item let-item>
-                            <img [src]="getProductImageSrc(product.productId, item)" style="width: 300px; display: block;" />
+                            <img [src]="getProductImageSrc(product.productId, item)" style="width: 20rem; display: block;" />
                         </ng-template>
                         <ng-template #thumbnail let-item>
-                            <img [src]="getProductImageSrc(product.productId, item)" style="width: 60px;display: block;" />
+                            <img [src]="getProductImageSrc(product.productId, item)" style="width: 60px; display: block;" />
                         </ng-template>
                         <ng-template #caption let-item>
                             <div class="flex justify-between">

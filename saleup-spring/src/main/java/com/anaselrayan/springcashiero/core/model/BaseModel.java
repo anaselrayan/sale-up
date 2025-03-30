@@ -48,5 +48,4 @@ public class BaseModel {
     @Column(nullable = false)
     private Boolean isActiveStatus = Boolean.TRUE;
 
-
 }

@@ -115,6 +115,14 @@
 			<artifactId>jasperreports-barbecue</artifactId>
 			<version>7.0.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.anaselrayan</groupId>
+			<artifactId>ArialAr</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/ArialAr.jar</systemPath>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -16,6 +16,8 @@ public class SaleItemDTO {
 
     private Double unitPrice;
 
+    private Double unitCost;
+
     private Double subTotal;
 
 }

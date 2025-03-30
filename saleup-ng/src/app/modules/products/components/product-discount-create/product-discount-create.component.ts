@@ -6,19 +6,30 @@ import { DiscountType, Product } from '@module/products/models/product.model';
 import { ProductService } from '@module/products/services/product.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Button } from 'primeng/button';
-import { InputSwitch } from 'primeng/inputswitch';
 import { Dialog } from 'primeng/dialog';
 import { InputNumber } from 'primeng/inputnumber';
 import { Select } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
-import { ToastService } from '@shared/services/toast.service';
 import { DatePicker } from 'primeng/datepicker';
 import { DateUtils } from 'src/app/utils/date.utils';
+import { ToggleButton } from 'primeng/togglebutton';
 
 @Component({
   selector: 'app-product-discount-create',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule, Dialog, Button, InputNumber, Select, ToastModule, InputSwitch, DatePicker],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    Dialog,
+    Button,
+    InputNumber,
+    Select,
+    ToastModule,
+    DatePicker,
+    ToggleButton
+  ],
   templateUrl: './product-discount-create.component.html',
   styleUrl: './product-discount-create.component.scss'
 })
@@ -28,23 +39,22 @@ export class ProductDiscountCreateComponent {
   discountTypes = [DiscountType.FIXED, DiscountType.PERCENT];
   loading = false;
   header = 'Product Discount: ';
-  @Input() visible: boolean = false;
   @Output() visibileChange = new EventEmitter<boolean>();
   @Output() success = new EventEmitter<boolean>();
 
   constructor(
     private productService: ProductService,
     private formBuilder: UntypedFormBuilder,
-    private toast: ToastService,
     private translate: TranslateService
   ) {}
 
   ngOnInit() {
     this.initForm();
     if(this.product) {
+      console.log(this.product)
       this.header += this.product.basicDetails.productName;
       this.form.patchValue({
-        active: this.product.priceDetails.discountActive,
+        active: !this.product.priceDetails.discountDisabled,
         type: this.product.priceDetails.discountType,
         amount: this.product.priceDetails.discountAmount,
         range: this.product.priceDetails.discountStartDate && this.product.priceDetails.discountEndDate ?  
@@ -90,8 +100,8 @@ export class ProductDiscountCreateComponent {
     return req;
   }
 
-  cancel() {
-    this.visible = false;
+  close() {
     this.visibileChange.emit(false);
   }
+
 }

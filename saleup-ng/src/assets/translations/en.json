@@ -89,5 +89,10 @@
     "ORDER_SAVED": "Order saved successfully!",
     "TODAY_SALES": "Today's Sales",
     "TODAY_REVENUE": "Today's Revenue",
+    "STATISTICS": "Statistics",
+    "SOLD_UNITS": "Sold Units",
+    "TOTAL_SALES": "Total Sales",
+    "TOTAL_REVENUE": "Total Revenue",
+    "TOTAL_COST": "Total Cost",
     "CUSTOMERS": "Customers"
 }

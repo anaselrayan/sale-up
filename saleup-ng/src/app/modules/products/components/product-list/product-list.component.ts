@@ -60,7 +60,7 @@ import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
     Tooltip,
     SCurrencyPipe,
     ProductDiscountCreateComponent
-],
+  ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './product-list.component.html',
 })
@@ -195,17 +195,7 @@ export class ProductListComponent implements OnInit {
   }
 
   getDiscountLabel(product: Product) {
-    if (!product.priceDetails.discountActive)
-      return 'NO';
-
-    if (product.priceDetails.discountType === DiscountType.FIXED) {
-      return product.priceDetails.discountAmount + '$';
-    }
-    
-    if (product.priceDetails.discountType === DiscountType.PERCENT) {
-      return product.priceDetails.discountAmount + '%';
-    }
-    return '';
+    return ProductUtils.getDiscountLabel(product);
   }
 
   discountDialogToggle(e: boolean) {
@@ -221,6 +211,10 @@ export class ProductListComponent implements OnInit {
 
   newProduct() {
     this.router.navigate(['products/new'])
+  }
+
+  productDetails(product: Product) {
+    this.router.navigate(['products/detail', product.productId])
   }
 
 }

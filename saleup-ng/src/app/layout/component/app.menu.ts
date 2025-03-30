@@ -28,7 +28,7 @@ export class AppMenu {
                         label: 'Products',
                         icon: 'pi pi-box', 
                         items: [
-                            { label: 'Add Products', icon: 'pi pi-file-plus', routerLink: ['/products/new'] },
+                            { label: 'Add Products', icon: 'pi pi-plus', routerLink: ['/products/new'] },
                             { label: 'Product List', icon: 'pi pi pi-list', routerLink: ['/products/list'] },
                             { label: 'Category List', icon: 'pi pi-clone', routerLink: ['/products/categories'] },
                             { label: 'Product Brands', icon: 'pi pi-tags', routerLink: ['/products/brands'] },

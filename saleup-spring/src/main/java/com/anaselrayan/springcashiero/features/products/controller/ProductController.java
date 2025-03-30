@@ -4,6 +4,7 @@ import com.anaselrayan.springcashiero.core.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.products.request.ProductDiscountRequest;
 import com.anaselrayan.springcashiero.features.products.request.ProductRequest;
 import com.anaselrayan.springcashiero.features.products.service.ProductService;
+import com.anaselrayan.springcashiero.features.products.service.ProductStatisticsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import static com.anaselrayan.springcashiero.core.constatnts.Endpoint.API_URL;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductStatisticsService productStatisticsService;
 
     @PostMapping
     public ResponseEntity<ApiResponse> createProduct(@ModelAttribute @Valid ProductRequest request) {
@@ -61,6 +63,13 @@ public class ProductController {
     @PostMapping("/discount")
     public ResponseEntity<ApiResponse> createProductDiscount(@RequestBody @Valid ProductDiscountRequest req) {
         ApiResponse res = productService.createProductDiscount(req);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/statistics/{productId}")
+    public ResponseEntity<ApiResponse> getProductStatistics(@PathVariable Long productId,
+                                                            @RequestParam(required = false) String range) {
+        ApiResponse res = productStatisticsService.getProductStatisticsSummary(productId, range);
         return ResponseEntity.ok(res);
     }
 

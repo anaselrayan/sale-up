@@ -22,6 +22,8 @@ import { Tooltip } from 'primeng/tooltip';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { LayoutService } from '@layout/service/layout.service';
 import { Skeleton } from 'primeng/skeleton';
+import { ToastService } from '@shared/services/toast.service';
+import { Toast } from 'primeng/toast';
 
 
 @Component({
@@ -42,7 +44,8 @@ import { Skeleton } from 'primeng/skeleton';
     PaginatorModule,
     Tooltip,
     SCurrencyPipe,
-    Skeleton
+    Skeleton,
+    Toast
 ],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.scss'
@@ -53,15 +56,16 @@ export class PosComponent {
   pageDetails?: Page;
   products: Product[] = [];
   loading = false;
+  searching = false;
 
   @ViewChild(BarcodeScannerLivestreamComponent)
   barcodeScanner!: BarcodeScannerLivestreamComponent;
-  barcodeValue!: any;
 
   constructor(
     private productService: ProductService,
     private cartService: CartService,
-    private lasyoutService: LayoutService
+    private lasyoutService: LayoutService,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
@@ -80,8 +84,21 @@ export class PosComponent {
     this.barcodeScanner.start();
   }
 
-  onValueChanges(result: any) {
-    this.barcodeValue = result.codeResult.code;
+  onValueChanges(value: any) {
+    if (this.searching)
+      return;
+    this.searching = true;
+    const barcode = value.codeResult.code.trim();
+    this.productService.getProductByBarcode(barcode)
+      .subscribe(res => {
+        if (res.success) {
+          this.cartService.addProductSubject.next(res.data);
+        } else {
+          console.log(barcode, value)
+          this.toast.showWarn("Product not found!");
+          this.searching = false;
+        }
+      })
   }
 
   onStarted(started: any) {
@@ -118,17 +135,7 @@ export class PosComponent {
   }
 
   getQuantitySeverity(p: Product) {
-    if (p.basicDetails.quantity > p.basicDetails.lowStockPoint) {
-      return 'success'
-    }
-    else if (p.basicDetails.quantity <= p.basicDetails.lowStockPoint) {
-      return 'warn';
-    }
-    else if (p.basicDetails.quantity == 0) {
-      return 'danger';
-    }
-    else
-      return 'info';
+    return ProductUtils.getQuantitySeverity(p)
   }
   
   getProductImageSrc(product: Product) {

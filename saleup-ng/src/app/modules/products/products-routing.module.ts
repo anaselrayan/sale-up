@@ -6,6 +6,7 @@ import { CategoryListComponent } from './components/category-list/category-list.
 import { AuthGuard } from '@module/auth/services/auth.guard';
 import { ProductBrandsComponent } from './components/product-brands/product-brands.component';
 import { ProductUnitsComponent } from './components/product-units/product-units.component';
+import { ProductDetailsComponent } from './components/product-details/product-details.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,12 @@ const routes: Routes = [
     component: ProductCreateComponent,
     canActivate: [AuthGuard],
     data: { perms: ['perm.create.product'] }
+  },
+  {
+    path: 'detail/:productId',
+    component: ProductDetailsComponent,
+    canActivate: [AuthGuard],
+    data: { perms: ['perm.access.product'] }
   },
   {
     path: 'categories',

@@ -5,6 +5,8 @@ import { ApiResponse } from "@shared/models/api-response";
 import { Observable } from "rxjs";
 import { DashboardSnapshotResponse } from "../models/dashboard-snapshot-response";
 import { BestSellingProductResponse } from "../models/best-selling-product-response";
+import { MonthSalesResponse } from "../models/month-sales-response";
+import { Product } from "@module/products/models/product.model";
 
 @Injectable({
     providedIn: 'root'
@@ -19,9 +21,16 @@ export class DashboardService {
         return this.http.get<any>(`${this.baseUrl}/snapshot`);
     }
 
-    public getTopSellingProducts(): Observable<ApiResponse<BestSellingProductResponse[]>> {
-        return this.http.get<any>(`${this.baseUrl}/top-selling`);
+    public getTopSellingProducts(type: string): Observable<ApiResponse<BestSellingProductResponse[]>> {
+        return this.http.get<any>(`${this.baseUrl}/top-selling?type=${type}`);
     }
 
+    public getMonthlySales(year: number): Observable<ApiResponse<MonthSalesResponse[]>>{
+        return this.http.get<any>(`${this.baseUrl}/monthly-sales?year=${year}`);
+    }
+
+    public getLowStockProducts(): Observable<ApiResponse<Product[]>>{
+        return this.http.get<any>(`${this.baseUrl}/low-stock`);
+    }
 
 }

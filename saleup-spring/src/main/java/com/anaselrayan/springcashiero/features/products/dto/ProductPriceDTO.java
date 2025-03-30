@@ -16,7 +16,9 @@ public class ProductPriceDTO {
 
     private Double sellingPrice;
 
-    private Boolean discountActive;
+    private Boolean discountDisabled;
+
+    private Boolean discountRangeActive;
 
     private DiscountType discountType;
 

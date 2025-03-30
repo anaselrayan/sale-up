@@ -51,7 +51,10 @@ import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
         <ul *ngIf="!loading" class="list-none p-0 m-0">
             <li *ngFor="let item of model" class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <div class="flex items-center gap-2">
-                    <img width="50px" [src]="getProductImageSrc(item.product)" alt="">
+                    <img class="rounded w-full"
+                        [src]="getProductImageSrc(item.product)"
+                        [alt]="item.product.basicDetails.productName"
+                        style="width: 50px; object-fit: cover;" />
                     <div>
                         <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">{{ item.product.basicDetails.productName }}</span>
                         <div class="mt-1 text-muted-color">{{ item.product.basicDetails.productCategory?.name }}</div>
@@ -72,6 +75,7 @@ export class BestSellingWidget {
     model: BestSellingProductResponse[] = [];
     loading = false;
     maxQuantity = 0;
+    range = 'week';
 
     constructor(private dashboardService: DashboardService) {}
 
@@ -82,12 +86,12 @@ export class BestSellingWidget {
     ]
 
     ngOnInit() {
-       this.getData('week');
+       this.getData();
     }
 
-    getData(type: string) {
+    getData() {
         this.loading = true;
-        this.dashboardService.getTopSellingProducts()
+        this.dashboardService.getTopSellingProducts(this.range)
             .subscribe(res => {
                 if (res.success) {
                     this.model = res.data;
@@ -105,7 +109,8 @@ export class BestSellingWidget {
     }
 
     onChangeCriteria(e: any) {
-        this.getData(e.value)
+        this.range = e.value;
+        this.getData()
     }
 
     getProductImageSrc(product: Product) {

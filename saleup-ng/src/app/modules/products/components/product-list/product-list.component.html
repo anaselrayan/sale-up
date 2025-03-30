@@ -84,8 +84,12 @@
                 <td style="width: 3rem">
                     <p-tableCheckbox [value]="product" />
                 </td>
-                <td style="min-width: 12rem">{{ product.basicDetails.barcode }}</td>
-                <td style="min-width: 16rem">{{ product.basicDetails.productName }}</td>
+                <td (click)="productDetails(product)" class="hover:text-primary hover:underline cursor-pointer min-w-12rem">
+                    {{ product.basicDetails.barcode }}
+                </td>
+                <td (click)="productDetails(product)" class="hover:underline cursor-pointer min-w-16rem">
+                    {{ product.basicDetails.productName }}
+                </td>
                 <td>
                     <img class="rounded w-full"
                         [src]="getProductImageSrc(product)"
@@ -98,13 +102,13 @@
                 <td>{{ product.priceDetails.sellingPrice | sCurrency }}</td>
                 <td>
                     <div class="flex items-center gap-2">
-                        <div class="text-sm">
+                        <div class="text-sm" [ngClass]="{'line-through text-surface-500': (!product.priceDetails.discountDisabled && !product.priceDetails.discountRangeActive)}">
                             {{ getDiscountLabel(product) }}
                         </div>
-                        <div *ngIf="product.priceDetails.discountActive">
+                        <div *ngIf="!product.priceDetails.discountDisabled">
                             <p-button pTooltip="Show discount" icon="pi pi-eye" class="mr-2" [rounded]="true" [text]="true" (onClick)="editProductDiscount(product)" />
                         </div>
-                        <div *ngIf="!product.priceDetails.discountActive">
+                        <div *ngIf="product.priceDetails.discountDisabled">
                             <p-button pTooltip="Create discount" icon="pi pi-percentage" class="mr-2" [rounded]="true" [text]="true" (onClick)="editProductDiscount(product)" />
                         </div>
                     </div>
@@ -133,7 +137,7 @@
 
 <p-confirmdialog [style]="{ width: '450px' }" />
 
-<app-product-discount-create *ngIf="discountDialog" [visible]="discountDialog" [product]="product"
+<app-product-discount-create *ngIf="discountDialog" [product]="product"
 (success)="discountSuccess($event)"    
 (visibileChange)="discountDialogToggle($event)">
 </app-product-discount-create>

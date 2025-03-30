@@ -40,7 +40,6 @@ public class SaleReceiptService {
     public static final String RECEIPT_REPORT_PATH = "/report/receipt.jasper";
 
     public String generateSaleReceipt(Sale sale) {
-        log.info("Generating receipt: " + sale.getId() + " ...");
         try {
             String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/" + sale.getCustomer().getPhone();
             String companyName = settingService.getSetting("company.name").getValue();

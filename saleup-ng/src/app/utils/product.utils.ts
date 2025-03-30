@@ -1,5 +1,5 @@
 import { environment } from "@env/environment";
-import { Product, ProductBrand, ProductCategory, ProductImage } from "@module/products/models/product.model";
+import { DiscountType, Product, ProductBrand, ProductCategory, ProductImage } from "@module/products/models/product.model";
 
 export class ProductUtils {
 
@@ -28,4 +28,31 @@ export class ProductUtils {
         return 'assets/images/products/placeholder.jpg';
     }
 
+    public static getQuantitySeverity(p: Product) {
+        if (p.basicDetails.quantity > p.basicDetails.lowStockPoint) {
+            return 'success'
+        }
+        else if (p.basicDetails.quantity <= p.basicDetails.lowStockPoint) {
+            return 'warn';
+        }
+        else if (p.basicDetails.quantity == 0) {
+            return 'danger';
+        }
+        else
+            return 'info';
+    }
+
+    public static getDiscountLabel(product: Product) {
+        if (product.priceDetails.discountDisabled)
+          return 'NO';
+    
+        if (product.priceDetails.discountType === DiscountType.FIXED) {
+          return product.priceDetails.discountAmount + '$';
+        }
+        
+        if (product.priceDetails.discountType === DiscountType.PERCENT) {
+          return product.priceDetails.discountAmount + '%';
+        }
+        return '';
+    }
 }

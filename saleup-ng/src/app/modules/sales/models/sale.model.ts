@@ -18,5 +18,6 @@ export interface SaleItem {
     product: Product;
     quantity: number;
     unitPrice: number;
+    unitCost: number;
     subTotal: number;
 }

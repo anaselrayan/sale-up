@@ -25,6 +25,8 @@ public class SaleItem extends BaseModel {
 
     private Integer quantity;
 
+    private Double unitCost;
+
     private Double unitPrice;
 
     private Double subTotal;

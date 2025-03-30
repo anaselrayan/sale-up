@@ -29,7 +29,7 @@ public class ProductPrice extends BaseModel {
     @Enumerated(EnumType.STRING)
     private DiscountType discountType;
 
-    private Boolean discountActive;
+    private Boolean discountDisabled;
 
     private LocalDateTime discountStartDate;
 

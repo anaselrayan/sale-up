@@ -10,7 +10,8 @@ public class ProductUtils {
     public static boolean validProductDiscount(ProductPrice price) {
         LocalDateTime now = LocalDateTime.now();
         return price.getDiscountAmount() != null &&
-                price.getDiscountActive() &&
+                price.getDiscountDisabled() != null &&
+                !price.getDiscountDisabled() &&
                 price.getDiscountStartDate() != null &&
                 price.getDiscountEndDate() != null &&
                 now.isAfter(price.getDiscountStartDate()) &&
@@ -36,6 +37,14 @@ public class ProductUtils {
         else if (DiscountType.PERCENT.equals(type))
             return amount <= 100;
         return false;
+    }
+
+    public static boolean activeDiscountRange(ProductPrice price) {
+        LocalDateTime now = LocalDateTime.now();
+        return price.getDiscountStartDate() != null &&
+                price.getDiscountEndDate() != null &&
+                now.isAfter(price.getDiscountStartDate()) &&
+                now.isBefore(price.getDiscountEndDate());
     }
 
 }

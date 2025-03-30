@@ -1,16 +1,25 @@
 import { Component } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
-import { debounceTime, Subscription } from 'rxjs';
-import { LayoutService } from '../../../layout/service/layout.service';
+import { Subscription } from 'rxjs';
+import { DashboardService } from '../services/dashboard.service';
+import { MonthSalesResponse } from '../models/month-sales-response';
+import { DateUtils } from 'src/app/utils/date.utils';
+import { Select } from 'primeng/select';
+import { Skeleton } from 'primeng/skeleton';
+import { CommonModule } from '@angular/common';
 
 @Component({
     standalone: true,
     selector: 'app-revenue-stream-widget',
-    imports: [ChartModule],
+    imports: [CommonModule, ChartModule, Select, Skeleton],
     template: `<div class="card !mb-8">
-        <div class="font-semibold text-xl mb-4">Revenue Stream</div>
-        <p-chart type="bar" [data]="chartData" [options]="chartOptions" class="h-80" />
-    </div>`
+        <div class="mb-4 flex justify-between">
+            <span class="font-semibold text-xl">Sales & Revenue</span>
+            <p-select [disabled]="loading" [options]="filterOptions" (onChange)="onChangeCriteria($event)" class="mb-4" />
+        </div>
+        <p-skeleton *ngIf="loading" size="20rem" />
+        <p-chart *ngIf="!loading" type="line" [data]="chartData" [options]="chartOptions" class="h-[30rem]" />
+        </div>`
 })
 export class RevenueStreamWidget {
     chartData: any;
@@ -18,60 +27,65 @@ export class RevenueStreamWidget {
     chartOptions: any;
 
     subscription!: Subscription;
+    year!: number;
+    loading = false;
 
-    constructor(public layoutService: LayoutService) {
-        this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
-            this.initChart();
-        });
-    }
+    filterOptions: number[] = [];
+
+    constructor(
+        private dashboardService: DashboardService
+    ) {}
 
     ngOnInit() {
-        this.initChart();
+        this.getFilterOptions();
+        this.getChartData();
     }
 
-    initChart() {
+    getFilterOptions() {
+        const currYear = new Date().getFullYear();
+        this.year = currYear;
+        this.filterOptions = [currYear, currYear - 1, currYear - 2]
+    }
+
+    getChartData() {
+        this.loading = true;
+        this.dashboardService.getMonthlySales(this.year)
+            .subscribe(res => {
+                this.chartData = this.fillMissedData(res.data);
+                this.initChart(this.chartData);
+                this.loading = false;
+            })
+    }
+
+    initChart(model: MonthSalesResponse[]) {
         const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-        const borderColor = documentStyle.getPropertyValue('--surface-border');
-        const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
+        const textColor = documentStyle.getPropertyValue('--p-text-color');
+        const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
+        const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
         this.chartData = {
-            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+            labels: model.map(m => DateUtils.getMonthName(m.month)),
             datasets: [
                 {
-                    type: 'bar',
-                    label: 'Subscriptions',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-                    data: [4000, 10000, 15000, 4000],
-                    barThickness: 32
+                    label: 'Sales',
+                    data: model.map(m => m.total),
+                    fill: false,
+                    borderColor: documentStyle.getPropertyValue('--p-orange-500'),
+                    tension: 0.4
                 },
                 {
-                    type: 'bar',
-                    label: 'Advertising',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
-                    data: [2100, 8400, 2400, 7500],
-                    barThickness: 32
-                },
-                {
-                    type: 'bar',
-                    label: 'Affiliate',
-                    backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
-                    data: [4100, 5200, 3400, 7400],
-                    borderRadius: {
-                        topLeft: 8,
-                        topRight: 8,
-                        bottomLeft: 0,
-                        bottomRight: 0
-                    },
-                    borderSkipped: false,
-                    barThickness: 32
+                    label: 'Revenue',
+                    data: model.map(m => m.revenue),
+                    fill: false,
+                    borderColor: documentStyle.getPropertyValue('--p-green-500'),
+                    tension: 0.4
                 }
             ]
         };
 
         this.chartOptions = {
             maintainAspectRatio: false,
-            aspectRatio: 0.8,
+            aspectRatio: 0.6,
             plugins: {
                 legend: {
                     labels: {
@@ -81,33 +95,39 @@ export class RevenueStreamWidget {
             },
             scales: {
                 x: {
-                    stacked: true,
                     ticks: {
-                        color: textMutedColor
+                        color: textColorSecondary
                     },
                     grid: {
-                        color: 'transparent',
-                        borderColor: 'transparent'
+                        color: surfaceBorder,
+                        drawBorder: false
                     }
                 },
                 y: {
-                    stacked: true,
                     ticks: {
-                        color: textMutedColor
+                        color: textColorSecondary
                     },
                     grid: {
-                        color: borderColor,
-                        borderColor: 'transparent',
-                        drawTicks: false
+                        color: surfaceBorder,
+                        drawBorder: false
                     }
                 }
             }
         };
+        // this.cd.markForCheck()
     }
 
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
+    fillMissedData(result: MonthSalesResponse[]) {
+        const completeResult: MonthSalesResponse[] = [];
+        for (let m = 1; m <= 12; m++) {
+            const existed = result.find(res => res.month === m);
+            completeResult.push(existed ? existed : {month: m, total: 0, revenue: 0})
         }
+        return completeResult;
+    }
+
+    onChangeCriteria(e: any) {
+        this.year = e.value;
+        this.getChartData();
     }
 }

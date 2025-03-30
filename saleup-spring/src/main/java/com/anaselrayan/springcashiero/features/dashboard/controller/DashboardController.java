@@ -25,8 +25,20 @@ public class DashboardController {
     }
 
     @GetMapping("/top-selling")
-    public ResponseEntity<ApiResponse> getTop10SoldProducts(@RequestParam(required = false) String type) {
+    public ResponseEntity<ApiResponse> getTopSoldProducts(@RequestParam(required = false) String type) {
         ApiResponse res = dashboardService.getTopSellingProducts(type);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/monthly-sales")
+    public ResponseEntity<ApiResponse> getMonthlySales(@RequestParam Integer year) {
+        ApiResponse res = dashboardService.getMonthlySales(year);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/low-stock")
+    public ResponseEntity<ApiResponse> getMinStockProducts() {
+        ApiResponse res = dashboardService.getLowStockProducts();
         return ResponseEntity.ok(res);
     }
 
