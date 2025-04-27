@@ -14,7 +14,7 @@ public class ReceiptItemRequest {
         this.itemName = item.getProduct().getProductBasic().getProductName();
         this.itemQty = item.getQuantity();
         this.itemPrice = item.getUnitPrice();
-        this.totalPrice = item.getSubTotal();
+        this.totalPrice = Math.round(item.getSubTotal() * 100.0) / 100.0;
     }
 
 }

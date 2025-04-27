@@ -10,4 +10,5 @@ public class DashboardSnapshotResponse {
     private Double todaySalesQuantity;
     private Double todaySalesRevenue;
     private Long totalCustomers;
+    private Double todaySaleReturns;
 }

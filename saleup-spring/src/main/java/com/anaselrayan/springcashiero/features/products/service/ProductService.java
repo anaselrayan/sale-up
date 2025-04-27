@@ -12,13 +12,17 @@ import com.anaselrayan.springcashiero.features.products.repository.*;
 import com.anaselrayan.springcashiero.features.products.request.ProductDiscountRequest;
 import com.anaselrayan.springcashiero.features.products.request.ProductImagesRequest;
 import com.anaselrayan.springcashiero.features.products.request.ProductRequest;
+import com.anaselrayan.springcashiero.features.products.request.ProductStockSimpleRequest;
 import com.anaselrayan.springcashiero.features.products.utils.ProductUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -35,7 +39,7 @@ public class ProductService {
     private final ProductImageService productImageService;
 
     public ApiResponse createProduct(ProductRequest request) {
-        ApiResponse validationRes = validateProductRequest(request, ActionType.INSERT);
+        ApiResponse validationRes = validateProductRequest(request, ActionType.CREATE);
         if (!validationRes.getSuccess())
             return validationRes;
 
@@ -58,6 +62,7 @@ public class ProductService {
         ProductPrice productPriceReq = ProductPrice.builder()
                 .costPrice(request.getCostPrice())
                 .sellingPrice(request.getSellingPrice())
+                .discountDisabled(true)
                 .build();
 
         ProductBasic savedProductBasic = productBasicRepository.save(productBasicReq);
@@ -114,7 +119,7 @@ public class ProductService {
 
     public ApiResponse getProductsPage(PageRequest pr) {
         try {
-            Page<Product> productPage = productRepository.findAll(pr);
+            Page<Product> productPage = productRepository.findAllByDeletedFalse(pr);
             PageImpl<ProductDTO> dtoPage = new PageImpl<>(
                     productPage.getContent().stream().map(ProductConverter::convert).toList(),
                     productPage.getPageable(),
@@ -129,7 +134,7 @@ public class ProductService {
 
     public ApiResponse searchByKeyword(String keyword, PageRequest pr) {
         try {
-            Page<Product> productPage = productRepository.findByKeyword(keyword, pr);
+            Page<Product> productPage = productRepository.findByKeywordAndDeletedFalse(keyword, pr);
             PageImpl<ProductDTO> dtoPage = new PageImpl<>(
                     productPage.getContent().stream().map(ProductConverter::convert).toList(),
                     productPage.getPageable(),
@@ -161,37 +166,6 @@ public class ProductService {
         }
     }
 
-    private ApiResponse validateProductRequest(ProductRequest request, ActionType actionType) {
-        if (actionType == ActionType.UPDATE) {
-            if (request.getProductId() == null || !productRepository.existsById(request.getProductId()))
-                return new ApiResponse(false, StatusCode.BAD_REQUEST, "product id not found");
-
-            Product existedProduct = productRepository.getReferenceById(request.getProductId());
-            if (!request.getBarcode().equals(existedProduct.getProductBasic().getBarcode()) &&
-                    productRepository.existsByProductBasicBarcode(request.getBarcode())) {
-                return new ApiResponse(false, StatusCode.BAD_REQUEST, "barcode already assigned to another product");
-            }
-        }
-        if (actionType == ActionType.INSERT) {
-            if (productRepository.existsByProductBasicBarcode(request.getBarcode()))
-                return new ApiResponse(false, StatusCode.BAD_REQUEST, "barcode already assigned to another product");
-        }
-
-        if (request.getProductBrandId() != null
-                && !productBrandRepository.existsById(request.getProductBrandId()))
-            return new ApiResponse(false, StatusCode.BAD_REQUEST, "product brand not found");
-
-        if (request.getUnitOfMeasureId() != null
-                && !productUnitOfMeasureRepository.existsById(request.getUnitOfMeasureId()))
-            return new ApiResponse(false, StatusCode.BAD_REQUEST, "product unit not found");
-
-        if (request.getProductStatusId() != null
-                && !productStatusRepository.existsById(request.getProductStatusId()))
-            return new ApiResponse(false, StatusCode.BAD_REQUEST, "product status not found");
-
-        return new ApiResponse(true, StatusCode.OK, "Valid");
-    }
-
     public ApiResponse createProductDiscount(ProductDiscountRequest req) {
         Long productId = req.getProductId();
         if (productId == null || !productRepository.existsById(productId))
@@ -212,6 +186,61 @@ public class ProductService {
             log.error(ex.getMessage());
             return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
         }
+    }
+
+    public ApiResponse deleteProduct(Long productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (productOptional.isEmpty())
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "product doesn't exist");
+        productOptional.get().setDeleted(true);
+        String barcode = productOptional.get().getProductBasic().getBarcode();
+        productOptional.get().getProductBasic().setBarcode(barcode + "*" + productId);
+        productRepository.save(productOptional.get());
+        productBasicRepository.save(productOptional.get().getProductBasic());
+        return new ApiResponse("Deleted", StatusCode.OK);
+    }
+
+    private ApiResponse validateProductRequest(ProductRequest request, ActionType actionType) {
+        if (actionType == ActionType.UPDATE) {
+            if (request.getProductId() == null || !productRepository.existsById(request.getProductId()))
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "product id not found");
+
+            Product existedProduct = productRepository.getReferenceById(request.getProductId());
+            if (!request.getBarcode().equals(existedProduct.getProductBasic().getBarcode()) &&
+                    productRepository.existsByProductBasicBarcode(request.getBarcode())) {
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "barcode already assigned to another product");
+            }
+        }
+        if (actionType == ActionType.CREATE) {
+            if (productRepository.existsByProductBasicBarcode(request.getBarcode()))
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "barcode already assigned to another product");
+        }
+
+        if (request.getProductBrandId() != null
+                && !productBrandRepository.existsById(request.getProductBrandId()))
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "product brand not found");
+
+        if (request.getUnitOfMeasureId() != null
+                && !productUnitOfMeasureRepository.existsById(request.getUnitOfMeasureId()))
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "product unit not found");
+
+        if (request.getProductStatusId() != null
+                && !productStatusRepository.existsById(request.getProductStatusId()))
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "product status not found");
+
+        return new ApiResponse(true, StatusCode.OK, "Valid");
+    }
+
+    public ApiResponse updateProductStock(@Valid ProductStockSimpleRequest req) {
+        Optional<Product> productOptional = productRepository.findById(req.getProductId());
+        if (productOptional.isEmpty()) return new ApiResponse(false, StatusCode.BAD_REQUEST, "product doesn't exist");
+        Product product = productOptional.get();
+        product.getProductBasic().setQuantity(req.getQuantity());
+        product.getProductPrice().setCostPrice(req.getCost());
+        product.getProductPrice().setSellingPrice(req.getPrice());
+        productBasicRepository.save(product.getProductBasic());
+        productPriceRepository.save(product.getProductPrice());
+        return new ApiResponse(ProductConverter.convert(product), StatusCode.OK);
     }
 
 }

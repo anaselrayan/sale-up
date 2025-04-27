@@ -9,7 +9,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { DialogModule } from 'primeng/dialog';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
-import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ProductCategory } from '../../models/product.model';
 import { PageRequest } from '@shared/models/page-request.model';
 import { Table, TableModule } from 'primeng/table';
@@ -19,6 +19,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { ConfirmService } from '@shared/services/confirm.service';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-category-list',
@@ -38,6 +39,7 @@ import { ConfirmService } from '@shared/services/confirm.service';
     IconFieldModule,
     TranslateModule,
     FileUploadModule,
+    Tooltip,
     ConfirmDialog
   ],
   templateUrl: './category-list.component.html',
@@ -91,7 +93,7 @@ export class CategoryListComponent {
   openNew() {
     this.categoryDialog = true;
     this.mode = 'create'
-    this.dialogHeader = 'Add Category'
+    this.dialogHeader = this.translate.instant('ADD_PRODUCT_CATEGORY')
     this.catForm.reset();
   }
 

@@ -13,13 +13,5 @@ public class PermissionSeeder {
 
     private final PermissionRepository permissionRepository;
 
-    @Bean
-    public CommandLineRunner permissionRunner() {
-        return args -> {
-            if (permissionRepository.count() == 0) {
-                permissionRepository.saveAll(PermissionSeeds.getPermList());
-            }
-        };
-    }
 
 }

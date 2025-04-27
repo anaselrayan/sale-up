@@ -13,8 +13,7 @@ public class CustomerConverter {
 
         return CustomerDTO.builder()
                 .customerId(from.getId())
-                .firstName(from.getFirstName())
-                .lastName(from.getLastName())
+                .fullName(from.getFullName())
                 .email(from.getEmail())
                 .phone(from.getPhone())
                 .email(from.getEmail())

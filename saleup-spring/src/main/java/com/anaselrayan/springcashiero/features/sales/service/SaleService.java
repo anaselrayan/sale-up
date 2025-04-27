@@ -44,11 +44,14 @@ public class SaleService {
                 return validateSaleRes;
 
             Sale toSave = Sale.builder()
-                    .customer(customerRepository.getReferenceById(request.getCustomerId()))
                     .subTotal(request.getSubTotal())
                     .grandTotal(request.getGrandTotal())
                     .discount(request.getDiscount())
                     .build();
+            if (request.getCustomerId() != null) {
+                toSave.setCustomer(customerRepository.getReferenceById(request.getCustomerId()));
+            }
+
             Sale savedSale = saleRepository.save(toSave);
             savedSale.setBarcode(SaleUtil.generateBarcode(savedSale));
             List<SaleItem> savedItems = new ArrayList<>();

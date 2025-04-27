@@ -17,55 +17,57 @@ import { AppMenuitem } from './app.menuitem';
 })
 export class AppMenu {
     model: MenuItem[] = [];
-
+    
     ngOnInit() {
         this.model = [
             {
-                label: 'Home',
+                label: '',
                 items: [
-                    { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
+                    { label: 'DASHBOARD', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
                     {
-                        label: 'Products',
+                        label: 'PRODUCTS',
                         icon: 'pi pi-box', 
                         items: [
-                            { label: 'Add Products', icon: 'pi pi-plus', routerLink: ['/products/new'] },
-                            { label: 'Product List', icon: 'pi pi pi-list', routerLink: ['/products/list'] },
-                            { label: 'Category List', icon: 'pi pi-clone', routerLink: ['/products/categories'] },
-                            { label: 'Product Brands', icon: 'pi pi-tags', routerLink: ['/products/brands'] },
-                            { label: 'Product Units', icon: 'pi pi-gauge', routerLink: ['/products/units'] },
+                            { label: 'ADD_PRODUCTS', icon: 'pi pi-plus', routerLink: ['/products/new'] },
+                            { label: 'PRODUCT_LIST', icon: 'pi pi pi-list', routerLink: ['/products/list'] },
+                            { label: 'PRODUCT_CATEGORIES', icon: 'pi pi-clone', routerLink: ['/products/categories'] },
+                            { label: 'BRANDS', icon: 'pi pi-tags', routerLink: ['/products/brands'] },
+                            { label: 'PRODUCT_UNITS', icon: 'pi pi-gauge', routerLink: ['/products/units'] },
+                            { label: 'QUICK_STOCK_UPDATE', icon: 'pi pi-sync', routerLink: ['/products/stock-update'] },
                         ]
                     },
                     {
-                        label: 'Sales',
+                        label: 'SALES',
                         icon: 'pi pi-cart-plus', 
                         items: [
                             { label: 'POS', icon: 'pi pi-shop', routerLink: ['/sales/pos'] },
-                            { label: 'Sale History', icon: 'pi pi-cart-arrow-down', routerLink: ['/sales/list'] },
+                            { label: 'SALE_HISTORY', icon: 'pi pi-cart-arrow-down', routerLink: ['/sales/list'] },
+                            { label: 'SALE_RETURN_LIST', icon: 'pi pi-arrow-right-arrow-left', routerLink: ['sales/sale-return/list'] },
                         ]
                     },
                     {
-                        label: 'People',
+                        label: 'PEOPLE',
                         icon: 'pi pi-users', 
                         items: [
-                            { label: 'Customers', icon: 'pi pi-user-minus', routerLink: ['/customers/list'] },
-                            { label: 'Suppliers', icon: 'pi pi-user-plus', routerLink: ['/suppliers'] },
-                            { label: 'Users', icon: 'pi pi-user-edit', routerLink: ['/users/list'] },
-                            { label: 'Roles', icon: 'pi pi-key', routerLink: ['/roles'] },
+                            { label: 'CUSTOMERS', icon: 'pi pi-user-minus', routerLink: ['/customers/list'] },
+                            { label: 'SUPPLIERS', icon: 'pi pi-user-plus', routerLink: ['/suppliers'] },
+                            { label: 'USERS', icon: 'pi pi-user-edit', routerLink: ['/users/list'] },
+                            { label: 'ROLES', icon: 'pi pi-key', routerLink: ['/roles'] },
                         ]
                     },
                     {
-                        label: 'Reports',
+                        label: 'REPORTS',
                         icon: 'pi pi-chart-line',
                         items: [
-                            { label: 'Sales Report', icon: 'pi pi-chart-bar', routerLink: ['/settings/system'] },
-                            { label: 'Stock Report', icon: 'pi pi-table', routerLink: ['/settings/system'] },
+                            { label: 'SALE_REPORT', icon: 'pi pi-chart-bar', routerLink: ['/report/sale'] },
+                            { label: 'STOCK_REPORT', icon: 'pi pi-table', routerLink: ['/report/stock'] },
                         ]
                     },
                     {
-                        label: 'Settings',
+                        label: 'SETTINGS',
                         icon: 'pi pi-cog',
                         items: [
-                            { label: 'System Settings', icon: 'pi pi-sliders-v', routerLink: ['/settings/system'] },
+                            { label: 'SYSTEM_SETTINGS', icon: 'pi pi-sliders-v', routerLink: ['/settings/system'] },
                         ]
                     },
                 ],

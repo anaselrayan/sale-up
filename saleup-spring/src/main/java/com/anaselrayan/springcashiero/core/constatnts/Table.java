@@ -18,6 +18,9 @@ public class Table {
     public static final String SALE = PREFIX + "SALE";
     public static final String SALE_ITEM = SALE + "_ITEM";
 
+    public static final String SALE_RETURN = PREFIX + "SALE_RETURN";
+    public static final String SALE_RETURN_ITEM = SALE_RETURN + "_ITEM";
+
     public static final String APP_USER = PREFIX + "APP_USER";
     public static final String USER_ROLE = PREFIX + "USER_ROLE";
     public static final String ROLE_PERMISSION = PREFIX + "ROLE_PERMISSION";
@@ -25,5 +28,6 @@ public class Table {
 
     public static final String SETTING = PREFIX + "SETTING";
     public static final String SETTING_CATEGORY = SETTING + "_CATEGORY";
+    public static final String SETTING_OPTION = SETTING + "_OPTION";
 
 }

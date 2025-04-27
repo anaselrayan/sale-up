@@ -11,6 +11,7 @@ public class SettingConverter {
                 .value(from.getSettingValue())
                 .type(from.getSettingType())
                 .category(SettingCategoryConverter.convert(from.getSettingCategory()))
+                .options(SettingOptionConverter.convert(from.getOptions()))
                 .build();
     }
 

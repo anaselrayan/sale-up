@@ -10,26 +10,14 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import {TranslateModule, TranslateLoader} from "@ngx-translate/core";
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient} from '@angular/common/http';
-import { AppDetailsService } from '@shared/services/app-details.service';
+import { StartUpService } from '@shared/services/startup.service';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 const httpLoaderFactory: (http: HttpClient) => TranslateHttpLoader = (http: HttpClient) =>
     new TranslateHttpLoader(http, 'assets/translations/', '.json');
 
-export function initializeApp(appDetailsService: AppDetailsService) {
-  return (): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      appDetailsService.fetchAppDetails().subscribe({
-        next: (details) => {
-          appDetailsService.storeAppDetails(details);
-          resolve();
-        },
-        error: (err) => {
-          console.error('Error fetching app details:', err);
-          reject();
-        },
-      });
-    });
-  };
+export function initializeApp(startupService: StartUpService) {
+  return () => startupService.startUp();
 }
 
 export const appConfig: ApplicationConfig = {
@@ -49,9 +37,10 @@ export const appConfig: ApplicationConfig = {
         {
           provide: APP_INITIALIZER,
           useFactory: initializeApp,
-          deps: [AppDetailsService],
+          deps: [StartUpService],
           multi: true,
         },
+        { provide: LocationStrategy, useClass: HashLocationStrategy },
         MessageService,
         ConfirmationService
     ]

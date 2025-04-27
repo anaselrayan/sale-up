@@ -24,6 +24,8 @@ import { PasswordModule } from 'primeng/password';
 import { RoleService } from '@module/roles/services/role.service';
 import { Role } from '@module/roles/models/role.model';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { Tooltip } from 'primeng/tooltip';
+import { ConfirmService } from '@shared/services/confirm.service';
 
 @Component({
   selector: 'app-user-list',
@@ -43,6 +45,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     ConfirmDialogModule,
     TranslateModule,
     Avatar,
+    Tooltip,
     PaginatorModule,
     PasswordModule,
     FileUploadModule,
@@ -71,13 +74,13 @@ export class UserListComponent {
     private userService: UserService,
     private roleService: RoleService,
     private toast: ToastService,
+    private confirm: ConfirmService,
     private translate: TranslateService
   ) {}
 
   ngOnInit() {
     this.getUsers();
     this.getRoles();
-    this.initUserForm();
   }
 
   getUsers() {
@@ -122,35 +125,56 @@ export class UserListComponent {
       this.toast.showWarn(this.translate.instant('REQUIRED_FIELDS_MSG'));
       return;
     }
-    this.userService.createUser(this.getUserPayload())
+    if (this.mode === 'create') {
+      this.userService.createUser(this.getUserPayload())
       .subscribe(res => {
         if (res.success) {
           this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
           this.getUsers();
           this.userForm.reset();
           this.userDialog = false;
+        } else {
+          this.toast.showError(res.message)
         }
         this.loading = false;
       })
+    }
+    else if (this.mode === 'update') {
+      this.userService.updateUser(this.getUserPayload())
+      .subscribe(res => {
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+          this.getUsers();
+          this.userForm.reset();
+          this.userDialog = false;
+        } else {
+          this.toast.showError(res.message)
+        }
+        this.loading = false;
+      })
+    }
   }
 
   getUserPayload(): FormData {
     const formData = new FormData();
     const val = this.userForm.value;
     if (this.user) {
-      formData.append('userId', val['userId']);
+      formData.append('userId', this.user.userId + '');
     }
     formData.append('username', val['username']);
     formData.append('password', val['password']);
     formData.append('passwordConfirm', val['passwordConfirm']);
-    formData.append('phone', val['phone']);
-    formData.append('email', val['email']);
+    formData.append('phone', val['phone'] || '');
+    formData.append('email', val['email'] || '');
     formData.append('roleId', val['roleId']);
     return formData;
   }
 
   openNew() {
     this.userDialog = true;
+    this.mode = 'create';
+    this.dialogHeader = this.translate.instant('ADD_USER')
+    this.initUserForm();
   }
 
   deleteSelectedUsers() {}
@@ -161,6 +185,48 @@ export class UserListComponent {
 
   onSelectImage(e: any) {
     console.log(e)
+  }
+
+  toggleUserLock(user: User) {
+    this.userService.toggleUserLock(user.userId, !user.locked)
+      .subscribe(res => {
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+          this.getUsers();
+        }
+        else {
+          this.toast.showError(res.message);
+        }
+      })
+  }
+
+  onEditUser(user: User) {
+    this.mode = 'update';
+    this.user = user;
+    this.dialogHeader = this.translate.instant('EDIT_USER', {name: user.username})
+    this.userForm = new FormGroup({
+      username: new FormControl(user.username, [Validators.required]),
+      phone: new FormControl(user.phone, []),
+      email: new FormControl(user.email, []),
+      roleId: new FormControl([user.role.roleId], [Validators.required])
+    })
+    this.userDialog = true;
+  }
+
+  onDeleteUser(user: User) {
+    const msg = this.translate.instant('DELETE_ALERT', {name: user.username});
+    this.confirm.dialogAlert(msg, ()=> {
+      this.userService.deleteUser(user.userId)
+        .subscribe(res => {
+          if (res.success) {
+            this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+            this.getUsers();
+          }
+          else {
+            this.toast.showError(res.message);
+          }
+        })
+    })
   }
 
 }

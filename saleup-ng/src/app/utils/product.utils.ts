@@ -44,7 +44,7 @@ export class ProductUtils {
 
     public static getDiscountLabel(product: Product) {
         if (product.priceDetails.discountDisabled)
-          return 'NO';
+          return null;
     
         if (product.priceDetails.discountType === DiscountType.FIXED) {
           return product.priceDetails.discountAmount + '$';
@@ -53,6 +53,7 @@ export class ProductUtils {
         if (product.priceDetails.discountType === DiscountType.PERCENT) {
           return product.priceDetails.discountAmount + '%';
         }
-        return '';
+        return null;
     }
+
 }

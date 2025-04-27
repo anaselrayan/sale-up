@@ -13,15 +13,18 @@
                         </ng-template>
                         <ng-template #caption let-item>
                             <div class="flex justify-between">
-                                <p-button *ngIf="!item.isPrimary" label="Set as primary" (onClick)="setImageAsPrimary(item)" text />
-                                <p-tag *ngIf="item.isPrimary" value="PRIMARY" severity="success"/>
+                                <p-button *ngIf="!item.isPrimary" [label]="'SET_IMAGE_PRIMARY' | translate" (onClick)="setImageAsPrimary(item)" text />
+                                <p-tag *ngIf="item.isPrimary" [value]="'PRIMARY_IMAGE' | translate" severity="success"/>
                                 <p-button icon="pi pi-trash" severity="danger" (onClick)="deleteImage($event, item)" rounded />
                             </div>
                         </ng-template>
                     </p-galleria>
-                    <p-fileupload name="files[]" [url]="getUploadPath()" (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="10000000" mode="advanced">
+                    <p-fileupload name="files[]" [url]="getUploadPath()"
+                    [chooseLabel]="'CHOOSE_FILE' | translate" [cancelLabel]="'CANCEL' | translate" [uploadLabel]="'UPLOAD' | translate"
+                    (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" 
+                    maxFileSize="10000000" mode="advanced">
                         <ng-template #empty>
-                            <div>Drag and drop files to here to upload.</div>
+                            <div>{{ 'NO_SELECTED_FILE' | translate }}</div>
                         </ng-template>
                         <ng-template #content>
                             <ul *ngIf="uploadedFiles.length">
@@ -37,7 +40,13 @@
                     </div>
                     <div class="flex flex-wrap gap-2 w-full">
                         <label for="barcode">{{'BARCODE' | translate }}</label>
-                        <input pInputText id="barcode" type="text" formControlName="barcode" />
+                        <span class="text-muted-color">({{'SCAN_BARCODE_HINT' | translate }})</span>
+                        <div class="w-full">
+                            <p-iconfield>
+                                <p-inputicon styleClass="pi pi-barcode" />
+                                <input pInputText id="barcode" type="text" formControlName="barcode" />
+                            </p-iconfield>
+                        </div>
                     </div>
                 </div>
     
@@ -45,16 +54,18 @@
                     <div class="flex flex-col flex-wrap gap-2 w-full">
                         <label for="category">{{'CATEGORY' | translate }}</label>
                         <p-multiselect id="category" [options]="categoryList" [filter]="true" 
+                            [emptyMessage]="'NO_DATA' | translate"
                             optionLabel="name" optionValue="productCategoryId" 
-                            placeholder="Select options" selectionLimit="1"
+                            [placeholder]="'SELECT_FROM_LIST' | translate " selectionLimit="1"
                             formControlName="productCategoryId"
                         />
                     </div>
                     <div class="flex flex-col flex-wrap gap-2 w-full">
                         <label for="brand">{{'BRAND' | translate }}</label>
                         <p-multiselect id="brand" [options]="brandList" [filter]="true" 
+                            [emptyMessage]="'NO_DATA' | translate"
                             optionLabel="name" optionValue="productBrandId" 
-                            placeholder="Select options" selectionLimit="1"
+                            [placeholder]="'SELECT_FROM_LIST' | translate " selectionLimit="1"
                             formControlName="productBrandId"
                         />
                     </div>
@@ -75,8 +86,9 @@
                     <div class="flex flex-col flex-wrap gap-2 w-full">
                         <label for="productUnit">{{'PRODUCT_UNIT' | translate }}</label>
                         <p-multiselect id="productUnit" [options]="unitList" [filter]="true" 
-                            optionLabel="name" optionValue="unitOfMeasureId" 
-                            placeholder="Select options" selectionLimit="1"
+                            [emptyMessage]="'NO_DATA' | translate"
+                            optionLabel="name" optionValue="unitOfMeasureId"
+                            [placeholder]="'SELECT_FROM_LIST' | translate " selectionLimit="1"
                             formControlName="unitOfMeasureId"
                         />
                     </div>
@@ -93,15 +105,17 @@
                     </div>
                     <div *ngIf="mode==='new'" class="flex flex-col flex-wrap gap-2 w-full">
                         <label for="productImages">{{'PRODUCT_IMAGES' | translate }}</label>
-                        <p-fileupload [fileLimit]="5" (onSelect)="handleImageSelection($event)" [showUploadButton]="false" [multiple]="true" accept="image/*" maxFileSize="10000000" mode="advanced">
+                        <p-fileupload [fileLimit]="5" (onSelect)="handleImageSelection($event)" [showUploadButton]="false"
+                            [chooseLabel]="'CHOOSE_FILE' | translate" [cancelLabel]="'CANCEL' | translate"
+                            [multiple]="true" accept="image/*" maxFileSize="10000000" mode="advanced">
                             <ng-template #empty>
-                                <div>Drag and drop files to here to upload.</div>
+                                <div>{{ 'NO_SELECTED_FILE' | translate }}</div>
                             </ng-template>
                         </p-fileupload>
                     </div>
                 </div>
                 <div class="flex flex-col md:flex-row gap-6">
-                    <p-button [loading]="loading" type="submit" label="Save" icon="pi pi-check" />
+                    <p-button [loading]="loading" type="submit" [label]="'SAVE' | translate" icon="pi pi-check" />
                 </div>
             </div>
         </div>
@@ -109,3 +123,8 @@
 </p-fluid>
 <p-toast></p-toast>
 <p-confirmpopup />
+
+<barcode-scanner-livestream
+    [type]="['code_128', 'ean', 'upc']"
+    (valueChanges)="onScanBarcodeChanges($event)"
+></barcode-scanner-livestream>

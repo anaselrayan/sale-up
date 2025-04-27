@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -8,7 +8,7 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AppDetailsService } from '@shared/services/app-details.service';
+import { StartUpService } from '@shared/services/startup.service';
 import { environment } from '@env/environment';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@module/auth/services/auth.service';
@@ -18,7 +18,8 @@ import { ToastModule } from 'primeng/toast';
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, TranslateModule, ToastModule],
+    imports: [CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, ReactiveFormsModule,
+        FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, TranslateModule, ToastModule],
     template: `
         <app-floating-configurator />
         <div *ngIf="appService.appDetails$ | async as appDetails" class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
@@ -50,22 +51,22 @@ import { ToastModule } from 'primeng/toast';
                             <span class="text-muted-color font-medium">{{'SIGN_INT_TO_CONTINUE' | translate }}</span>
                         </div>
 
-                        <div>
+                        <form [formGroup]="form" (submit)="signIn()">
                             <label for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">{{ 'USERNAME' | translate }}</label>
-                            <input pInputText id="username" type="text" placeholder="Enter username" class="w-full md:w-[30rem] mb-8" [(ngModel)]="username" />
+                            <input pInputText id="username" formControlName="username" type="text" placeholder="Enter username" class="w-full md:w-[30rem] mb-8" />
 
                             <label for="password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">{{ 'PASSWORD' | translate }}</label>
-                            <p-password id="password" [(ngModel)]="password" placeholder="Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
+                            <p-password id="password" formControlName="password" placeholder="Enter Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
 
                             <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                                 <div class="flex items-center">
-                                    <p-checkbox [(ngModel)]="checked" id="rememberme1" binary class="mr-2"></p-checkbox>
+                                    <p-checkbox formControlName="rememberMe" id="rememberme1" binary class="mr-2 ml-2"></p-checkbox>
                                     <label for="rememberme1">{{'REMEMBER_ME' | translate }}</label>
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">{{'FORGOT_PASSWORD' | translate }}</span>
                             </div>
-                            <p-button [loading]="loading" (onClick)="signIn()" label="Sign In" styleClass="w-full"></p-button>
-                        </div>
+                            <p-button [loading]="loading" type="submit" [label]="'SIGN_IN' | translate" styleClass="w-full"></p-button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -76,27 +77,37 @@ import { ToastModule } from 'primeng/toast';
 export class Login {
 
     constructor(
-        public appService: AppDetailsService,
+        public appService: StartUpService,
         private authService: AuthService,
         private translate: TranslateService,
         private toast: ToastService
     ) {}
 
-    username: string = '';
-
-    password: string = '';
-
-    checked: boolean = false;
+    form!: FormGroup;
     loading = false;
 
     getAppLogoSrc() {
         return environment.apiBaseUrl + '/resource';
     }
 
+    ngOnInit() {
+        this.form = new FormGroup({
+            username: new FormControl(null, [Validators.required]),
+            password: new FormControl(null, [Validators.required]),
+            rememberMe: new FormControl(null),
+        })
+    }
+
     signIn() {
+        if (!this.form.valid) {
+            this.toast.showError(this.translate.instant('REQUIRED_FIELDS_MSG'));
+            return;
+        }
         this.loading = true;
-        this.authService.signIn({username: this.username, password: this.password})
-            .subscribe(res => {
+        this.authService.signIn({
+            username: this.form.value['username'],
+            password: this.form.value['password']
+        }).subscribe(res => {
                 if (res.success) {
                     this.authService.handleLoginSuccess(res.data)
                 }
@@ -107,6 +118,6 @@ export class Login {
             }, error => {
                 this.toast.showError(this.translate.instant('BAD_CREDENTIALS'))
                 this.loading = false;
-            })
+        })
     }
 }

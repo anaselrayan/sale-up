@@ -3,6 +3,7 @@ package com.anaselrayan.springcashiero.features.products.converter;
 import com.anaselrayan.springcashiero.features.products.dto.ProductBrandDTO;
 import com.anaselrayan.springcashiero.features.products.model.ProductBrand;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class ProductBrandConverter {
     }
 
     public static List<ProductBrandDTO> convert(List<ProductBrand> from) {
+        if (from == null) return Collections.emptyList();
         return from.stream().map(ProductBrandConverter::convert).collect(Collectors.toList());
     }
 

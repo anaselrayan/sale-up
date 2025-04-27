@@ -8,16 +8,18 @@ import java.text.DecimalFormat;
 public class SaleUtil {
 
     public static double getSaleRevenue(Sale sale) {
-        double cost = 0.0;
+        double totalCost = 0.0;
+        double totalPrice = 0.0;
         for (SaleItem item : sale.getSaleItems()) {
-            cost += item.getProduct().getProductPrice().getCostPrice();
+            totalCost += ((item.getQuantity() - item.getReturnedQuantity()) * item.getUnitCost());
+            totalPrice += ((item.getQuantity() - item.getReturnedQuantity()) * item.getUnitPrice());
         }
-        return sale.getGrandTotal() - cost;
+        return totalPrice - totalCost;
     }
 
     public static String generateBarcode(Sale sale) {
         DecimalFormat formatter = new DecimalFormat("000000");
-        return  "SR_" + formatter.format(sale.getId());
+        return  "SL_" + formatter.format(sale.getId());
     }
 
 }

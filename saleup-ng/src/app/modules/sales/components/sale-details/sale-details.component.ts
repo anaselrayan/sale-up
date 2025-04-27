@@ -8,13 +8,17 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CardModule } from 'primeng/card';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { SaleService } from '@module/sales/services/sale.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Sale } from '@module/sales/models/sale.model';
 import { NgxBarcode6Module } from 'ngx-barcode6';
 import { TranslateModule } from '@ngx-translate/core';
 import { TableModule } from 'primeng/table';
 import { Skeleton } from 'primeng/skeleton';
 import { Tooltip } from 'primeng/tooltip';
+import { SubstringPipe } from "@shared/pipes/substring.pipe";
+import { DateFtPipe } from "@shared/pipes/date-ft.pipe";
+import { ProductUtils } from 'src/app/utils/product.utils';
+import { Product } from '@module/products/models/product.model';
 
 @Component({
   selector: 'app-sale-details',
@@ -31,8 +35,11 @@ import { Tooltip } from 'primeng/tooltip';
     TranslateModule,
     TableModule,
     Skeleton,
-    Tooltip
-  ],
+    Tooltip,
+    SubstringPipe,
+    DateFtPipe,
+    RouterModule
+],
   templateUrl: './sale-details.component.html',
   styleUrl: './sale-details.component.scss'
 })
@@ -72,6 +79,10 @@ export class SaleDetailsComponent {
 
   printReceipt() {
     this.saleService.previewSaleReceipt(this.sale);
+  }
+
+  getProductImageSrc(product: Product) {
+      return ProductUtils.getFirstImageSrc(product)
   }
 
 }

@@ -5,28 +5,28 @@
             <p-autocomplete [style]="{width: '100%'}" [dropdown]="true" optionLabel="phone" [(ngModel)]="cart.customer" [suggestions]="customers" (completeMethod)="searchCustomers($event)" >
                 <ng-template let-item pTemplate="item"> 
                     <div class="flex gap-2 items-center">
-                        <p-avatar [label]="item.firstName.toUpperCase()[0] + item.lastName.toUpperCase()[0]" shape="circle" />
-                        <div>{{ item.phone }}</div><span class="font-sm">( {{item.firstName + ' ' + item.lastName}} )</span> 
+                        <p-avatar [label]="item.fullName.toUpperCase()[0]" shape="circle" />
+                        <div>{{ item.phone }}</div><span class="font-sm"> {{ item.fullName }} </span> 
                     </div> 
                 </ng-template> 
             </p-autocomplete>
         </div>
-        <p-button (onClick)="addCustomerDialog = true" [style]="{width: '100%', border: '1px dashed'}" label="Add new customer" icon="pi pi-plus" outlined="true" />
+        <p-button (onClick)="customerDialog = true" [style]="{width: '100%', border: '1px dashed'}" [label]="'ADD_CUSTOMER' | translate" icon="pi pi-plus" outlined="true" />
     </div>
     <div class="order-details">
         <div class="mb-4 text-lg flex justify-between"> 
             <span>{{'ORDER_DETAILS' | translate }}</span>
-            <p-button *ngIf="cart.items?.length" severity="danger" label="Empty cart" icon="pi pi-shopping-cart" class="mr-2" [text]="true" (onClick)="cart.empty()" />
+            <p-button *ngIf="cart.items?.length" severity="danger" [label]="'EMPTY_CART' | translate" icon="pi pi-shopping-cart" class="mr-2" [text]="true" (onClick)="cart.empty()" />
         </div>
         <div *ngIf="!cart.items || !cart.items.length" class="no-items text-center text-surface-600">
-            {{'EMPTY_CART' | translate }}
+            {{'CART_EMPTY' | translate }}
         </div>
         <div class="order-items overflow-auto flex flex-col gap-2 mb-6" style="max-height: 20rem;">
             <div *ngFor="let item of cart.items" class="order-item flex gap-4 items-center justify-between">
                 <img class="rounded w-full"
                         [src]="getProductImageSrc(item.product!)"
                         [alt]="item.product!.basicDetails.productName"
-                        style="width: 50px; height: 50px; object-fit: cover;" />
+                        style="width: 4rem; height: 4rem; object-fit: cover;" />
                 <div class="flex items-center justify-between w-full">
                     <div class="flex flex-col">
                         <div style="width: 12rem;" class="mb-2 text-max-lines-1" tooltipPosition="top" [pTooltip]="item.product?.basicDetails?.productName">
@@ -62,7 +62,7 @@
             </div>
             <div class="flex justify-between">
                 <div class="mb-4 text-surface-400"> {{'DISCOUNT' | translate }} </div>
-                <span>{{ cart.discount }}</span>
+                <span>{{ cart.discount | sCurrency }}</span>
             </div>
             <hr class="border-dashed" />
             <div class="flex justify-between">
@@ -74,10 +74,20 @@
     
     <ng-template #footer>
         <div class="payment text-lg">
-            <p-button (onClick)="submitOrder()" [loading]="orderLoading" [style]="{width: '100%'}" label="PROCESS ORDER" [disabled]="!cart.items || !cart.items.length" />
+            <p-button (onClick)="submitOrder()" [loading]="orderLoading" [style]="{width: '100%'}" [label]="'SUBMIT_ORDER' | translate" [disabled]="!cart.items || !cart.items.length" />
         </div>
     </ng-template>
 </p-card>
 <p-toast></p-toast>
 
-<app-customer-create-dialog [visible]="addCustomerDialog"></app-customer-create-dialog>
+<app-customer-create-dialog *ngIf="customerDialog" (visibleChange)="toggleDialog($event)">
+</app-customer-create-dialog>
+
+<p-confirmdialog>
+    <ng-template #message let-message>
+        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700">
+            <i [ngClass]="message.icon" class="!text-6xl text-primary-500"></i>
+            <p>{{ message.message }}</p>
+        </div>
+    </ng-template>
+</p-confirmdialog>

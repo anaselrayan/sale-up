@@ -26,7 +26,7 @@ export class AuthService {
 
   signOut() {
     sessionStorage.removeItem('token');
-    window.location.href = '/auth/login';
+    this.redirectToLogin();
   }
 
   signIn(req: LoginRequest): Observable<ApiResponse<AuthResponse>> {
@@ -54,6 +54,10 @@ export class AuthService {
     } catch (error) {
       return false;
     }
+  }
+
+  redirectToLogin() {
+    this.router.navigate(['/auth/login'])
   }
 
 }

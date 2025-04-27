@@ -1,80 +1,147 @@
 import { Component } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
-import { MenuModule } from 'primeng/menu';
+import { LayoutService } from '@layout/service/layout.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ChartModule } from 'primeng/chart';
+import { Select } from 'primeng/select';
+import { debounceTime, Subscription } from 'rxjs';
+import { MonthSaleReturnsResponse } from '../models/month-returns-response';
+import { DashboardService } from '../services/dashboard.service';
+import { DateUtils } from 'src/app/utils/date.utils';
 
 @Component({
     standalone: true,
     selector: 'app-notifications-widget',
-    imports: [ButtonModule, MenuModule],
+    imports: [ChartModule, TranslateModule, Select],
     template: `<div class="card">
-        <div class="flex items-center justify-between mb-6">
-            <div class="font-semibold text-xl">Notifications</div>
-            <div>
-                <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain" (click)="menu.toggle($event)"></button>
-                <p-menu #menu [popup]="true" [model]="items"></p-menu>
-            </div>
+        <div class="mb-4 flex justify-between">
+            <span class="font-semibold text-xl"> {{ 'SALE_RETURNS' | translate }} </span>
+            <p-select [disabled]="loading" [options]="filterOptions" (onChange)="onChangeCriteria($event)" class="mb-4" />
         </div>
-
-        <span class="block text-muted-color font-medium mb-4">TODAY</span>
-        <ul class="p-0 mx-0 mt-0 mb-6 list-none">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-dollar !text-xl text-blue-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Richard Jones
-                    <span class="text-surface-700 dark:text-surface-100">has purchased a blue t-shirt for <span class="text-primary font-bold">$79.00</span></span>
-                </span>
-            </li>
-            <li class="flex items-center py-2">
-                <div class="w-12 h-12 flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-download !text-xl text-orange-500"></i>
-                </div>
-                <span class="text-surface-700 dark:text-surface-100 leading-normal">Your request for withdrawal of <span class="text-primary font-bold">$2500.00</span> has been initiated.</span>
-            </li>
-        </ul>
-
-        <span class="block text-muted-color font-medium mb-4">YESTERDAY</span>
-        <ul class="p-0 m-0 list-none mb-6">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-dollar !text-xl text-blue-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Keyser Wick
-                    <span class="text-surface-700 dark:text-surface-100">has purchased a black jacket for <span class="text-primary font-bold">$59.00</span></span>
-                </span>
-            </li>
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-pink-100 dark:bg-pink-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-question !text-xl text-pink-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Jane Davis
-                    <span class="text-surface-700 dark:text-surface-100">has posted a new questions about your product.</span>
-                </span>
-            </li>
-        </ul>
-        <span class="block text-muted-color font-medium mb-4">LAST WEEK</span>
-        <ul class="p-0 m-0 list-none">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-arrow-up !text-xl text-green-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal">Your revenue has increased by <span class="text-primary font-bold">%25</span>.</span>
-            </li>
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-heart !text-xl text-purple-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"><span class="text-primary font-bold">12</span> users have added your products to their wishlist.</span>
-            </li>
-        </ul>
+        <p-chart type="bar" [data]="chartData" [options]="chartOptions" class="h-80" />
     </div>`
 })
 export class NotificationsWidget {
-    items = [
-        { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-        { label: 'Remove', icon: 'pi pi-fw pi-trash' }
-    ];
+    chartData: any;
+
+    chartOptions: any;
+
+    subscription!: Subscription;
+
+    loading = false;
+    year!: number;
+    filterOptions: number[] = [];
+
+    constructor(
+        private dashboardService: DashboardService,
+        public layoutService: LayoutService,
+        private translate: TranslateService,
+    ) {
+        this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
+            this.getChartData();
+        });
+    }
+
+    ngOnInit() {
+        this.getFilterOptions();
+        this.getChartData();
+    }
+
+    getFilterOptions() {
+        const currYear = new Date().getFullYear();
+        this.year = currYear;
+        this.filterOptions = [currYear, currYear - 1, currYear - 2]
+    }
+
+    getChartData() {
+        this.loading = true;
+        this.dashboardService.getMonthlySaleReturns(this.year)
+            .subscribe(res => {
+                this.chartData = this.fillMissedData(res.data);
+                this.initChart(this.chartData);
+                this.loading = false;
+            })
+    }
+
+    initChart(model: MonthSaleReturnsResponse[]) {
+        const documentStyle = getComputedStyle(document.documentElement);
+        const textColor = documentStyle.getPropertyValue('--text-color');
+        const borderColor = documentStyle.getPropertyValue('--surface-border');
+        const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
+
+        this.chartData = {
+            labels: model.map(m => DateUtils.getMonthName(m.month)),
+            datasets: [
+                {
+                    type: 'bar',
+                    label: this.translate.instant('TOTAL_RETURNS'),
+                    backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
+                    data: model.map(m => m.total),
+                    borderRadius: {
+                        topLeft: 8,
+                        topRight: 8,
+                        bottomLeft: 0,
+                        bottomRight: 0
+                    },
+                    borderSkipped: false,
+                    barThickness: 32
+                }
+            ]
+        };
+
+        this.chartOptions = {
+            maintainAspectRatio: false,
+            aspectRatio: 0.8,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: textColor
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    ticks: {
+                        color: textMutedColor
+                    },
+                    grid: {
+                        color: 'transparent',
+                        borderColor: 'transparent'
+                    }
+                },
+                y: {
+                    stacked: true,
+                    ticks: {
+                        color: textMutedColor
+                    },
+                    grid: {
+                        color: borderColor,
+                        borderColor: 'transparent',
+                        drawTicks: false
+                    }
+                }
+            }
+        };
+    }
+
+    fillMissedData(result: MonthSaleReturnsResponse[]) {
+        const completeResult: MonthSaleReturnsResponse[] = [];
+        for (let m = 1; m <= 12; m++) {
+            const existed = result.find(res => res.month === m);
+            completeResult.push(existed ? existed : {month: m, total: 0})
+        }
+        return completeResult;
+    }
+
+    onChangeCriteria(e: any) {
+        this.year = e.value;
+        this.getChartData();
+    }
+
+    ngOnDestroy() {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+    }
+
 }

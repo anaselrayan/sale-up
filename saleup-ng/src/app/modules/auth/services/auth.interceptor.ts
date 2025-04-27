@@ -2,9 +2,11 @@ import { HttpInterceptorFn } from "@angular/common/http";
 import { AuthService } from "./auth.service";
 import { inject } from '@angular/core';
 import { tap } from "rxjs";
+import { Router } from "@angular/router";
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
 
   const authToken = authService.getToken();
 
@@ -22,8 +24,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         // No need to check for HttpResponse explicitly, since errors are caught separately
       },
       error => {
-        if (error.status === 409) {
+        if (error.status === 401) {
           authService.signOut();
+        }
+        else if (error.status === 403) {
+          router.navigate(['/auth/access'])
         }
       }
     )

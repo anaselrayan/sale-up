@@ -19,6 +19,8 @@ import { Customer } from '@module/customers/models/customer.model';
 import { CustomerService } from '@module/customers/service/customer.service';
 import { Avatar } from 'primeng/avatar';
 import { CustomerCreateDialogComponent } from "../customer-create-dialog/customer-create-dialog.component";
+import { Tooltip } from 'primeng/tooltip';
+import { ConfirmService } from '@shared/services/confirm.service';
 
 
 @Component({
@@ -39,6 +41,7 @@ import { CustomerCreateDialogComponent } from "../customer-create-dialog/custome
     ConfirmDialogModule,
     TranslateModule,
     Avatar,
+    Tooltip,
     CustomerCreateDialogComponent
 ],
   templateUrl: './customer-list.component.html',
@@ -51,7 +54,7 @@ export class CustomerListComponent {
   loading = false;
   pageReq = new PageRequest(0, 10);
   customerList: Customer[] = [];
-  customer!: Partial<Customer>;
+  customer: Customer | undefined;
   selectedCustomers!: Customer[] | null;
   cols!: any[];
 
@@ -60,6 +63,7 @@ export class CustomerListComponent {
   constructor(
     private customerService: CustomerService,
     private toast: ToastService,
+    private confirm: ConfirmService,
     private translate: TranslateService
   ) {}
 
@@ -79,20 +83,39 @@ export class CustomerListComponent {
   }
 
   openNew() {
+    this.customer = undefined;
     this.customerDialog = true;
-    this.mode = 'create'
-    this.dialogHeader = 'Add Customer'
+    this.mode = 'create';
+    this.dialogHeader = 'ADD_CUSTOMER';
   }
 
   onGlobalFilter(table: Table, event: Event) {
       table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
-  
+  deleteCustomer(c: Customer) {
+    const msg = this.translate.instant('DELETE_ALERT', {name: c.fullName});
+    this.confirm.dialogAlert(msg, ()=> {
+      this.customerService.deleteCustomer(c.customerId)
+        .subscribe(res => {
+          if (res.success) {
+            this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+            this.getCustomersPage();
+          } else {
+            this.toast.showError(res.message);
+          }
+        })
+    })
+  }
 
-  deleteCustomer(cat: Customer) {}
+  editCustomer(customer: Customer) {
+    this.customer = customer;
+    this.mode == 'update';
+    this.customerDialog = true;
+  }
 
-  deleteSelectedProducts() {}
-
+  toggleDialog(show: boolean) {
+    this.customerDialog = show;
+  }
   
 }

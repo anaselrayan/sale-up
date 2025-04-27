@@ -1,9 +1,12 @@
 package com.anaselrayan.springcashiero.runner.seeders;
 
 import com.anaselrayan.springcashiero.features.settings.constant.SettingCategories;
+import com.anaselrayan.springcashiero.features.settings.constant.SettingType;
 import com.anaselrayan.springcashiero.features.settings.model.Setting;
 import com.anaselrayan.springcashiero.features.settings.model.SettingCategory;
+import com.anaselrayan.springcashiero.features.settings.model.SettingOption;
 import com.anaselrayan.springcashiero.features.settings.repository.SettingCategoryRepository;
+import com.anaselrayan.springcashiero.features.settings.repository.SettingOptionRepository;
 import com.anaselrayan.springcashiero.features.settings.repository.SettingRepository;
 import com.anaselrayan.springcashiero.runner.seeds.SettingSeeds;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ public class SettingSeeder {
 
     private final SettingRepository settingRepository;
     private final SettingCategoryRepository settingCategoryRepository;
+    private final SettingOptionRepository settingOptionRepository;
 
     @Bean
     public CommandLineRunner run() {
@@ -55,8 +59,21 @@ public class SettingSeeder {
 
     private void addSettings(List<Setting> settingList) {
         for (Setting setting : settingList) {
-            if (!settingRepository.existsBySettingKey(setting.getSettingKey()))
-                settingRepository.save(setting);
+            if (!settingRepository.existsBySettingKey(setting.getSettingKey())) {
+                Setting saved = settingRepository.save(setting);
+                saveSettingOptions(saved, setting.getOptions());
+            }
+
+        }
+    }
+
+    private void saveSettingOptions(Setting setting, List<SettingOption> options) {
+        if (options == null || options.isEmpty() || !setting.getSettingType().equals(SettingType.SELECT))
+            return;
+
+        for (SettingOption option : options) {
+            option.setSetting(setting);
+            settingOptionRepository.save(option);
         }
     }
 

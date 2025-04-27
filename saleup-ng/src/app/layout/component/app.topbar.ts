@@ -5,10 +5,11 @@ import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
-import { AppDetailsService } from '@shared/services/app-details.service';
+import { StartUpService } from '@shared/services/startup.service';
 import { environment } from '@env/environment';
 import { Menu } from 'primeng/menu';
 import { AuthService } from '@module/auth/services/auth.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-topbar',
@@ -16,7 +17,7 @@ import { AuthService } from '@module/auth/services/auth.service';
     imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator, Menu],
     template: ` <div class="layout-topbar">
         <div class="layout-topbar-logo-container" *ngIf="appService.appDetails$ | async as appDetails">
-            <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+            <button class="layout-menu-button layout-topbar-action ml-2 mr-2" (click)="layoutService.onMenuToggle()">
                 <i class="pi pi-bars"></i>
             </button>
             <a class="layout-topbar-logo" routerLink="/" >
@@ -73,10 +74,6 @@ import { AuthService } from '@module/auth/services/auth.service';
                         <i class="pi pi-calendar"></i>
                         <span>Calendar</span>
                     </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button>
                     <p-menu #menu [popup]="true" appendTo="body" [model]="profileMenuItems"></p-menu>
                     <button type="button" (click)="menu.toggle($event)" class="layout-topbar-action">
                         <i class="pi pi-user"></i>
@@ -94,18 +91,26 @@ export class AppTopbar {
     constructor(
         private authService: AuthService,
         public layoutService: LayoutService,
-        public appService: AppDetailsService
-    ) {
-        this.profileMenuItems = [
-            { label: 'Sign out', icon: 'pi pi-sign-out', command: () => { this.authService.signOut() }}
-        ]
+        public appService: StartUpService,
+        private translate: TranslateService
+    ) {}
+
+    ngOnInit() {
+        this.translate.get('SIGN_OUT').subscribe(val => {
+            this.profileMenuItems = [
+                { label: val, icon: 'pi pi-sign-out', command: () => { this.authService.signOut() }}
+            ]
+        })
+
     }
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        this.layoutService.persistConfig();
     }
 
     getAppLogoSrc() {
         return environment.apiBaseUrl + '/resource';
     }
+    
 }

@@ -11,9 +11,8 @@ import { Avatar } from 'primeng/avatar';
 import { InputNumber } from 'primeng/inputnumber';
 import { Product } from '@module/products/models/product.model';
 import { ProductUtils } from 'src/app/utils/product.utils';
-import { SaleCart } from '@module/sales/models/sale-cart';
+import { CartItem, SaleCart } from '@module/sales/models/sale-cart';
 import { CartService } from '@module/sales/services/cart.service';
-import { CartItem } from '@module/sales/models/cart-item';
 import { Customer } from '@module/customers/models/customer.model';
 import { CustomerService } from '@module/customers/service/customer.service';
 import { SaleService } from '@module/sales/services/sale.service';
@@ -23,6 +22,8 @@ import { CustomerCreateDialogComponent } from "@module/customers/components/cust
 import { Tooltip } from 'primeng/tooltip';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { SubstringPipe } from "@shared/pipes/substring.pipe";
 
 @Component({
   selector: 'app-pos-sale-details',
@@ -41,7 +42,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     CustomerCreateDialogComponent,
     Tooltip,
     SCurrencyPipe,
-    TranslateModule
+    TranslateModule,
+    ConfirmDialog
 ],
   templateUrl: './pos-sale-details.component.html',
   styleUrl: './pos-sale-details.component.scss'
@@ -51,7 +53,7 @@ export class PosSaleDetailsComponent implements OnInit {
   cart!: SaleCart;
   customers: Customer[] = [];
   orderLoading = false;
-  addCustomerDialog = false;
+  customerDialog = false;
   @Output("success") success = new EventEmitter<boolean>();
 
   constructor(
@@ -92,10 +94,6 @@ export class PosSaleDetailsComponent implements OnInit {
   }
 
   submitOrder() {
-    if (!this.cart.customer) {
-      this.toast.showWarn('Please select customer')
-      return;
-    }
     this.orderLoading = true;
     this.saleService.createSale(this.cartService.cartToSaleRequest(this.cart))
       .subscribe(res => {
@@ -110,6 +108,10 @@ export class PosSaleDetailsComponent implements OnInit {
         this.toast.showError(err.error.message)
         this.orderLoading = false;
       })
+  }
+
+  toggleDialog(e: any) {
+    this.customerDialog = e;
   }
 
 }

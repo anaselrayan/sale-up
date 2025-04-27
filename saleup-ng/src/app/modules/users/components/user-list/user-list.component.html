@@ -1,11 +1,13 @@
 <p-toolbar styleClass="mb-6">
     <ng-template #start>
-        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedUsers()" [disabled]="!selectedUsers || !selectedUsers.length" />
+        <div class="flex items-center gap-2">
+            <p-button [label]="'ADD' | translate" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+            <p-button severity="secondary" [label]="'DELETE' | translate" icon="pi pi-trash" outlined (onClick)="deleteSelectedUsers()" [disabled]="!selectedUsers || !selectedUsers.length" />
+        </div>
     </ng-template>
 
     <ng-template #end>
-        <p-button label="Export" icon="pi pi-upload" severity="secondary" />
+        <p-button [label]="'EXPORT' | translate" icon="pi pi-upload" severity="secondary" />
     </ng-template>
 </p-toolbar>
 
@@ -22,10 +24,10 @@
     dataKey="userId">
     <ng-template #caption>
         <div class="flex items-center justify-between">
-            <h5 class="m-0">Users</h5>
+            <h5 class="m-0">{{'USERS' | translate }}</h5>
             <p-iconfield>
                 <p-inputicon styleClass="pi pi-search" />
-                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" [placeholder]="'SEARCH_PACEHOLDER' | translate" />
             </p-iconfield>
         </div>
     </ng-template>
@@ -35,7 +37,7 @@
                 <p-tableHeaderCheckbox />
             </th>
             <th>
-                Image
+                {{'IMAGE'| translate}}
             </th>
             <th pSortableColumn="username">
                 {{'USERNAME'| translate}}
@@ -60,6 +62,9 @@
             <th pSortableColumn="locked">
                 {{'IS_LOCKED'| translate}}
                 <p-sortIcon field="locked" />
+            </th>
+            <th>
+                {{ 'OPTIONS' | translate }}
             </th>
         </tr>
     </ng-template>
@@ -89,6 +94,13 @@
             <td>
                 {{ user.locked ? ('YES' | translate) : ('NO' | translate) }}
             </td>
+            <td>
+                <div class="flex gap-2 items-center">
+                    <p-button icon="pi pi-pencil" [pTooltip]="'EDIT' | translate" tooltipPosition="top" [rounded]="true" [outlined]="true" (onClick)="onEditUser(user)" />
+                    <p-button [icon]="user.locked ? 'pi pi-lock-open' : 'pi pi-unlock'" [pTooltip]="user.locked ? ('ENABLE' | translate) : ('DISABLE' | translate)" tooltipPosition="top" severity="warn" [rounded]="true" [outlined]="true" (click)="toggleUserLock(user)" />
+                    <p-button icon="pi pi-trash" [pTooltip]="'DELETE' | translate" tooltipPosition="top" [rounded]="true" [outlined]="true" severity="danger" (onClick)="onDeleteUser(user)" />
+                </div>
+            </td>
         </tr>
     </ng-template>
 </p-table>
@@ -102,42 +114,44 @@
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
 
 <p-dialog [(visible)]="userDialog" [style]="{ width: '450px' }" [header]="dialogHeader" [modal]="true">
-    <form [formGroup]="userForm" (ngSubmit)="onSaveUser()">
+    <form *ngIf="userForm" [formGroup]="userForm" (ngSubmit)="onSaveUser()">
         <div class="flex items-center gap-4 mb-4">
             <label for="username" class="font-semibold w-24">{{'USERNAME' | translate }}</label>
             <input formControlName="username" pInputText id="username" class="flex-auto" autocomplete="off" />
         </div>
-        <div class="flex items-center gap-4 mb-4">
+        <div class="flex justify-between items-center gap-4 mb-4">
             <label for="role" class="font-semibold w-24">{{'ROLE' | translate }}</label>
-            <p-multiselect id="role" [options]="roles" [filter]="true" 
+            <p-multiselect id="role" [options]="roles" [filter]="true"
+                [emptyMessage]="'NO_DATA' | translate"
                 optionLabel="roleName" optionValue="roleId" 
-                placeholder="Select options" selectionLimit="1"
+                [placeholder]="'SELECT_FROM_LIST' | translate" selectionLimit="1"
                 formControlName="roleId"/>
         </div>
-        <div class="flex items-center gap-4 mb-4">
+        <div *ngIf="mode === 'create'" class="flex justify-between items-center gap-4 mb-4">
             <label for="password" class="font-semibold w-24">{{'PASSWORD' | translate }}</label>
             <p-password formControlName="password" [toggleMask]="true" />
         </div>
-        <div class="flex items-center gap-4 mb-4">
+        <div *ngIf="mode === 'create'" class="flex justify-between items-center gap-4 mb-4">
             <label for="passwordConfirm" class="font-semibold w-24">{{'PASSWORD_CONFIRM' | translate }}</label>
             <p-password formControlName="passwordConfirm" [toggleMask]="true" [feedback]="false" />
         </div>
-        <div class="flex items-center gap-4 mb-4">
+        <div class="flex justify-between items-center gap-4 mb-4">
             <label for="phone" class="font-semibold w-24">{{'PHONE' | translate }}</label>
             <input formControlName="phone" pInputText id="phone" class="flex-auto" autocomplete="off" />
         </div>
-        <div class="flex items-center gap-4 mb-4">
+        <div class="flex justify-between items-center gap-4 mb-4">
             <label for="email" class="font-semibold w-24">{{'EMAIL' | translate }}</label>
             <input formControlName="email" pInputText id="email" class="flex-auto" autocomplete="off" />
         </div>
-        <div class="flex items-center gap-4 mb-8">
+        <div class="flex justify-between items-center gap-4 mb-8">
             <label for="userImage" class="font-semibold w-24">{{'IMAGE' | translate }}</label>
-            <p-fileupload mode="basic" chooseLabel="Choose" chooseIcon="pi pi-upload" name="userImage" accept="image/*" maxFileSize="1000000" (onSelect)="onSelectImage($event)" />
+            <p-fileupload mode="basic" [chooseLabel]="'CHOOSE_FILE' | translate" chooseIcon="pi pi-upload" name="userImage" accept="image/*" maxFileSize="1000000" (onSelect)="onSelectImage($event)" />
         </div>
         <div class="flex justify-end gap-2">
-            <p-button label="Cancel" severity="secondary" (click)="userDialog = false" />
-            <p-button label="Save" type="submit" />
+            <p-button [label]="'CANCEL' | translate" severity="secondary" (click)="userDialog = false" />
+            <p-button [label]="'SAVE' | translate" type="submit" />
         </div>
     </form>
 </p-dialog>
 <p-toast></p-toast>
+<p-confirmdialog [style]="{ width: '450px' }" />

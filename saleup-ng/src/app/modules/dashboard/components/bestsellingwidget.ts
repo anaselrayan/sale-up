@@ -9,14 +9,16 @@ import { Select } from 'primeng/select';
 import { Product } from '@module/products/models/product.model';
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
+import { SubstringPipe } from "@shared/pipes/substring.pipe";
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
     standalone: true,
     selector: 'app-best-selling-widget',
-    imports: [CommonModule, ButtonModule, MenuModule, Skeleton, Select, SCurrencyPipe],
+    imports: [CommonModule, ButtonModule, MenuModule, Skeleton, Select, SCurrencyPipe, SubstringPipe, TranslateModule],
     template: ` <div class="card">
         <div class="flex justify-between items-center mb-6">
-            <div class="font-semibold text-xl">Best Selling Products</div>
+            <div class="font-semibold text-xl">{{ 'BEST_SELLING_PRODUCTS' | translate }}</div>
             <p-select [disabled]="loading" [options]="options" (onChange)="onChangeCriteria($event)" class="mb-4" />
         </div>
         <ul *ngIf="loading" class="list-none p-0 m-0">
@@ -56,11 +58,11 @@ import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
                         [alt]="item.product.basicDetails.productName"
                         style="width: 50px; object-fit: cover;" />
                     <div>
-                        <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">{{ item.product.basicDetails.productName }}</span>
+                        <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">{{ item.product.basicDetails.productName | substring: 'short' }}</span>
                         <div class="mt-1 text-muted-color">{{ item.product.basicDetails.productCategory?.name }}</div>
                     </div>
                 </div>
-                <div class="mt-2 md:mt-0 flex items-center">
+                <div class="mt-2 md:mt-0 flex gap-2 items-center">
                     <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
                         <div class="bg-orange-500 h-full" [ngClass]="[getQuantitySeverity(item.totalSold).severity]" [style]="{width: getQuantitySeverity(item.totalSold).width}"></div>
                     </div>

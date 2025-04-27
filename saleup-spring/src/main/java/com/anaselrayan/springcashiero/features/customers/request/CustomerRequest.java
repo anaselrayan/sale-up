@@ -9,13 +9,9 @@ public class CustomerRequest {
 
     private Long customerId;
 
-    @NotNull(message = "customer firstname can't be null")
-    @NotEmpty(message = "customer firstname can't be empty")
-    private String firstName;
-
-    @NotNull(message = "customer lastname can't be null")
-    @NotEmpty(message = "customer lastname can't be empty")
-    private String lastName;
+    @NotNull(message = "customer name can't be null")
+    @NotEmpty(message = "customer name can't be empty")
+    private String fullName;
 
     private String email;
 

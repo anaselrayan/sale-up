@@ -24,6 +24,8 @@ import { LayoutService } from '@layout/service/layout.service';
 import { Skeleton } from 'primeng/skeleton';
 import { ToastService } from '@shared/services/toast.service';
 import { Toast } from 'primeng/toast';
+import { RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -45,7 +47,9 @@ import { Toast } from 'primeng/toast';
     Tooltip,
     SCurrencyPipe,
     Skeleton,
-    Toast
+    Toast,
+    RouterModule,
+    TranslateModule
 ],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.scss'
@@ -65,6 +69,7 @@ export class PosComponent {
     private productService: ProductService,
     private cartService: CartService,
     private lasyoutService: LayoutService,
+    private translate: TranslateService,
     private toast: ToastService
   ) {}
 
@@ -94,15 +99,10 @@ export class PosComponent {
         if (res.success) {
           this.cartService.addProductSubject.next(res.data);
         } else {
-          console.log(barcode, value)
-          this.toast.showWarn("Product not found!");
+          this.toast.showError(this.translate.instant('PRODUCT_NOT_FOUND'));
           this.searching = false;
         }
       })
-  }
-
-  onStarted(started: any) {
-    console.log(started);
   }
 
   subscribeForGlobalSearch() {

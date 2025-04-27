@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { TranslateService } from "@ngx-translate/core";
 import { MessageService } from "primeng/api";
 
 @Injectable({
@@ -6,12 +7,12 @@ import { MessageService } from "primeng/api";
 })
 export class ToastService {
 
-    constructor(private ms: MessageService) {}
+    constructor(private ms: MessageService, private tr: TranslateService) {}
 
     showError(msg: string) {
         this.ms.add({
             severity: 'error',
-            summary: 'Something went wrong',
+            summary: this.tr.instant('SOMETHING_WRONG'),
             detail: msg,
             closable: true,
             life: 3000
@@ -21,7 +22,7 @@ export class ToastService {
     showSuccess(msg: string) {
         this.ms.add({
             severity: 'success',
-            summary: 'Success operations',
+            summary: this.tr.instant('SUCCESS_OPERATION'),
             detail: msg,
             closable: true,
             life: 3000
@@ -31,7 +32,7 @@ export class ToastService {
     showInfo(msg: string) {
         this.ms.add({
             severity: 'info',
-            summary: 'Info.',
+            summary: this.tr.instant('INFO'),
             detail: msg,
             closable: true,
             life: 3000
@@ -41,7 +42,7 @@ export class ToastService {
     showWarn(msg: string) {
         this.ms.add({
             severity: 'warn',
-            summary: 'Warning',
+            summary: this.tr.instant('WARNING'),
             detail: msg,
             closable: true,
             life: 3000

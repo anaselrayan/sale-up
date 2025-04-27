@@ -7,7 +7,7 @@
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-barcode" />
                         <input pInputText class="w-80" [formControl]="globalSearchControl" type="text"
-                            placeholder="Search products..." />
+                            [placeholder]="'SEARCH_PACEHOLDER' | translate" />
                     </p-iconfield>
                     <p-paginator
                     (onPageChange)="onPageChange($event)"
@@ -47,23 +47,30 @@
                                     <div class="text-right text-red-300">
                                         {{ product.basicDetails?.productCategory?.name }}
                                     </div>
-                                    <div tooltipPosition="top" [pTooltip]="product.basicDetails?.productName" class="mt-1 text-overflow-ellipsis	overflow-hidden text-max-lines-2">
+                                    <div [routerLink]="['/products/detail', product.productId]" tooltipPosition="top"
+                                         [pTooltip]="product.basicDetails?.productName"
+                                         class="mt-1 cursor-pointer text-overflow-ellipsis overflow-hidden text-max-lines-2">
                                         {{ product.basicDetails.productName }}
                                     </div>
                                 </div>
                                 
                                 <div class="flex flex-col gap-6 mt-6">
-                                    <div class="flex gap-3">
+                                    <div *ngIf="product.priceDetails.sellingPrice == product.priceDetails.priceWithDiscount" class="flex gap-3">
+                                        <span class="font-semibold text-primary">
+                                            {{ product.priceDetails.priceWithDiscount | sCurrency }}
+                                        </span>
+                                    </div>
+                                    <div *ngIf="product.priceDetails.sellingPrice != product.priceDetails.priceWithDiscount" class="flex gap-3">
                                         <span class="text-sm text-surface-400 line-through">
                                             {{ product.priceDetails.sellingPrice | sCurrency }}
                                         </span>
-                                        <span class="font-semibold">
+                                        <span class="font-semibold text-primary">
                                             {{ product.priceDetails.priceWithDiscount | sCurrency }}
                                         </span>
                                     </div>
                                     <div class="flex gap-2">
-                                        <button pButton icon="pi pi-shopping-cart" label="Buy Now" (click)="addProductToCart(product)"
-                                            class="flex-auto whitespace-nowrap" outlined="true"></button>
+                                        <button pButton icon="pi pi-shopping-cart" [label]="'ADD_TO_CART' | translate" (click)="addProductToCart(product)"
+                                            class="flex-auto" variant="text" severity="secondary"></button>
                                     </div>
                                 </div>
                             </div>
@@ -76,8 +83,7 @@
 </div>
 
 <barcode-scanner-livestream
-    type="code_128"
-    (started)="onStarted($event)"
+    [type]="['code_128', 'ean', 'upc']"
     (valueChanges)="onValueChanges($event)"
 ></barcode-scanner-livestream>
 <p-toast></p-toast>

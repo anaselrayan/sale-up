@@ -12,6 +12,7 @@ public class SaleItemConverter {
         return SaleItemDTO.builder()
                 .saleItemId(from.getId())
                 .quantity(from.getQuantity())
+                .returnedQuantity(from.getReturnedQuantity())
                 .unitPrice(from.getUnitPrice())
                 .unitCost(from.getUnitCost())
                 .subTotal(from.getSubTotal())

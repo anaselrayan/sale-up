@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { AppDetailsService } from '@shared/services/app-details.service';
+import { StartUpService } from '@shared/services/startup.service';
 
 @Component({
     standalone: true,
@@ -12,5 +12,5 @@ import { AppDetailsService } from '@shared/services/app-details.service';
     </div>`
 })
 export class AppFooter {
-    constructor(public appService: AppDetailsService) {}
+    constructor(public appService: StartUpService) {}
 }

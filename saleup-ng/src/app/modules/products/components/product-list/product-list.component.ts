@@ -17,8 +17,7 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { DiscountType, Product } from '../../models/product.model';
+import { Product } from '../../models/product.model';
 import { PageRequest } from '@shared/models/page-request.model';
 import { ProductService } from '../../services/product.service';
 import { PaginatorModule } from 'primeng/paginator';
@@ -27,9 +26,12 @@ import { CardModule } from 'primeng/card';
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { Router } from '@angular/router';
 import { ProductDiscountCreateComponent } from "../product-discount-create/product-discount-create.component";
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Tooltip } from 'primeng/tooltip';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
+import { SubstringPipe } from '@shared/pipes/substring.pipe';
+import { ConfirmService } from '@shared/services/confirm.service';
+import { ToastService } from '@shared/services/toast.service';
 
 
 @Component({
@@ -59,9 +61,10 @@ import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
     CardModule,
     Tooltip,
     SCurrencyPipe,
-    ProductDiscountCreateComponent
+    ProductDiscountCreateComponent,
+    SubstringPipe
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [],
   templateUrl: './product-list.component.html',
 })
 export class ProductListComponent implements OnInit {
@@ -85,8 +88,9 @@ export class ProductListComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
+    private confirmService: ConfirmService,
+    private translate: TranslateService,
+    private toast: ToastService,
     private router: Router
   ) {}
 
@@ -116,36 +120,20 @@ export class ProductListComponent implements OnInit {
   }
 
   deleteSelectedProducts() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected products?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.selectedProducts = null;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Products Deleted',
-          life: 3000
-        });
-      }
-    });
+
   }
 
   deleteProduct(product: Product) {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete ' + product.basicDetails.productName + '?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Product Deleted',
-          life: 3000
-        });
-      }
-    });
+    const msg = this.translate.instant("DELETE_ALERT", { name: product.basicDetails.productName })
+    this.confirmService.dialogAlert(msg, ()=> {
+      this.productService.deleteProduct(product.productId)
+      .subscribe(res => {
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+          this.getProducts();
+        }
+      })
+    })
   }
 
   onEditProduct(product: Product) {

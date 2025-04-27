@@ -5,6 +5,7 @@ import { SalesListComponent } from './components/sales-list/sales-list.component
 import { SaleDetailsComponent } from './components/sale-details/sale-details.component';
 import { SaleReturnListComponent } from './components/sale-return-list/sale-return-list.component';
 import { SaleReturnCreateComponent } from './components/sale-return-create/sale-return-create.component';
+import { SaleReturnDetailsComponent } from './components/sale-return-details/sale-return-details.component';
 
 const routes: Routes = [
   {
@@ -20,10 +21,12 @@ const routes: Routes = [
     component: SaleDetailsComponent
   },
   {
-    path: 'return',
+    path: 'sale-return',
     children: [
       { path: 'list', component: SaleReturnListComponent},
-      { path: ':saleId', component: SaleReturnCreateComponent}
+      { path: ':saleId', component: SaleReturnListComponent},
+      { path: 'create/:saleId', component: SaleReturnCreateComponent},
+      { path: 'detail/:saleReturnId', component: SaleReturnDetailsComponent}
     ]
   }
 ];

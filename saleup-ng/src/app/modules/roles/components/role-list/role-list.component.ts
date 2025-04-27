@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
+import { Toast } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -19,6 +19,7 @@ import { PermissionGroup, Role } from '@module/roles/models/role.model';
 import { RoleService } from '@module/roles/services/role.service';
 import { Tree } from 'primeng/tree';
 import { TreeNode } from 'primeng/api';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-role-list',
@@ -28,7 +29,7 @@ import { TreeNode } from 'primeng/api';
     FormsModule,
     ReactiveFormsModule,
     ButtonModule,
-    ToastModule,
+    Toast,
     ToolbarModule,
     InputTextModule,
     TextareaModule,
@@ -37,7 +38,8 @@ import { TreeNode } from 'primeng/api';
     IconFieldModule,
     TranslateModule,
     PaginatorModule,
-    Tree
+    Tree,
+    Tooltip
   ],
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss'
@@ -103,39 +105,70 @@ export class RoleListComponent {
       this.toast.showWarn(this.translate.instant('REQUIRED_FIELDS_MSG'));
       return;
     }
-    this.roleService.createRole({
-      roleName: this.roleForm.value['roleName'],
-      description: this.roleForm.value['description'],
-      permissionsIDs: this.selectedPerms.filter(p => p.data != 'group').map(p => p.data)
-    })
-      .subscribe(res => {
-        if (res.success) {
-          this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
-          this.getRoles();
-          this.roleForm.reset();
-          this.selectedPerms = [];
-          this.roleDialog = false;
-        }
-        else this.toast.showError(res.message);
-        this.saveLoading = false;
-      })
+    if (this.mode == 'create') {
+      this.roleService.createRole({
+        roleName: this.roleForm.value['roleName'],
+        description: this.roleForm.value['description'],
+        permissionsIDs: this.selectedPerms.filter(p => p.data != 'group').map(p => p.data)
+      }).subscribe(res => {
+          if (res.success) {
+            this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+            this.getRoles();
+            this.roleForm.reset();
+            this.selectedPerms = [];
+            this.roleDialog = false;
+          }
+          else { this.toast.showError(res.message); }
+          this.saveLoading = false;
+        })
+    } else if (this.mode == 'update' && this.role) {
+      this.roleService.updateRole({
+        roleId: this.role.roleId,
+        roleName: this.roleForm.value['roleName'],
+        description: this.roleForm.value['description'],
+        permissionsIDs: this.selectedPerms.filter(p => p.data != 'group').map(p => p.data)
+      }).subscribe(res => {
+          if (res.success) {
+            this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+            this.getRoles();
+            this.roleForm.reset();
+            this.selectedPerms = [];
+            this.roleDialog = false;
+          }
+          else { this.toast.showError(res.message); }
+          this.saveLoading = false;
+        })
+    }
   }
 
   mapPermissionsToTreeData(permGroups: PermissionGroup[]) {
     return permGroups.map(group => {
         return {
-            label: group.group,
+            label: this.translate.instant(group.group),
             data: 'group',
             children: group.permissions.map(permission => ({
-                label: permission.permName,
-                data: permission.permId,
-                expanded: false
+              label: this.translate.instant(permission.permName),
+              data: permission.permId,
+              expanded: false
             }))
         };
     });
-}
+  }
+
+  editRole(role: Role) {
+    this.mode = 'update';
+    this.dialogHeader = this.translate.instant('EDIT_ROLE', {name: role.roleName});
+    this.roleDialog = true;
+    this.role = role;
+    this.roleForm.patchValue({
+      roleName: role.roleName,
+      description: role.description,
+    })
+  }
 
   openNew() {
+    this.mode = 'create';
+    this.dialogHeader = this.translate.instant('ADD_ROLE');
     this.roleDialog = true;
   }
 

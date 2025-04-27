@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { TranslateService } from "@ngx-translate/core";
 import { ConfirmationService } from "primeng/api";
 
 type Accept = () => void;
@@ -9,7 +10,10 @@ type Reject = () => void;
 })
 export class ConfirmService {
 
-    constructor(private confirmation: ConfirmationService) {}
+    constructor(
+        private confirmation: ConfirmationService,
+        private translate: TranslateService
+    ) {}
 
     alert(event: Event, accept: Accept) {
         this.confirmation.confirm({
@@ -31,8 +35,16 @@ export class ConfirmService {
     dialogAlert(msg: string, accept: Accept) {
         this.confirmation.confirm({
             message: msg,
-            header: 'Confirm',
+            header: this.translate.instant('PLEASE_CONFIRM'),
             icon: 'pi pi-exclamation-triangle',
+            rejectButtonProps: {
+                label: this.translate.instant('CANCEL'),
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptButtonProps: {
+                label: this.translate.instant('YES')
+            },
             accept: () => accept()
             });
     }

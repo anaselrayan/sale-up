@@ -3,6 +3,7 @@ package com.anaselrayan.springcashiero.features.products.controller;
 import com.anaselrayan.springcashiero.core.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.products.request.ProductDiscountRequest;
 import com.anaselrayan.springcashiero.features.products.request.ProductRequest;
+import com.anaselrayan.springcashiero.features.products.request.ProductStockSimpleRequest;
 import com.anaselrayan.springcashiero.features.products.service.ProductService;
 import com.anaselrayan.springcashiero.features.products.service.ProductStatisticsService;
 import jakarta.validation.Valid;
@@ -70,6 +71,18 @@ public class ProductController {
     public ResponseEntity<ApiResponse> getProductStatistics(@PathVariable Long productId,
                                                             @RequestParam(required = false) String range) {
         ApiResponse res = productStatisticsService.getProductStatisticsSummary(productId, range);
+        return ResponseEntity.ok(res);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long productId) {
+        ApiResponse res = productService.deleteProduct(productId);
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("/stock-update")
+    public ResponseEntity<ApiResponse> updateProductStock(@RequestBody @Valid ProductStockSimpleRequest req) {
+        ApiResponse res = productService.updateProductStock(req);
         return ResponseEntity.ok(res);
     }
 

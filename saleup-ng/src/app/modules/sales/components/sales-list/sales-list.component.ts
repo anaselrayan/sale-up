@@ -20,6 +20,7 @@ import { Page } from '@shared/models/page-response.mdel';
 import { Paginator } from 'primeng/paginator';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { Router, RouterModule } from '@angular/router';
+import { DateFtPipe } from "@shared/pipes/date-ft.pipe";
 
 @Component({
   selector: 'app-sales-list',
@@ -38,8 +39,9 @@ import { Router, RouterModule } from '@angular/router';
     Menu,
     Paginator,
     SCurrencyPipe,
-    RouterModule
-  ],
+    RouterModule,
+    DateFtPipe
+],
   templateUrl: './sales-list.component.html',
   styleUrl: './sales-list.component.scss'
 })
@@ -90,9 +92,10 @@ export class SalesListComponent {
 
   getMenuItems(sale: Sale) {
     this.menuItems =  [
-      { label: 'Sale details', icon: 'pi pi-eye', command: ()=> { this.saleDetails(sale) } },
-      { label: 'Sale return', icon: 'pi pi-undo', command: ()=> { this.saleReturn(sale) } },
-      { label: 'Download receipt', icon: 'pi pi-print', command: () => { this.saleService.previewSaleReceipt(sale) } }
+      { label: this.translate.instant('SHOW_DETAILS'), icon: 'pi pi-eye', command: ()=> { this.saleDetails(sale) } },
+      { label: this.translate.instant('PRINT_RECEIPT'), icon: 'pi pi-print', command: () => { this.saleService.previewSaleReceipt(sale) } },
+      { label: this.translate.instant('RETURN_SALE'), icon: 'pi pi-arrow-right-arrow-left', disabled: sale.totallyReturned, command: ()=> { this.saleReturn(sale) } },
+      { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: () => {  } }
     ];
   }
 
@@ -113,8 +116,7 @@ export class SalesListComponent {
   }
 
   saleReturn(sale: Sale) {
-    this.router.navigate(['sales/return', sale.saleId])
+    this.router.navigate(['sales/sale-return/create', sale.saleId])
   }
-
 
 }

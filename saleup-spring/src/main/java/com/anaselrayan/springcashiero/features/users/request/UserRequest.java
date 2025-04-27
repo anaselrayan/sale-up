@@ -16,12 +16,8 @@ public class UserRequest {
     @NotEmpty(message = "username can't be empty")
     private String username;
 
-    @NotNull(message = "password can't be null")
-    @NotEmpty(message = "password can't be empty")
     private String password;
 
-    @NotNull(message = "password confirm can't be null")
-    @NotEmpty(message = "password confirm can't be empty")
     private String passwordConfirm;
 
     private String phone;

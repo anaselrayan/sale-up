@@ -5,6 +5,7 @@ import com.anaselrayan.springcashiero.core.response.StatusCode;
 import com.anaselrayan.springcashiero.features.customers.repository.CustomerRepository;
 import com.anaselrayan.springcashiero.features.dashboard.data.BestSellingProduct;
 import com.anaselrayan.springcashiero.features.dashboard.data.DashboardSnapshotResponse;
+import com.anaselrayan.springcashiero.features.dashboard.data.MonthSaleReturnsResponse;
 import com.anaselrayan.springcashiero.features.dashboard.data.MonthSalesResponse;
 import com.anaselrayan.springcashiero.features.products.converter.ProductConverter;
 import com.anaselrayan.springcashiero.features.products.model.Product;
@@ -12,6 +13,7 @@ import com.anaselrayan.springcashiero.features.products.repository.ProductReposi
 import com.anaselrayan.springcashiero.features.sales.model.Sale;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleItemRepository;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleRepository;
+import com.anaselrayan.springcashiero.features.sales.repository.SaleReturnRepository;
 import com.anaselrayan.springcashiero.features.sales.util.SaleUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class DashboardService {
     private final CustomerRepository customerRepository;
     private final SaleItemRepository saleItemRepository;
     private final ProductRepository productRepository;
+    private final SaleReturnRepository saleReturnRepository;
 
     public ApiResponse getDashboardSnapshot() {
         List<Sale> todaySales = saleRepository.findAllByCreatedAtAfter(LocalDate.now().atStartOfDay());
@@ -45,6 +48,7 @@ public class DashboardService {
                 .todaySalesCount(todaySales.size())
                 .todaySalesQuantity(quantity)
                 .todaySalesRevenue(revenue)
+                .todaySaleReturns(saleReturnRepository.getTotalReturn())
                 .totalCustomers(customerRepository.count())
                 .build();
         return new ApiResponse(res, StatusCode.OK);
@@ -69,13 +73,23 @@ public class DashboardService {
 
     public ApiResponse getMonthlySales(int year) {
         List<Object[]> result = saleItemRepository.getMonthlySales(year);
-        List<MonthSalesResponse> bestSellingProducts = result.stream().map(row -> {
+        List<MonthSalesResponse> monthlySales = result.stream().map(row -> {
             Integer month = (Integer) row[0];
             Double total = (Double) row[1];
             Double revenue = (Double) row[2];
             return new MonthSalesResponse(month, total, revenue);
         }).toList();
-        return new ApiResponse(bestSellingProducts, StatusCode.OK);
+        return new ApiResponse(monthlySales, StatusCode.OK);
+    }
+
+    public ApiResponse getMonthlySaleReturns(int year) {
+        List<Object[]> result = saleReturnRepository.getMonthlySaleReturns(year);
+        List<MonthSaleReturnsResponse> monthlyReturns = result.stream().map(row -> {
+            Integer month = (Integer) row[0];
+            Double total = (Double) row[1];
+            return new MonthSaleReturnsResponse(month, total);
+        }).toList();
+        return new ApiResponse(monthlyReturns, StatusCode.OK);
     }
 
     public ApiResponse getLowStockProducts() {

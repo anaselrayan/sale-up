@@ -12,7 +12,6 @@ public class SaleRequest {
 
     private Long saleId;
 
-    @NotNull(message = "customer id can't be null")
     private Long customerId;
 
     @NotNull(message = "sale item list can't be null")

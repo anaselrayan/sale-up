@@ -1,20 +1,22 @@
 import { Component } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
-import { Subscription } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { DashboardService } from '../services/dashboard.service';
 import { MonthSalesResponse } from '../models/month-sales-response';
 import { DateUtils } from 'src/app/utils/date.utils';
 import { Select } from 'primeng/select';
 import { Skeleton } from 'primeng/skeleton';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LayoutService } from '@layout/service/layout.service';
 
 @Component({
     standalone: true,
     selector: 'app-revenue-stream-widget',
-    imports: [CommonModule, ChartModule, Select, Skeleton],
+    imports: [CommonModule, ChartModule, Select, Skeleton, TranslateModule],
     template: `<div class="card !mb-8">
         <div class="mb-4 flex justify-between">
-            <span class="font-semibold text-xl">Sales & Revenue</span>
+            <span class="font-semibold text-xl"> {{ 'SALES_AND_REVENUE' | translate }} </span>
             <p-select [disabled]="loading" [options]="filterOptions" (onChange)="onChangeCriteria($event)" class="mb-4" />
         </div>
         <p-skeleton *ngIf="loading" size="20rem" />
@@ -33,8 +35,14 @@ export class RevenueStreamWidget {
     filterOptions: number[] = [];
 
     constructor(
-        private dashboardService: DashboardService
-    ) {}
+        private dashboardService: DashboardService,
+        private translate: TranslateService,
+        public layoutService: LayoutService
+    ) {
+        this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
+            this.getChartData();
+        });
+    }
 
     ngOnInit() {
         this.getFilterOptions();
@@ -67,14 +75,14 @@ export class RevenueStreamWidget {
             labels: model.map(m => DateUtils.getMonthName(m.month)),
             datasets: [
                 {
-                    label: 'Sales',
+                    label: this.translate.instant('SALES'),
                     data: model.map(m => m.total),
                     fill: false,
                     borderColor: documentStyle.getPropertyValue('--p-orange-500'),
                     tension: 0.4
                 },
                 {
-                    label: 'Revenue',
+                    label: this.translate.instant('REVENUES'),
                     data: model.map(m => m.revenue),
                     fill: false,
                     borderColor: documentStyle.getPropertyValue('--p-green-500'),
@@ -129,5 +137,11 @@ export class RevenueStreamWidget {
     onChangeCriteria(e: any) {
         this.year = e.value;
         this.getChartData();
+    }
+
+    ngOnDestroy() {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 }

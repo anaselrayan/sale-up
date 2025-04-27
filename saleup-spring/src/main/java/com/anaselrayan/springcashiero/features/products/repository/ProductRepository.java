@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("""
     SELECT p FROM Product  p WHERE p.productBasic.productName LIKE %:keyword% OR p.productBasic.barcode LIKE %:keyword%
     OR p.productBasic.description LIKE %:keyword%""")
-    Page<Product> findByKeyword(String keyword, Pageable pageable);
+    Page<Product> findByKeywordAndDeletedFalse(String keyword, Pageable pageable);
 
     Optional<Product> findByProductBasicBarcode(String barcode);
 
@@ -28,4 +28,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     ORDER BY p.productBasic.lowStockPoint
     """)
     List<Product> findMinStockProducts(Pageable pageable);
+
+    Page<Product> findAllByDeletedFalse(Pageable pageable);
 }

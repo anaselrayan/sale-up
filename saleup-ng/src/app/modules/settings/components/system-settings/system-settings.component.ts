@@ -3,19 +3,19 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { environment } from '@env/environment';
 import { SettingRequest } from '@module/settings/models/setting-request';
-import { Setting } from '@module/settings/models/setting.model';
+import { Setting, SettingType } from '@module/settings/models/setting.model';
 import { SettingService } from '@module/settings/services/setting.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FileService } from '@shared/services/file.service';
 import { ToastService } from '@shared/services/toast.service';
 import { ButtonModule } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
-import { DropdownModule } from 'primeng/dropdown';
 import { FileUploadModule, UploadEvent } from 'primeng/fileupload';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressBar } from 'primeng/progressbar';
+import { Select } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
 import { ToastModule } from 'primeng/toast';
 import { forkJoin, map } from 'rxjs';
@@ -31,11 +31,11 @@ import { forkJoin, map } from 'rxjs';
     IconFieldModule,
     InputIconModule,
     TranslateModule,
-    DropdownModule,
+    Select,
     ToastModule,
     FileUploadModule,
-    Checkbox,
-    ProgressBar
+    ProgressBar,
+    Checkbox
   ],
   templateUrl: './system-settings.component.html',
   styleUrl: './system-settings.component.scss'
@@ -71,6 +71,7 @@ export class SystemSettingsComponent {
   }
 
   settingChange(setting: Setting) {
+    console.log(setting)
     const payload = this.payloads.find(p => p.key === setting.key);
     if (payload) {
       payload.value = setting.value;

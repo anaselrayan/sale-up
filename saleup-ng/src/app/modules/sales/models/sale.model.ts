@@ -9,6 +9,8 @@ export interface Sale {
     grandTotal: number;
     discount: number;
     barcode: string;
+    partiallyReturned: boolean;
+    totallyReturned: boolean;
     createdAt: Date;
     createdBy: string;
 }
@@ -17,6 +19,7 @@ export interface SaleItem {
     saleItemId: number;
     product: Product;
     quantity: number;
+    returnedQuantity: number;
     unitPrice: number;
     unitCost: number;
     subTotal: number;

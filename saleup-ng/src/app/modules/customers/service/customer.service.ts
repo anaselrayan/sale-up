@@ -22,8 +22,16 @@ export class CustomerService {
         return this.http.post<any>(this.baseUrl, req);
     }
 
+    public updateCustomer(req: CustomerRequest): Observable<ApiResponse<Customer>> {
+        return this.http.put<any>(this.baseUrl, req);
+    }
+
     public filterCustomersByPhone(keyword: string): Observable<ApiResponse<Customer[]>> {
         return this.http.get<any>(`${this.baseUrl}/filter?key=${keyword}`);
+    }
+
+    public deleteCustomer(id: number): Observable<ApiResponse<Customer>> {
+        return this.http.delete<any>(`${this.baseUrl}/${id}`);
     }
 
 }

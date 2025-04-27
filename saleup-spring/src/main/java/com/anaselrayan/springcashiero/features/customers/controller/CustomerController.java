@@ -21,14 +21,20 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<ApiResponse> createCustomer(@RequestBody @Valid CustomerRequest request) {
         ApiResponse res = customerService.createCustomer(request);
-        return ResponseEntity.status(res.getCode()).body(res);
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping
+    public ResponseEntity<ApiResponse> updateCustomer(@RequestBody @Valid CustomerRequest request) {
+        ApiResponse res = customerService.updateCustomer(request);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse> getCustomersPage(@RequestParam Integer page,
                                                         @RequestParam Integer size) {
         ApiResponse res = customerService.getCustomersPage(PageRequest.of(page, size));
-        return ResponseEntity.status(res.getCode()).body(res);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping("/filter")
@@ -40,7 +46,13 @@ public class CustomerController {
     @GetMapping("/{customerId}")
     public ResponseEntity<ApiResponse> getCustomerById(@PathVariable Long customerId) {
         ApiResponse res = customerService.getCustomerById(customerId);
-        return ResponseEntity.status(res.getCode()).body(res);
+        return ResponseEntity.ok(res);
+    }
+
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity<ApiResponse> deleteCustomer(@PathVariable Long customerId) {
+        ApiResponse res = customerService.deleteCustomer(customerId);
+        return ResponseEntity.ok(res);
     }
 
 }

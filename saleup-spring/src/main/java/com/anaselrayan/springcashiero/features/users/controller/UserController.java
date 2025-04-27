@@ -21,14 +21,32 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ApiResponse> createUser(@ModelAttribute @Valid UserRequest request) {
         ApiResponse res = userService.createUser(request);
-        return ResponseEntity.status(res.getCode()).body(res);
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping
+    public ResponseEntity<ApiResponse> updateUser(@ModelAttribute @Valid UserRequest request) {
+        ApiResponse res = userService.updateUser(request);
+        return ResponseEntity.ok(res);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long userId) {
+        ApiResponse res = userService.deleteUser(userId);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("lock/{userId}")
+    public ResponseEntity<ApiResponse> toggleUserStatus(@PathVariable Long userId, @RequestParam boolean lock) {
+        ApiResponse res = userService.toggleUserStatus(userId, lock);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse> getUsersPage(@RequestParam Integer page,
                                                    @RequestParam Integer size) {
         ApiResponse res = userService.getUsersPage(PageRequest.of(page, size));
-        return ResponseEntity.status(res.getCode()).body(res);
+        return ResponseEntity.ok(res);
     }
 
 }

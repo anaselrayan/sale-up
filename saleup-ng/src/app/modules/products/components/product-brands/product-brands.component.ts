@@ -19,6 +19,7 @@ import { ProductBrandService } from '@module/products/services/product-brand.ser
 import { FileUploadModule } from 'primeng/fileupload';
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-product-brands',
@@ -38,6 +39,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
     TranslateModule,
     PaginatorModule,
     FileUploadModule,
+    Tooltip,
     ConfirmDialog
   ],
   templateUrl: './product-brands.component.html',
@@ -46,7 +48,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 export class ProductBrandsComponent {
 
   brandDialog = false;
-  dialogHeader = 'Create Product Brand';
+  dialogHeader = '';
   loading = false;
   saveLoading = false;
   pageReq = new PageRequest(0, 10);
@@ -155,6 +157,8 @@ export class ProductBrandsComponent {
   }
 
   openNew() {
+    this.mode = 'create';
+    this.dialogHeader = this.translate.instant('ADD_PRODUCT_BRAND')
     this.brandDialog = true;
   }
 

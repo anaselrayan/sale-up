@@ -25,7 +25,7 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
     SELECT SUM(si.quantity) AS totalSoldUnits,
            SUM(si.subTotal) AS totalSoldAmount,
            SUM(si.unitCost * si.quantity) AS totalCost,
-           (SUM(si.subTotal) - SUM(si.unitCost * si.quantity)) AS totalRevenue
+           (SUM(si.unitPrice * (si.quantity - si.returnedQuantity)) - SUM(si.unitCost * (si.quantity - si.returnedQuantity))) AS totalRevenue
     FROM SaleItem si
     WHERE si.createdAt >= :startDate AND si.product.id = :productId
     GROUP BY si.product
@@ -34,7 +34,8 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
 
     @Query("""
     SELECT FUNCTION('MONTH', si.createdAt) AS month,
-    SUM(si.subTotal) AS total, (SUM(si.subTotal) - SUM(si.unitCost * si.quantity)) AS revenue
+    SUM(si.subTotal) AS total,
+    (SUM(si.unitPrice * (si.quantity - si.returnedQuantity)) - SUM(si.unitCost * (si.quantity - si.returnedQuantity))) AS revenue
     FROM SaleItem si
     WHERE FUNCTION('YEAR', si.createdAt) = :year
     GROUP BY FUNCTION('MONTH', si.createdAt)

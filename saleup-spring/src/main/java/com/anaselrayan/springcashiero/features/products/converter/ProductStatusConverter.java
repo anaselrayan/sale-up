@@ -20,8 +20,7 @@ public class ProductStatusConverter {
     }
 
     public static List<ProductStatusDTO> convert(List<ProductStatus> from) {
-        if (from == null)
-            return Collections.emptyList();
+        if (from == null) return Collections.emptyList();
         return from.stream().map(ProductStatusConverter::convert).collect(Collectors.toList());
     }
 

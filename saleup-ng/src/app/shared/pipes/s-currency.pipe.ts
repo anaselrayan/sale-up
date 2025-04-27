@@ -7,9 +7,24 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class SCurrencyPipe implements PipeTransform {
 
   transform(value: number | undefined | null, ...args: string[]): unknown {
-    if (value)
-      return '$' + value.toFixed(2);
-    else return '$0.0';
+    if (value) 
+      return this.getSymbol() + ' ' + value.toFixed(2);
+    else return this.getSymbol() + ' ' + '0.0';
+  }
+
+  private getSymbol() {
+    const appState = sessionStorage.getItem('app.state');
+    if (appState) {
+      const c = JSON.parse(appState).defaultCurrency;
+      switch(c) {
+        case 'USD': return '$';
+        case 'EUR': return '€';
+        case 'EGP': return 'E£';
+        case 'SAR': return 'ر.س';
+        default: return '';
+      }
+    }
+    return '';
   }
 
 }

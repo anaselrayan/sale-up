@@ -23,6 +23,12 @@ public class RoleController {
         return ResponseEntity.ok(res);
     }
 
+    @PutMapping
+    public ResponseEntity<ApiResponse> updateRole(@RequestBody @Valid RoleRequest request) {
+        ApiResponse res = roleService.updateUserRole(request);
+        return ResponseEntity.ok(res);
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse> getAllRoles() {
         ApiResponse res = roleService.getAllRoles();

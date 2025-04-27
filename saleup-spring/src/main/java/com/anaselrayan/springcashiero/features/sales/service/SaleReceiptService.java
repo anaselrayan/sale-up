@@ -38,15 +38,17 @@ public class SaleReceiptService {
     private final UploadService uploadService;
     private final SaleRepository saleRepository;
     public static final String RECEIPT_REPORT_PATH = "/report/receipt.jasper";
+    private static final String NO_CUSTOMER_FOLDER = "NOT_REGISTERED";
 
     public String generateSaleReceipt(Sale sale) {
         try {
-            String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/" + sale.getCustomer().getPhone();
+            String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/";
+            receiptPath += (sale.getCustomer() == null ? NO_CUSTOMER_FOLDER : sale.getCustomer().getPhone());
             String companyName = settingService.getSetting("company.name").getValue();
 
             Files.createDirectories(Paths.get(receiptPath));
 
-            var reportPath = new ClassPathResource(RECEIPT_REPORT_PATH);
+            ClassPathResource reportPath = new ClassPathResource(RECEIPT_REPORT_PATH);
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(reportPath.getInputStream());
 
             List<ReceiptItemRequest> productList = sale.getSaleItems().stream().map(ReceiptItemRequest::new).toList();
@@ -58,8 +60,8 @@ public class SaleReceiptService {
             params.put("companyAddr", getCompanyAddress());
             params.put("customerName", getCustomer(sale));
             params.put("staffName", getSeller(sale));
-            params.put("subTotal", sale.getSubTotal());
-            params.put("total", sale.getGrandTotal());
+            params.put("subTotal", Math.round(sale.getSubTotal() * 100) / 100.0);
+            params.put("total", Math.round(sale.getGrandTotal() * 100) / 100.0);
             params.put("billFooter", getReceiptFooter());
             params.put("logoImage", getLogoImageBytes());
             params.put("barcode", sale.getBarcode());
@@ -71,7 +73,7 @@ public class SaleReceiptService {
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dummyList);
 
             JasperPrint jp = JasperFillManager.fillReport(jasperReport, params, dataSource);
-            String receiptFilePath = receiptPath + "/" + sale.getId() + ".pdf";
+            String receiptFilePath = receiptPath + "/" + sale.getBarcode() + ".pdf";
             JasperExportManager.exportReportToPdfFile(jp, receiptFilePath);
             log.info("Receipt exported successfully to path: " + receiptFilePath);
             return receiptFilePath;
@@ -83,8 +85,9 @@ public class SaleReceiptService {
 
     public ResponseEntity<Resource> getSaleReceipt(Long saleId) {
         Sale sale = saleRepository.findById(saleId).orElseThrow();
-        String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/" + sale.getCustomer().getPhone();
-        return uploadService.downloadResource(receiptPath, saleId + ".pdf");
+        String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/";
+        receiptPath += (sale.getCustomer() == null ? NO_CUSTOMER_FOLDER : sale.getCustomer().getPhone());
+        return uploadService.downloadResource(receiptPath, sale.getBarcode() + ".pdf");
     }
 
     private ByteArrayInputStream getLogoImageBytes() {
@@ -95,6 +98,7 @@ public class SaleReceiptService {
             String logo = settingService.getSetting("app.logo").getValue();
             ResponseEntity<Resource> res = uploadService.downloadResource(Upload.UPLOAD_STATIC_RESOURCES, logo);
             Resource resource = res.getBody();
+            if (resource == null) return null;
             byte[] bytes = resource.getInputStream().readAllBytes();
             return new ByteArrayInputStream(bytes);
         } catch (Exception e) {
@@ -116,8 +120,12 @@ public class SaleReceiptService {
     }
 
     private String getCustomer(Sale sale) {
-        if ("true".equals(settingService.getSetting("pos.receipt.showCustomer").getValue()))
-            return sale.getCustomer().getFirstName() + " " + sale.getCustomer().getLastName();
+        if ("true".equals(settingService.getSetting("pos.receipt.showCustomer").getValue())) {
+            if (sale.getCustomer() != null)
+                return sale.getCustomer().getFullName() + " ( " + sale.getCustomer().getPhone() + " ) ";
+            else
+                return "NOT_REGISTERED_CUSTOMER";
+        }
         else return null;
     }
 

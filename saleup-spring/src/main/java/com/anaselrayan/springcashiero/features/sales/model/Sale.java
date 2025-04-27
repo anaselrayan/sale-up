@@ -4,6 +4,7 @@ import com.anaselrayan.springcashiero.core.model.BaseModel;
 import com.anaselrayan.springcashiero.features.customers.model.Customer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import static com.anaselrayan.springcashiero.core.constatnts.Table.SALE;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@SQLRestriction("deleted = false")
 public class Sale extends BaseModel {
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -32,5 +34,9 @@ public class Sale extends BaseModel {
     private Double discount;
 
     private String barcode;
+
+    private boolean partiallyReturned = false;
+
+    private boolean totallyReturned = false;
 
 }

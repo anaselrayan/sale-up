@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,6 +11,7 @@ import { ToastService } from '@shared/services/toast.service';
 import { CustomerService } from '@module/customers/service/customer.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CustomerRequest } from '@module/customers/models/customer.request';
+import { Customer } from '@module/customers/models/customer.model';
 
 @Component({
   selector: 'app-customer-create-dialog',
@@ -31,9 +32,11 @@ import { CustomerRequest } from '@module/customers/models/customer.request';
 export class CustomerCreateDialogComponent implements OnInit {
 
   customerForm!: FormGroup;
-  @Input() visible: boolean = false;
-  dialogHeader = '';
+  @Output() visibleChange = new EventEmitter<boolean>();
+  dialogHeader = 'Add Customer';
   saveLoading = false;
+  @Input() mode: 'create' | 'update' = 'create';
+  @Input() customer: Customer | undefined;
 
   constructor(
     private customerService: CustomerService,
@@ -42,14 +45,25 @@ export class CustomerCreateDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (this.customer) this.mode = 'update';
+    if (this.mode === 'create') this.dialogHeader = this.translate.instant('ADD_CUSTOMER');
     this.initCustomerForm();
+    if (this.mode === 'update' && this.customer) {
+      this.dialogHeader = this.translate.instant('EDIT_CUSTOMER', {name: this.customer.fullName});
+      this.customerForm.patchValue({
+        phone: this.customer.phone,
+        fullName: this.customer.fullName,
+        email: this.customer.email,
+        country: this.customer.country,
+        address: this.customer.address
+      })
+    }
   }
     
   initCustomerForm() {
     this.customerForm = new FormGroup({
       phone: new FormControl(null, [Validators.required]),
-      firstName: new FormControl(null, [Validators.required]),
-      lastName: new FormControl(null, [Validators.required]),
+      fullName: new FormControl(null, [Validators.required]),
       email: new FormControl(null),
       country: new FormControl(null),
       address: new FormControl(null),
@@ -59,9 +73,10 @@ export class CustomerCreateDialogComponent implements OnInit {
   getCustomerRequest() {
     const payload = new CustomerRequest();
     const formVal = this.customerForm.value;
+    if (this.customer)
+      payload.customerId = this.customer.customerId;
     payload.phone = formVal['phone'];
-    payload.firstName = formVal['firstName'];
-    payload.lastName = formVal['lastName'];
+    payload.fullName = formVal['fullName'];
     payload.email = formVal['email'];
     payload.address = formVal['address'];
     payload.country = formVal['country'];
@@ -73,18 +88,35 @@ export class CustomerCreateDialogComponent implements OnInit {
       this.toast.showError(this.translate.instant('REQUIRED_FIELDS_MSG'))
       return;
     }
-    this.saveLoading = true;
-    this.customerService.createCustomer(this.getCustomerRequest())
+    if (this.mode === 'create') {
+      this.saveLoading = true;
+      this.customerService.createCustomer(this.getCustomerRequest())
       .subscribe(res => {
         this.saveLoading = false;
         if (res.success) {
-          this.toast.showSuccess('Customer Created')
+          this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'))
+          this.visibleChange.emit(false)
+        } else {
+          this.toast.showError(res.message)
         }
-      }, err => {
-        this.toast.showError(err.error?.message)
-        this.saveLoading = false;
       })
-    this.visible = false;
+    } else if (this.mode === 'update') {
+      this.saveLoading = true;
+      this.customerService.updateCustomer(this.getCustomerRequest())
+      .subscribe(res => {
+        this.saveLoading = false;
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'))
+          this.visibleChange.emit(false)
+        } else {
+          this.toast.showError(res.message)
+        }
+      })
+    }
+  }
+
+  onVisibleChange(e: any) {
+    this.visibleChange.emit(e)
   }
 
 }

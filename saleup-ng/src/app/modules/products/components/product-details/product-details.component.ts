@@ -11,7 +11,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CardModule } from 'primeng/card';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { NgxBarcode6Module } from 'ngx-barcode6';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TableModule } from 'primeng/table';
 import { Skeleton } from 'primeng/skeleton';
 import { GalleriaModule } from 'primeng/galleria';
@@ -51,6 +51,7 @@ export class ProductDetailsComponent {
   loading = false;
   statLoading = false;
   stRange = 'day'
+  stOptions: any[] = [];
 
   responsiveOptions: any[] = [
     {
@@ -63,22 +64,26 @@ export class ProductDetailsComponent {
     }
   ] ;
 
-  stOptions = [
-    {label: 'Today', value: 'day'},
-    {label: 'Last Week', value: 'week'},
-    {label: 'Last Month', value: 'month'},
-    {label: 'Last Year', value: 'year'},
-  ]
-
   ngOnInit() {
     this.fetchProductDetails();
+    this.initOptions();
   }
 
   constructor(
     private productService: ProductService,
     private route: ActivatedRoute,
+    private translate: TranslateService,
     private router: Router
   ) {}
+
+  initOptions() {
+    this.stOptions = [
+      {label: this.translate.instant('TODAY'), value: 'day'},
+      {label: this.translate.instant('LAST_WEEK'), value: 'week'},
+      {label: this.translate.instant('LAST_MONTH'), value: 'month'},
+      {label: this.translate.instant('LAST_YEAR'), value: 'year'},
+    ]
+  }
 
   fetchProductDetails() {
     this.loading = true;

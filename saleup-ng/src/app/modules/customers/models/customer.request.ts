@@ -1,7 +1,6 @@
 export class CustomerRequest {
     customerId?: number;
-    firstName?: string;
-    lastName?: string;
+    fullName?: string;
     email?: string;
     phone?: string;
     country?: string;

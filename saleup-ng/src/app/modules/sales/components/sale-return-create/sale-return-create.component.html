@@ -1,1 +1,139 @@
-<p>sale-return-create works!</p>
+<p-card>
+    <div *ngIf="loading" class="loading">
+        <p-skeleton styleClass="mb-2" />
+        <p-skeleton width="10rem" styleClass="mb-2" />
+        <p-skeleton width="5rem" styleClass="mb-2" />
+        <p-skeleton height="2rem" styleClass="mb-2" />
+        <p-skeleton width="10rem" height="4rem" />
+    </div>
+    <div *ngIf="!loading" class="details">
+        <div class="font-bold text-lg mb-4 flex justify-between">
+            <div class="header">
+                <span>{{ 'PRODUCTS_RETURN_REQUEST' | translate }}</span>
+            </div>
+            <p-button (onClick)="returnAll()" tooltipPosition="top" [pTooltip]="'RETURN_ALL' | translate" [rounded]="true" [text]="true" severity="success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M6.545.998a1 1 0 0 0 0 2h2.728a2.638 2.638 0 0 1 0 5.275H4.817V6.545a1 1 0 0 0-1.707-.707L.384 8.564a1 1 0 0 0-.22 1.09q.073.18.218.327l2.728 2.728a1 1 0 0 0 1.707-.707v-1.729h4.456a4.638 4.638 0 1 0 0-9.275z" clip-rule="evenodd"/></svg>
+            </p-button>
+             
+        </div>
+        <div class="mb-4">
+            <span class="font-md text-surface-400">{{ ('SALE' | translate) + ': '}}</span>
+            <span class="text-primary">{{ ' ' + sale.barcode + ' ' }}</span>
+        </div>
+        <div class="mb-4">
+            <span class="font-md text-surface-400">{{ ('TIMESTAMP' | translate) + ': '}}</span>
+            <span>{{ sale.createdAt | dateFt:'long' }}</span>
+        </div>
+        <div class="sale-customer mb-4">
+            <div class="font-md mb-2 text-surface-400">
+                {{ 'CUSTOMER_DETAILS' | translate }}
+            </div>
+            <div class="ml-2 text-sm">
+                <div class="mb-1" *ngIf="!sale.customer">
+                    <span>{{'NAME' | translate}}</span>: 
+                    {{ 'NOT_REGISTERED_CUSTOMER' | translate}}
+                </div>
+                <div class="mb-1" *ngIf="sale.customer">
+                    <span>{{'NAME' | translate}}</span>: 
+                    {{ sale.customer.fullName }}
+                </div>
+                <div class="mb-1" *ngIf="sale.customer">
+                    <span>{{'PHONE' | translate}}</span>: 
+                    <span class="text-primary">{{ sale.customer.phone }}</span>
+                </div>
+                <div class="mb-1" *ngIf="sale.customer && sale.customer.country">
+                    <span>{{'COUNTRY' | translate}}</span>: 
+                    {{ sale.customer.country }}
+                </div>
+                <div class="mb-1" *ngIf="sale.customer && sale.customer.address">
+                    <span>{{'ADDRESS' | translate}}</span>: 
+                    {{ sale.customer.address }}
+                </div>
+                <div class="mb-1" *ngIf="sale.customer && sale.customer.email">
+                    <span>{{'EMAIL' | translate}}</span>: 
+                    {{ sale.customer.email }}
+                </div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <span class="font-md text-surface-400">{{ ('SOLD_BY' | translate) + ': '}}</span>
+            <span>{{ sale.createdBy }}</span>
+        </div>
+        <div class="order-summary mb-4">
+            <div class="font-md mb-2 text-surface-400">
+                {{ 'ORDER_DETAILS' | translate }}
+            </div>
+            <p-table [value]="returnCart.returnItems" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template #header>
+                    <tr>
+                        <th>{{ 'PRODUCT' | translate }}</th>
+                        <th>{{ 'UNIT_PRICE' | translate }}</th>
+                        <th>{{ 'QUANTITY_TO_RETURN' | translate }}</th>
+                        <th>{{ 'SUB_TOTAL' | translate }}</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                    <tr>
+                        <td class="dark:text-primary-200" [style]="{'width': '30%'}">
+                            <div class="flex items-center gap-2">
+                                <img class="rounded w-full"
+                                    [src]="getProductImageSrc(item.saleItem.product)"
+                                    [alt]="item.saleItem.product.basicDetails?.productName"
+                                    style="width: 3rem; height: 3rem; object-fit: cover;" />
+                                <div>{{ item.saleItem.product.basicDetails.productName | substring: 'medium' }}</div>
+                            </div>
+                        </td>
+                        <td [style]="{'width': '20%'}">{{ item.saleItem.unitPrice | sCurrency }}</td>
+                        <td [style]="{'width': '25%'}">
+                            <p-inputnumber 
+                                [(ngModel)]="item.quantity" readonly="true" min="0" [max]="item.saleItem.quantity - item.saleItem.returnedQuantity"
+                                [showButtons]="true" buttonLayout="horizontal" spinnerMode="horizontal" [inputStyle]="{ width: '3rem' }">
+                                <ng-template #incrementbuttonicon>
+                                    <span class="w-full h-full flex items-center justify-center" (click)="returnCart.increaseItemQty(item)">
+                                        <span class="pi pi-plus"></span>
+                                    </span>
+                                </ng-template>
+                                <ng-template #decrementbuttonicon>
+                                    <span class="w-full h-full flex items-center justify-center" (click)="returnCart.decreaseItemQty(item)">
+                                        <span class="pi pi-minus"></span>
+                                    </span>
+                                </ng-template>
+                            </p-inputnumber>
+                        </td>
+                        <td [style]="{'width': '25%'}">{{ item.quantity * item.saleItem.unitPrice | sCurrency }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+    
+            <div class="mt-6">
+                <p-table [value]="[1]" [tableStyle]="{ 'min-width': '50rem' }">
+                    <ng-template #header>
+                        <tr>
+    
+                        </tr>
+                    </ng-template>
+                    <ng-template #body>
+                        <tr>
+                            <td>{{ 'SUB_TOTAL' | translate }}</td>
+                            <td [style]="{'width': '50%'}">{{ returnCart.subTotal | sCurrency }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'SALE_RETURN_FEES' | translate }}</td>
+                            <td [style]="{'width': '50%'}">{{ returnCart.feesAmount | sCurrency }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'TOTAL_REFUND' | translate }}</td>
+                            <td [style]="{'width': '50%'}" class="text-primary">{{ returnCart.totalAmount | sCurrency }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+        <div class="flex justify-center w-full">
+            <p-button (onClick)="submitSaleReturn()" [loading]="submitLoading" [style]="{width: '100%'}" [label]="'SUBMIT_RETURN_ORDER' | translate" />
+        </div>
+    </div>
+</p-card>
+
+<p-toast></p-toast>
+<p-confirmdialog [style]="{ width: '450px' }" />

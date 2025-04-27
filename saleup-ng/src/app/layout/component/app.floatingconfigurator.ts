@@ -24,5 +24,6 @@ export class AppFloatingConfigurator {
 
     toggleDarkMode() {
         this.LayoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        this.LayoutService.persistConfig();
     }
 }

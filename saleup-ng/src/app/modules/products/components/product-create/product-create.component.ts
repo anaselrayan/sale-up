@@ -25,6 +25,9 @@ import { ConfirmService } from '@shared/services/confirm.service';
 import { ConfirmPopup } from 'primeng/confirmpopup';
 import { environment } from '@env/environment';
 import { ProductBrandService } from '@module/products/services/product-brand.service';
+import { InputIcon } from 'primeng/inputicon';
+import { IconField } from 'primeng/iconfield';
+import { BarcodeScannerLivestreamComponent, BarcodeScannerLivestreamModule } from 'ngx-barcode-scanner';
 
 
 @Component({
@@ -45,7 +48,10 @@ import { ProductBrandService } from '@module/products/services/product-brand.ser
     ConfirmPopup,
     TranslateModule,
     GalleriaModule,
-    Tag
+    Tag,
+    InputIcon,
+    IconField,
+    BarcodeScannerLivestreamModule
   ],
   templateUrl: './product-create.component.html'
 })
@@ -63,8 +69,11 @@ export class ProductCreateComponent implements OnInit {
 
   product!: Product;
 
+  @ViewChild(BarcodeScannerLivestreamComponent)
+  barcodeScanner!: BarcodeScannerLivestreamComponent;
+
   constructor(
-    private productServie: ProductService,
+    private productService: ProductService,
     private productImageService: ProductImageService,
     private categoryService: ProductCategoryService,
     private brandService: ProductBrandService,
@@ -85,12 +94,16 @@ export class ProductCreateComponent implements OnInit {
     this.getUnits();
   }
 
+  ngAfterViewInit() {
+    this.barcodeScanner.start();
+  }
+
   fetchProductToEdit() {
     const idParam = this.route.snapshot.paramMap.get('productId');
     if (idParam) {
       const productId = Number.parseInt(idParam);
       if (productId && Number.isInteger(productId)) {
-        this.productServie.getProductById(productId)
+        this.productService.getProductById(productId)
           .subscribe(res => {
             if (res.success) {
               this.product = res.data;
@@ -176,6 +189,13 @@ export class ProductCreateComponent implements OnInit {
     return data;
   }
 
+  onScanBarcodeChanges(value: any) {
+    const barcode = value.codeResult.code.trim();
+    this.productForm.patchValue({
+      barcode: barcode
+    })
+  }
+
   submit() {
     if (!this.productForm.valid) {
       this.toast.showError('Make sure to enter all the required fields')
@@ -191,7 +211,7 @@ export class ProductCreateComponent implements OnInit {
 
   createProduct() {
     this.loading = true;
-    this.productServie
+    this.productService
       .createProduct(this.getProductRequest())
       .subscribe(res => {
         if (res.success) {
@@ -207,7 +227,7 @@ export class ProductCreateComponent implements OnInit {
 
   editProduct() {
     this.loading = true;
-    this.productServie
+    this.productService
       .editProduct(this.getProductRequest())
       .subscribe(res => {
         if (res.success) {

@@ -29,11 +29,11 @@
                 <div class="actions flex items-center justify-between">
                     <div [routerLink]="['/products/list']" class="back flex gap-2 items-center cursor-pointer mb-2 text-surface-300">
                         <span class="pi pi-arrow-left"></span>
-                        <span>Back to list</span>
+                        <span>{{ 'BACK_TO_LIST' | translate }}</span>
                     </div>
                     <div class="flex gap-1 justify-between">
-                        <p-button [routerLink]="['/products/edit', product.productId]" tooltipPosition="top" pTooltip="Edit" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" />
-                        <p-button tooltipPosition="top" pTooltip="Delete" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" />
+                        <p-button [routerLink]="['/products/edit', product.productId]" tooltipPosition="top" [pTooltip]="'EDIT' | translate" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" />
+                        <p-button tooltipPosition="top" [pTooltip]="'DELETE' | translate" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" />
                     </div>
                 </div>
                 <div class="text-lg font-bold">
@@ -67,11 +67,11 @@
                 </div>
                 <div class="flex gap-2 items-center mb-2">
                     <span>{{ 'DISCOUNT' | translate }}:</span>
-                    <span class="text-orange-500">{{ getDiscountLabel(product) }}</span>
+                    <span class="text-orange-500">{{ getDiscountLabel(product) || ('NO_EXIST' | translate) }}</span>
                 </div>
                 <div class="flex gap-2 items-center mb-2">
                     <span>{{ 'DISCOUNT_ACTIVE' | translate }}:</span>
-                    <span>{{ product.priceDetails.discountRangeActive ? 'YES' : 'NO' }}</span>
+                    <span>{{ product.priceDetails.discountRangeActive ? ('YES' | translate)  : ('NO' | translate)  }}</span>
                 </div>
                 <div class="flex gap-2 items-center mb-2">
                     <span>{{ 'PRICE_AFTER_DISCOUNT' | translate }}:</span>
@@ -106,7 +106,7 @@
             <p-skeleton width="12rem" height="5rem" />
             <p-skeleton width="12rem" height="5rem" />
         </div>
-        <div *ngIf="!statLoading" class="flex gap-4">
+        <div *ngIf="!statLoading && product" class="flex gap-4">
             <div class="st-card p-4 rounded-border bg-surface-100 dark:bg-surface-800">
                 <div class="flex gap-4 justify-between">
                     <span class="block text-muted-color">{{ 'SOLD_UNITS' | translate }}</span>

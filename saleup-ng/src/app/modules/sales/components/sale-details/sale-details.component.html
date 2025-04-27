@@ -12,58 +12,83 @@
                 <span>{{ 'SALE_DETAILS' | translate }}</span>: 
                 <span class="text-primary">{{ ' ' + sale.barcode + ' ' }}</span>
             </div>
-            <p-button tooltipPosition="top" pTooltip="Print receipt" (onClick)="printReceipt()" icon="pi pi-print" [rounded]="true" [text]="true" severity="success" />
+            <p-button tooltipPosition="top" [pTooltip]="'PRINT_RECEIPT' | translate" (onClick)="printReceipt()" icon="pi pi-print" [rounded]="true" [text]="true" severity="success" />
         </div>
         <div class="mb-4">
-            <span class="font-md text-surface-400">{{ ('TIMESTAMP' | translate) + ': '}}</span>
-            <span>{{ sale.createdAt | date:'medium' }}</span>
+            <span class="font-md text-muted-color">{{ ('TIMESTAMP' | translate) + ': '}}</span>
+            <span>{{ sale.createdAt | dateFt:'long' }}</span>
+        </div>
+        <div class="mb-4">
+            <div class="flex gap-2 mb-2" *ngIf="sale.totallyReturned">
+                <i class="pi pi-arrow-right-arrow-left text-muted-color"></i>
+                <div class="text-red-500">{{'SALE_TOTALLY_RETURNED' | translate}}</div>
+            </div>
+            <div class="flex gap-2 mb-2" *ngIf="sale.partiallyReturned">
+                <i class="pi pi-arrow-right-arrow-left text-muted-color"></i>
+                <div class="text-orange-500">{{'SALE_PARTIALLY_RETURNED' | translate}}</div>
+            </div>
+            <div class="flex gap-2" *ngIf="!sale.partiallyReturned && !sale.totallyReturned">
+                <div class="text-blue-500 dark:text-blue-300">{{'SALE_HAS_NO_RETURNS' | translate}}</div>
+            </div>
+            <a *ngIf="sale.totallyReturned || sale.partiallyReturned" [routerLink]="['/sales/sale-return/list']" [queryParams]="{saleId: sale.saleId}" 
+            class=" hover:underline">{{ 'SHOW_SALE_RETURNS' | translate }}</a>
         </div>
         <div class="sale-customer mb-4">
-            <div class="font-md mb-2 text-surface-400">
+            <div class="font-md mb-2 text-muted-color">
                 {{ 'CUSTOMER_DETAILS' | translate }}
             </div>
             <div class="ml-2 text-sm">
-                <div class="mb-1">
+                <div class="mb-1" *ngIf="!sale.customer">
                     <span>{{'NAME' | translate}}</span>: 
-                    {{ sale.customer.firstName + ' ' + sale.customer.lastName }}
+                    {{ 'NOT_REGISTERED_CUSTOMER' | translate}}
                 </div>
-                <div class="mb-1">
+                <div class="mb-1" *ngIf="sale.customer">
+                    <span>{{'NAME' | translate}}</span>: 
+                    {{ sale.customer.fullName }}
+                </div>
+                <div class="mb-1" *ngIf="sale.customer">
                     <span>{{'PHONE' | translate}}</span>: 
                     <span class="text-primary">{{ sale.customer.phone }}</span>
                 </div>
-                <div class="mb-1" *ngIf="sale.customer.country">
+                <div class="mb-1" *ngIf="sale.customer && sale.customer.country">
                     <span>{{'COUNTRY' | translate}}</span>: 
                     {{ sale.customer.country }}
                 </div>
-                <div class="mb-1" *ngIf="sale.customer.address">
+                <div class="mb-1" *ngIf="sale.customer && sale.customer.address">
                     <span>{{'ADDRESS' | translate}}</span>: 
                     {{ sale.customer.address }}
                 </div>
-                <div class="mb-1" *ngIf="sale.customer.email">
+                <div class="mb-1" *ngIf="sale.customer && sale.customer.email">
                     <span>{{'EMAIL' | translate}}</span>: 
                     {{ sale.customer.email }}
                 </div>
             </div>
         </div>
         <div class="order-summary mb-4">
-            <div class="font-md mb-2 text-surface-400">
+            <div class="font-md mb-2 text-muted-color">
                 {{ 'ORDER_DETAILS' | translate }}
             </div>
             <p-table [value]="sale.saleItems" [tableStyle]="{ 'min-width': '50rem' }">
                 <ng-template #header>
                     <tr>
-                        <th>{{ 'PRODUCT' | translate }}</th>
-                        <th>{{ 'UNIT_PRICE' | translate }}</th>
-                        <th>{{ 'QUANTITY' | translate }}</th>
-                        <th>{{ 'SUB_TOTAL' | translate }}</th>
+                        <th [style]="{'width': '30%'}">{{ 'PRODUCT' | translate }}</th>
+                        <th [style]="{'width': '20%'}">{{ 'UNIT_PRICE' | translate }}</th>
+                        <th [style]="{'width': '25%'}">{{ 'QUANTITY' | translate }}</th>
+                        <th [style]="{'width': '25%'}">{{ 'SUB_TOTAL' | translate }}</th>
                     </tr>
                 </ng-template>
                 <ng-template #body let-item>
                     <tr>
-                        <td>{{ item.product.basicDetails.productName }}</td>
+                        <td class="dark:text-primary-200 flex gap-2 items-center">
+                            <img class="rounded w-full"
+                                [src]="getProductImageSrc(item.product)"
+                                [alt]="item.product.basicDetails?.productName"
+                                style="width: 3rem; height: 3rem; object-fit: cover;" />
+                            <span>{{ item.product.basicDetails.productName | substring: 'medium' }}</span>
+                        </td>
                         <td>{{ item.unitPrice | sCurrency }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ item.subTotal }}</td>
+                        <td>{{ item.subTotal | sCurrency }}</td>
                     </tr>
                 </ng-template>
             </p-table>
@@ -78,22 +103,22 @@
                     <ng-template #body>
                         <tr>
                             <td>{{ 'SUB_TOTAL' | translate }}</td>
-                            <td>{{ sale.subTotal | sCurrency }}</td>
+                            <td [style]="{'width': '50%'}">{{ sale.subTotal | sCurrency }}</td>
                         </tr>
                         <tr>
                             <td>{{ 'DISCOUNT' | translate }}</td>
-                            <td>{{ sale.discount }}</td>
+                            <td [style]="{'width': '50%'}">{{ sale.discount | sCurrency }}</td>
                         </tr>
                         <tr>
                             <td>{{ 'GRAND_TOTAL' | translate }}</td>
-                            <td class="text-primary">{{ sale.grandTotal | sCurrency }}</td>
+                            <td [style]="{'width': '50%'}" class="text-primary">{{ sale.grandTotal | sCurrency }}</td>
                         </tr>
                     </ng-template>
                 </p-table>
             </div>
         </div>
         <div class="mb-4">
-            <span class="font-md text-surface-400">{{ ('CREATED_BY' | translate) + ': '}}</span>
+            <span class="font-md text-muted-color">{{ ('SOLD_BY' | translate) + ': '}}</span>
             <span>{{ sale.createdBy }}</span>
         </div>
         <div class="flex justify-center w-full">

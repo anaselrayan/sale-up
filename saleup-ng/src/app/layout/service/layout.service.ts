@@ -26,13 +26,7 @@ interface MenuChangeEvent {
     providedIn: 'root'
 })
 export class LayoutService {
-    _config: layoutConfig = {
-        preset: 'Aura',
-        primary: 'emerald',
-        surface: null,
-        darkTheme: true,
-        menuMode: 'static'
-    };
+    _config: layoutConfig = this.initConfig();
 
     _state: LayoutState = {
         staticMenuDesktopInactive: false,
@@ -175,4 +169,23 @@ export class LayoutService {
     reset() {
         this.resetSource.next(true);
     }
+
+    persistConfig() {
+        sessionStorage.setItem('ui.state', JSON.stringify(this.layoutConfig()))
+    }
+
+    initConfig(): layoutConfig {
+        const confStr = sessionStorage.getItem('ui.state');
+        if (confStr) {
+            return JSON.parse(confStr)
+        }
+        return {
+            preset: 'Aura',
+            primary: 'emerald',
+            surface: null,
+            darkTheme: true,
+            menuMode: 'static'
+        };
+    }
+    
 }

@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.SQLRestriction;
 
 import static com.anaselrayan.springcashiero.core.constatnts.Table.PRODUCT;
 
@@ -17,7 +16,6 @@ import static com.anaselrayan.springcashiero.core.constatnts.Table.PRODUCT;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@SQLRestriction("deleted = false")
 public class Product extends BaseModel {
 
     @OneToOne

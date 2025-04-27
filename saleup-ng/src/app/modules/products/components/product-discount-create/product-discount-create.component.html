@@ -1,24 +1,30 @@
-<p-dialog (onHide)="close()" [visible]="true" [style]="{ width: '40rem' }" [header]="header" [modal]="true">
+<p-dialog (visibleChange)="onVisibleChange($event)" [visible]="true" [style]="{ width: '40rem' }" [modal]="true">
+    <ng-template #header>
+        <div class="header font-semibold">
+            <div class="text-primary mb-2">{{ 'ADD_DISCOUNT' | translate }}</div>
+            <span>{{ product.basicDetails.productName| substring: 'short'}}</span>
+        </div>
+    </ng-template>
     <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="flex justify-between items-center gap-2 mb-4">
             <span></span>
-            <p-togglebutton formControlName="active" onLabel="ENABLED" offLabel="DISABLED" onIcon="pi pi-check"  offIcon="pi pi-times" styleClass="w-36" ariaLabel="Do you confirm" />
+            <p-togglebutton formControlName="active" [onLabel]="'ENABLED' | translate" [offLabel]="'DISABLED' | translate" [onIcon]="'pi pi-check'"  [offIcon]="'pi pi-times'" styleClass="w-36" ariaLabel="Do you confirm" />
         </div>
         <div class="flex flex-col justify-center gap-2 mb-4">
-            <label for="type" class="font-semibold">{{'DISCOUNT_TYPE' | translate }}</label>
-            <p-select formControlName="type" [options]="discountTypes"/>
+            <label for="type">{{'DISCOUNT_TYPE' | translate }}</label>
+            <p-select formControlName="type" [options]="discountTypes" optionLabel="label" optionValue="value" />
         </div>
         <div class="flex flex-col justify-center gap-2 mb-4">
-            <label for="amount" class="font-semibold">{{'DISCOUNT_AMOUNT' | translate }}</label>
-            <p-inputnumber id="amount" formControlName="amount" mode="currency" currency="USD" showButtons ></p-inputnumber>
+            <label for="amount">{{'DISCOUNT_AMOUNT' | translate }}</label>
+            <p-inputnumber id="amount" formControlName="amount" mode="decimal" showButtons ></p-inputnumber>
         </div>
         <div class="flex flex-col justify-center gap-2 mb-4">
-            <label for="range" class="font-semibold">{{'ACTIVE_RANGE' | translate }}</label>
+            <label for="range">{{'ACTIVE_RANGE' | translate }}</label>
             <p-datePicker [style]="{width: '100%'}" id="range" [showTime]="true" formControlName="range" appendTo="body" selectionMode="range"/>
         </div>
         <div class="flex justify-end gap-2">
-            <p-button label="Cancel" severity="secondary" (onClick)="close()" />
-            <p-button label="Save" [disabled]="form.invalid" [loading]="loading" type="submit" />
+            <p-button [label]="'CANCEL' | translate" severity="secondary" (onClick)="onVisibleChange(false)" />
+            <p-button [label]="'SAVE' | translate" [disabled]="form.invalid" [loading]="loading" type="submit" />
         </div>
     </form>
 </p-dialog>

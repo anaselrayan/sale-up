@@ -1,6 +1,5 @@
 import { Product } from "@module/products/models/product.model";
-import { CartItem } from "../models/cart-item";
-import { SaleCart } from "../models/sale-cart";
+import { CartItem, SaleCart } from "../models/sale-cart";
 import { Injectable } from "@angular/core";
 import { ReplaySubject } from "rxjs";
 import { SoundUtils } from "src/app/utils/sound.utils";

@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { DatePicker } from 'primeng/datepicker';
 import { DateUtils } from 'src/app/utils/date.utils';
 import { ToggleButton } from 'primeng/togglebutton';
+import { SubstringPipe } from "@shared/pipes/substring.pipe";
 
 @Component({
   selector: 'app-product-discount-create',
@@ -28,18 +29,19 @@ import { ToggleButton } from 'primeng/togglebutton';
     Select,
     ToastModule,
     DatePicker,
-    ToggleButton
-  ],
+    ToggleButton,
+    SubstringPipe
+],
   templateUrl: './product-discount-create.component.html',
   styleUrl: './product-discount-create.component.scss'
 })
 export class ProductDiscountCreateComponent {
   form!: FormGroup;
   @Input("product") product!: Product;
-  discountTypes = [DiscountType.FIXED, DiscountType.PERCENT];
+  discountTypes: any = [];
   loading = false;
-  header = 'Product Discount: ';
-  @Output() visibileChange = new EventEmitter<boolean>();
+  dialogHeader = 'Product Discount: ';
+  @Output() visibleChange = new EventEmitter<boolean>();
   @Output() success = new EventEmitter<boolean>();
 
   constructor(
@@ -49,10 +51,19 @@ export class ProductDiscountCreateComponent {
   ) {}
 
   ngOnInit() {
+    this.discountTypes = [
+      {
+        label: this.translate.instant('FIXED_VALUE'),
+        value: DiscountType.FIXED
+      },
+      {
+        label: this.translate.instant('PERCENT_VALUE'),
+        value: DiscountType.PERCENT
+      }
+    ]
     this.initForm();
     if(this.product) {
-      console.log(this.product)
-      this.header += this.product.basicDetails.productName;
+      this.dialogHeader += this.product.basicDetails.productName;
       this.form.patchValue({
         active: !this.product.priceDetails.discountDisabled,
         type: this.product.priceDetails.discountType,
@@ -100,8 +111,8 @@ export class ProductDiscountCreateComponent {
     return req;
   }
 
-  close() {
-    this.visibileChange.emit(false);
+  onVisibleChange(e: any) {
+    this.visibleChange.emit(e);
   }
 
 }

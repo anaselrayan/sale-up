@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Builder
 public class UserDTO {
 
+    private Long userId;
+
     private String username;
 
     private String phone;

@@ -36,6 +36,12 @@ public class DashboardController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/monthly-sale-returns")
+    public ResponseEntity<ApiResponse> getMonthlySaleReturns(@RequestParam Integer year) {
+        ApiResponse res = dashboardService.getMonthlySaleReturns(year);
+        return ResponseEntity.ok(res);
+    }
+
     @GetMapping("/low-stock")
     public ResponseEntity<ApiResponse> getMinStockProducts() {
         ApiResponse res = dashboardService.getLowStockProducts();

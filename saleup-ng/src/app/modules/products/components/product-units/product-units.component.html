@@ -1,11 +1,13 @@
 <p-toolbar styleClass="mb-6">
     <ng-template #start>
-        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedUnits()" [disabled]="!selectedUnits || !selectedUnits.length" />
+        <div class="flex items-center gap-2">
+            <p-button [label]="'ADD' | translate" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+            <p-button severity="secondary" [label]="'DELETE' | translate" icon="pi pi-trash" outlined (onClick)="deleteSelectedUnits()" [disabled]="!selectedUnits || !selectedUnits.length" />
+        </div>
     </ng-template>
 
     <ng-template #end>
-        <p-button label="Export" icon="pi pi-upload" severity="secondary" />
+        <p-button [label]="'EXPORT' | translate" icon="pi pi-upload" severity="secondary" />
     </ng-template>
 </p-toolbar>
 
@@ -26,10 +28,10 @@
     [rowsPerPageOptions]="[10, 20, 30]">
     <ng-template #caption>
         <div class="flex items-center justify-between">
-            <h5 class="m-0">{{'PRODUCT_BRANDS' | translate}}</h5>
+            <h5 class="m-0">{{'UNITS_OF_MEASURE' | translate}}</h5>
             <p-iconfield>
                 <p-inputicon styleClass="pi pi-search" />
-                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" [placeholder]="'SEARCH_PACEHOLDER' | translate" />
             </p-iconfield>
         </div>
     </ng-template>
@@ -61,8 +63,10 @@
                 {{ unit.name }}
             </td>
             <td>
-                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editUnit(unit)" />
-                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteUnit(unit)" />
+                <div class="flex gap-2 items-center">
+                    <p-button icon="pi pi-pencil" [pTooltip]="'EDIT' | translate" tooltipPosition="top" class="mr-2" [rounded]="true" [outlined]="true" (click)="editUnit(unit)" />
+                    <p-button icon="pi pi-trash" [pTooltip]="'DELETE' | translate" tooltipPosition="top" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteUnit(unit)" />
+                </div>
             </td>
         </tr>
     </ng-template>
@@ -79,8 +83,8 @@
             <input formControlName="name" pInputText id="name" class="flex-auto" autocomplete="off" />
         </div>
         <div class="flex justify-end gap-2">
-            <p-button label="Cancel" severity="secondary" (click)="unitDialog = false" />
-            <p-button label="Save" [loading]="saveLoading" type="submit" />
+            <p-button [label]="'CANCEL' | translate" severity="secondary" (click)="unitDialog = false" />
+            <p-button [label]="'SAVE' | translate" [loading]="saveLoading" type="submit" />
         </div>
     </form>
 </p-dialog>

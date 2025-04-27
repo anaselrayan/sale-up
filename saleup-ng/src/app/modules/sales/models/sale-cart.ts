@@ -1,5 +1,5 @@
 import { Customer } from "@module/customers/models/customer.model";
-import { CartItem } from "./cart-item";
+import { Product } from "@module/products/models/product.model";
 
 export class SaleCart {
     customer?: Customer;
@@ -21,4 +21,9 @@ export class SaleCart {
         this.discount = 0.0;
         this.grandTotal = 0.0;
     }
+}
+
+export class CartItem {
+    product?: Product;
+    quantity?: number;
 }

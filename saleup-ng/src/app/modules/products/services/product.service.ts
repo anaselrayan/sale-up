@@ -6,13 +6,13 @@ import { PageRequest } from "src/app/shared/models/page-request.model";
 import { PageResponse } from "src/app/shared/models/page-response.mdel";
 import { environment } from "src/environments/environment";
 import { Product, ProductStatisticsSummary } from "../models/product.model";
-import { ProductDiscountRequest } from "../models/product-request";
+import { ProductDiscountRequest, ProductStockRequest } from "../models/product-request";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ProductService {
-
+    
     baseUrl = environment.apiBaseUrl + '/product';
 
     constructor(private http: HttpClient) {}
@@ -48,4 +48,13 @@ export class ProductService {
     public getProductStatistics(productId: number, range: string): Observable<ApiResponse<ProductStatisticsSummary>> {
         return this.http.get<any>(`${this.baseUrl}/statistics/${productId}?range=${range}`);
     }
+
+    public deleteProduct(productId: number): Observable<ApiResponse<any>> {
+        return this.http.delete<any>(`${this.baseUrl}/${productId}`);
+    }
+
+    updateProductStock(req: ProductStockRequest) {
+        return this.http.put<any>(`${this.baseUrl}/stock-update`, req);
+      }
+
 }

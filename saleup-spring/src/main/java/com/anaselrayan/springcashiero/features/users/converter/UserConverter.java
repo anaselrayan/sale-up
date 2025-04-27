@@ -8,6 +8,7 @@ public class UserConverter {
 
     public static UserDTO convert(AppUser from) {
         return UserDTO.builder()
+                .userId(from.getId())
                 .username(from.getUsername())
                 .phone(from.getPhone())
                 .email(from.getEmail())

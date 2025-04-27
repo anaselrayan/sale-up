@@ -19,6 +19,8 @@ public class SaleConverter {
                 .subTotal(from.getSubTotal())
                 .discount(from.getDiscount())
                 .barcode(from.getBarcode())
+                .partiallyReturned(from.isPartiallyReturned())
+                .totallyReturned(from.isTotallyReturned())
                 .build();
     }
 }

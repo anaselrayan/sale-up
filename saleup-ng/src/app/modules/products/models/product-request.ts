@@ -42,3 +42,10 @@ export class ProductDiscountRequest {
   discountStartDate!: Date;
   discountEndDate!: Date;
 }
+
+export class ProductStockRequest {
+  productId!: number;
+  quantity!: number;
+  cost!: number;
+  price!: number;
+}

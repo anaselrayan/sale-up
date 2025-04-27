@@ -7,6 +7,7 @@ import { DashboardSnapshotResponse } from "../models/dashboard-snapshot-response
 import { BestSellingProductResponse } from "../models/best-selling-product-response";
 import { MonthSalesResponse } from "../models/month-sales-response";
 import { Product } from "@module/products/models/product.model";
+import { MonthSaleReturnsResponse } from "../models/month-returns-response";
 
 @Injectable({
     providedIn: 'root'
@@ -27,6 +28,10 @@ export class DashboardService {
 
     public getMonthlySales(year: number): Observable<ApiResponse<MonthSalesResponse[]>>{
         return this.http.get<any>(`${this.baseUrl}/monthly-sales?year=${year}`);
+    }
+
+    public getMonthlySaleReturns(year: number): Observable<ApiResponse<MonthSaleReturnsResponse[]>>{
+        return this.http.get<any>(`${this.baseUrl}/monthly-sale-returns?year=${year}`);
     }
 
     public getLowStockProducts(): Observable<ApiResponse<Product[]>>{

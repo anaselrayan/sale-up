@@ -1,11 +1,12 @@
 package com.anaselrayan.springcashiero.features.settings.model;
 
 import com.anaselrayan.springcashiero.core.model.BaseModel;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.anaselrayan.springcashiero.features.settings.constant.SettingType;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collections;
+import java.util.List;
 
 import static com.anaselrayan.springcashiero.core.constatnts.Table.SETTING;
 
@@ -25,10 +26,22 @@ public class Setting extends BaseModel {
     @Column(nullable = false)
     private String settingValue;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, updatable = false)
-    private String settingType;
+    private SettingType settingType;
 
     @ManyToOne
     private SettingCategory settingCategory;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<SettingOption> options;
+
+    public Setting(String settingKey, String settingValue, SettingType settingType, SettingCategory settingCategory) {
+        this.settingKey = settingKey;
+        this.settingValue = settingValue;
+        this.settingType = settingType;
+        this.settingCategory = settingCategory;
+        this.options = Collections.emptyList();
+    }
 
 }

@@ -26,4 +26,15 @@ export class UserService {
         return this.http.post<any>(this.baseUrl, payload);
     }
 
+    public updateUser(payload: FormData): Observable<ApiResponse<User>> {
+        return this.http.put<any>(this.baseUrl, payload);
+    }
+
+    public toggleUserLock(userId: number, lock: boolean) {
+        return this.http.get<any>(`${this.baseUrl}/lock/${userId}?lock=${lock}`);
+    }
+
+    public deleteUser(userId: number) {
+        return this.http.delete<any>(`${this.baseUrl}/${userId}`);
+    }
 }

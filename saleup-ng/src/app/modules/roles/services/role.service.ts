@@ -10,7 +10,7 @@ import { PermissionGroup, Role } from "../models/role.model";
     providedIn: 'root'
 })
 export class RoleService {
-
+    
     baseUrl = environment.apiBaseUrl
 
     constructor(private http: HttpClient) {}
@@ -25,6 +25,10 @@ export class RoleService {
 
     public createRole(payload: RoleRequest): Observable<ApiResponse<Role>> {
         return this.http.post<any>(this.baseUrl + '/role', payload);
+    }
+
+    public updateRole(payload: RoleRequest): Observable<ApiResponse<Role>> {
+        return this.http.put<any>(this.baseUrl + '/role', payload);
     }
 
 }

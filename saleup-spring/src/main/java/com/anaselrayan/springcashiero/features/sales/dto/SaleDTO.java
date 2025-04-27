@@ -29,4 +29,8 @@ public class SaleDTO {
 
     private String createdBy;
 
+    private Boolean partiallyReturned;
+
+    private Boolean totallyReturned;
+
 }

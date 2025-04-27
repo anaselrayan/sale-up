@@ -5,27 +5,14 @@
 @use './assets/demo/demo.scss';
 
 @font-face {
-    font-family: 'Poppins';
-    src: url('assets/fonts/poppins/Poppins-Regular.ttf') format('truetype'),
-        url('assets/fonts/poppins/Poppins-Italic.ttf') format('truetype'),
-        url('assets/fonts/poppins/Poppins-Medium.ttf') format('truetype'),
-        url('assets/fonts/poppins/Poppins-Bold.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Almarai';
-    src: url('assets/fonts/almarai/Almarai-Regular.ttf') format('truetype'),
-        url('assets/fonts/almarai/Almarai-ExtraBold.ttf') format('truetype'),
-        url('assets/fonts/almarai/Almarai-Light.ttf') format('truetype'),
-        url('assets/fonts/almarai/Almarai-Bold.ttf') format('truetype');
+    font-family: 'Noto Sans';
+    src: url('assets/fonts/NotoSansArabic.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 body {
-    font-family: 'Poppins', 'Almarai', sans-serif;
+    font-family: 'Noto Sans', monospace;
 }
 
 .text-max-lines-2 {
@@ -38,8 +25,29 @@ body {
 
 .text-max-lines-1 {
     overflow: hidden;
+    text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 1;
             line-clamp: 1; 
     -webkit-box-orient: vertical;
+}
+
+.text-max-lines-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+            line-clamp: 3; 
+    -webkit-box-orient: vertical;
+}
+
+.card, .p-card, .layout-sidebar, .p-datatable {
+    border: 1px solid var(--p-datatable-border-color);
+}
+
+.layout-topbar {
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.app-configurator {
+    margin-left: 10rem;
 }

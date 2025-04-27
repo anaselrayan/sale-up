@@ -16,6 +16,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ProductUnitOfMeasure } from '@module/products/models/product.model';
 import { ProductUnitService } from '@module/products/services/product-unit.service';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-product-units',
@@ -33,6 +34,7 @@ import { ProductUnitService } from '@module/products/services/product-unit.servi
     InputIconModule,
     IconFieldModule,
     TranslateModule,
+    Tooltip,
     ConfirmDialog
   ],
   templateUrl: './product-units.component.html',
@@ -41,7 +43,7 @@ import { ProductUnitService } from '@module/products/services/product-unit.servi
 export class ProductUnitsComponent {
 
   unitDialog = false;
-  dialogHeader = 'Create Product Unit';
+  dialogHeader = '';
   loading = false;
   saveLoading = false;
   pageReq = new PageRequest(0, 10);
@@ -142,6 +144,8 @@ export class ProductUnitsComponent {
   deleteUnit(unit: ProductUnitOfMeasure) {}
 
   openNew() {
+    this.mode = 'create';
+    this.dialogHeader = this.translate.instant('ADD_PRODUCT_UNIT')
     this.unitDialog = true;
   }
 

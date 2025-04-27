@@ -2,10 +2,7 @@ package com.anaselrayan.springcashiero.features.products.service;
 
 import com.anaselrayan.springcashiero.core.response.ApiResponse;
 import com.anaselrayan.springcashiero.core.response.StatusCode;
-import com.anaselrayan.springcashiero.features.dashboard.data.BestSellingProduct;
-import com.anaselrayan.springcashiero.features.products.converter.ProductConverter;
 import com.anaselrayan.springcashiero.features.products.dto.ProductStatisticsSummaryDTO;
-import com.anaselrayan.springcashiero.features.products.model.Product;
 import com.anaselrayan.springcashiero.features.products.repository.ProductRepository;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @Slf4j

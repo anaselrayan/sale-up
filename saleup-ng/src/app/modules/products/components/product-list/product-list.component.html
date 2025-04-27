@@ -1,11 +1,13 @@
 <p-toolbar styleClass="mb-6">
     <ng-template #start>
-        <p-button (onClick)="newProduct()" label="New" icon="pi pi-plus" severity="secondary" class="mr-2" />
-        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length" />
+        <div class="flex items-center gap-2">
+            <p-button (onClick)="newProduct()" [label]="'ADD' | translate" icon="pi pi-plus" severity="secondary" class="mr-2" />
+            <p-button severity="secondary" [label]="'DELETE' | translate" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length" />
+        </div>
     </ng-template>
 
     <ng-template #end>
-        <p-button label="Export" icon="pi pi-upload" severity="secondary" />
+        <p-button [label]="'EXPORT' | translate" icon="pi pi-upload" severity="secondary" />
     </ng-template>
 </p-toolbar>
 
@@ -27,10 +29,10 @@
 
         <ng-template #caption>
             <div class="flex items-center justify-between">
-                <h5 class="m-0">Product List</h5>
+                <h5 class="m-0">{{ 'PRODUCT_LIST' | translate }}</h5>
                 <p-iconfield>
                     <p-inputicon styleClass="pi pi-search" />
-                    <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+                    <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" [placeholder]="'SEARCH_PACEHOLDER' | translate" />
                 </p-iconfield>
             </div>
         </ng-template>
@@ -66,7 +68,7 @@
                     {{ 'PRICE' | translate }}
                     <p-sortIcon field="sellingPrice" />
                 </th>
-                <th>
+                <th style="min-width: 8rem">
                     {{ 'DISCOUNT' | translate }}
                 </th>
                 <th style="min-width: 8rem">
@@ -87,14 +89,14 @@
                 <td (click)="productDetails(product)" class="hover:text-primary hover:underline cursor-pointer min-w-12rem">
                     {{ product.basicDetails.barcode }}
                 </td>
-                <td (click)="productDetails(product)" class="hover:underline cursor-pointer min-w-16rem">
-                    {{ product.basicDetails.productName }}
+                <td (click)="productDetails(product)" class=" hover:underline cursor-pointer" [pTooltip]="product.basicDetails.productName" tooltipPosition="top">
+                    {{ product.basicDetails.productName | substring: 'medium' }}
                 </td>
                 <td>
                     <img class="rounded w-full"
                         [src]="getProductImageSrc(product)"
                         [alt]="product.basicDetails?.productName"
-                        style="width: 80px; object-fit: cover;" />
+                        style="width: 6rem; height: 4rem; object-fit: cover;" />
                 </td>
                 <td>{{ product.basicDetails.productCategory?.name }}</td>
                 <td>{{ product.basicDetails.productBrand?.name }}</td>
@@ -103,13 +105,13 @@
                 <td>
                     <div class="flex items-center gap-2">
                         <div class="text-sm" [ngClass]="{'line-through text-surface-500': (!product.priceDetails.discountDisabled && !product.priceDetails.discountRangeActive)}">
-                            {{ getDiscountLabel(product) }}
+                            {{ getDiscountLabel(product) || ('NO_EXIST' | translate) }}
                         </div>
                         <div *ngIf="!product.priceDetails.discountDisabled">
-                            <p-button pTooltip="Show discount" icon="pi pi-eye" class="mr-2" [rounded]="true" [text]="true" (onClick)="editProductDiscount(product)" />
+                            <p-button [pTooltip]="'SHOW_DISCOUNT' | translate" icon="pi pi-eye" class="mr-2" [rounded]="true" [text]="true" (onClick)="editProductDiscount(product)" />
                         </div>
                         <div *ngIf="product.priceDetails.discountDisabled">
-                            <p-button pTooltip="Create discount" icon="pi pi-percentage" class="mr-2" [rounded]="true" [text]="true" (onClick)="editProductDiscount(product)" />
+                            <p-button [pTooltip]="'ADD_DISCOUNT' | translate" icon="pi pi-percentage" class="mr-2" [rounded]="true" [text]="true" (onClick)="editProductDiscount(product)" />
                         </div>
                     </div>
                 </td>
@@ -119,8 +121,10 @@
                 </td>
 
                 <td>
-                    <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (onClick)="onEditProduct(product)" />
-                    <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteProduct(product)" />
+                    <div class="flex gap-2 items-center">
+                        <p-button icon="pi pi-pencil" [pTooltip]="'EDIT' | translate" tooltipPosition="top" [rounded]="true" [outlined]="true" (onClick)="onEditProduct(product)" />
+                        <p-button icon="pi pi-trash" [pTooltip]="'DELETE' | translate" tooltipPosition="top" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteProduct(product)" />
+                    </div>
                 </td>
             </tr>
         </ng-template>
@@ -132,12 +136,14 @@
             [totalRecords]="pageDetails?.totalElements || 0"
             [showCurrentPageReport]="true"
             [showJumpToPageDropdown]="false"
+            [rowsPerPageOptions]="[10, 20, 50]"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
 </p-card>
 
 <p-confirmdialog [style]="{ width: '450px' }" />
+<p-toast></p-toast>
 
 <app-product-discount-create *ngIf="discountDialog" [product]="product"
-(success)="discountSuccess($event)"    
-(visibileChange)="discountDialogToggle($event)">
+(success)="discountSuccess($event)"
+(visibleChange)="discountDialogToggle($event)">
 </app-product-discount-create>

@@ -20,4 +20,6 @@ public class SaleItemDTO {
 
     private Double subTotal;
 
+    private Integer returnedQuantity;
+
 }
