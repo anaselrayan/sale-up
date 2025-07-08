@@ -225,6 +225,17 @@
     "ADD_PRODUCT_BRAND": "Add Brand",
     "ADD_PRODUCT_CATEGORY": "Add Category",
     "FIXED_VALUE": "Fixed Value",
-    "PERCENT_VALUE": "Percentage Value"
-        
+    "PERCENT_VALUE": "Percentage Value",
+
+    
+    "IMPORT": "Import",
+    "IMPORT_PRODUCTS": "Import Products",
+    "IMPORT_INSTRUCTIONS": "Import Instructions",
+    "COLUMN_NAME": "Column name",
+    "DATA_TYPE": "Data type",
+    "OPTIONAL": "Optional",
+    "TEXT": "Text",
+    "NUMERIC": "Decimal",
+    "INTEGER": "Integer",
+    "IMPORTED_SUCCESSFULLY": "Imported Successfully"
 }

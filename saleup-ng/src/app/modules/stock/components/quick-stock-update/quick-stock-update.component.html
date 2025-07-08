@@ -1,0 +1,98 @@
+<p-card styleClass="p-4">
+    <ng-template #header>
+        <div class="mb-4 font-bold text-xl">
+            {{ 'PRICE_AND_QUANTITY_UPDATE' | translate }}
+        </div>
+        <div class="mb-4 w-full flex justify-center">
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-barcode" />
+                <input #barcodeIn [placeholder]="'SEARCH_PACEHOLDER' | translate" (keydown.enter)="onSearch(barcodeIn.value)"
+                    [(ngModel)]="barcode" pInputText id="barcode" type="text" autofocus />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <div *ngIf="!product">
+        <div class="flex w-full justify-center text-muted-color">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12em" height="12em" viewBox="0 0 256 256"><g fill="currentColor"><path d="M224 48v160H32V48Z" opacity="0.2"/><path d="M232 48v40a8 8 0 0 1-16 0V56h-32a8 8 0 0 1 0-16h40a8 8 0 0 1 8 8M72 200H40v-32a8 8 0 0 0-16 0v40a8 8 0 0 0 8 8h40a8 8 0 0 0 0-16m152-40a8 8 0 0 0-8 8v32h-32a8 8 0 0 0 0 16h40a8 8 0 0 0 8-8v-40a8 8 0 0 0-8-8M32 96a8 8 0 0 0 8-8V56h32a8 8 0 0 0 0-16H32a8 8 0 0 0-8 8v40a8 8 0 0 0 8 8m48-16a8 8 0 0 0-8 8v80a8 8 0 0 0 16 0V88a8 8 0 0 0-8-8m104 88V88a8 8 0 0 0-16 0v80a8 8 0 0 0 16 0m-40-88a8 8 0 0 0-8 8v80a8 8 0 0 0 16 0V88a8 8 0 0 0-8-8m-32 0a8 8 0 0 0-8 8v80a8 8 0 0 0 16 0V88a8 8 0 0 0-8-8"/></g></svg>
+        </div>
+        <p class="w-full text-center text-muted-color">{{ 'SCAN_BARCODE_SEARCH_HINT' | translate }}</p>
+    </div>
+    
+    <div *ngIf="product && !loading" class="product-details w-full mb-4">
+        <div class="flex gap-4">
+            <div class="basic" style="width: 50%;">
+                <div class="actions flex items-center justify-between">
+                </div>
+                <div class="text-lg font-bold">
+                    {{ product.basicDetails.productName }}
+                </div>
+                <div class="flex gap-6 mb-4">
+                    <div *ngIf="product.basicDetails.productCategory" class="ml-2 text-surface-500 text-sm flex gap-2 items-center">
+                        <i class="pi pi-clone"></i>
+                        <span>{{ product.basicDetails.productCategory.name }}</span>
+                    </div>
+                    <div *ngIf="product.basicDetails.productBrand" class="ml-2 text-surface-500 text-sm flex gap-2 items-center">
+                        <i class="pi pi-tags"></i>
+                        <span>{{ product.basicDetails.productBrand.name }}</span>
+                    </div>
+                    <div *ngIf="product.basicDetails.unitOfMeasure" class="ml-2 text-surface-500 text-sm flex gap-2 items-center">
+                        <i class="pi pi-gauge"></i>
+                        <span>{{ product.basicDetails.unitOfMeasure.name }}</span>
+                    </div>
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'QUANTITY' | translate }}:</span>
+                    <p-tag [value]="product.basicDetails.quantity + ''" [severity]="getQuantitySeverity()" />
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'COST' | translate }}:</span>
+                    <span>{{ product.priceDetails.costPrice | sCurrency }}</span>
+                </div>
+                <div class="flex gap-2 items-center mb-2">
+                    <span>{{ 'PRICE' | translate }}:</span>
+                    <span>{{ product.priceDetails.sellingPrice | sCurrency }}</span>
+                </div>
+                <div class="flex gap-2 items-center mb-2 mt-6">
+                    <span class="pi pi-barcode"></span>
+                    <span>{{ product.basicDetails.barcode }}</span>
+                </div>
+                <div class="barcode">
+                    <ngx-barcode6
+                        [bc-width]="2"
+                        [bc-height]="30"
+                        [bc-format]="'CODE128'"
+                        [bc-value]="product.basicDetails.barcode" />
+                </div>
+            </div>
+            <div class="image-slider" style="width: 50%;">
+                <img [src]="getPrimaryImageSrc(product)" class="rounded" width="50%" alt="">
+            </div>
+        </div>
+    </div>
+    <form *ngIf="product && form" [formGroup]="form">
+        <div class="flex flex-col md:flex-row gap-6 mb-4">
+            <div class="flex flex-wrap gap-2 w-full">
+                <label for="costPrice">{{'COST' | translate }}</label>
+                <p-inputnumber id="costPrice" formControlName="cost" mode="currency" currency="USD" showButtons ></p-inputnumber>
+            </div>
+            <div class="flex flex-wrap gap-2 w-full">
+                <label for="sellingPrice">{{'SELLING_PRICE' | translate }}</label>
+                <p-inputnumber id="sellingPrice" formControlName="price" mode="currency" currency="USD" showButtons ></p-inputnumber>
+            </div>
+            <div class="flex flex-wrap gap-2 w-full">
+                <label for="quantity">{{'QUANTITY' | translate }}</label>
+                <p-inputnumber autofocus="true" id="quantity" formControlName="quantity" mode="decimal" showButtons ></p-inputnumber>
+            </div>
+        </div>
+        <div class="flex justify-center w-full">
+            <p-button type="submit" (onClick)="save()" [loading]="saveLoading" [style]="{width: '100%'}" [label]="'SAVE' | translate" />
+        </div>
+    </form>
+
+</p-card>
+
+<p-toast></p-toast>
+<barcode-scanner-livestream
+    [type]="['code_128', 'ean', 'upc']"
+    (valueChanges)="onScanBarcodeChanges($event)"
+></barcode-scanner-livestream>

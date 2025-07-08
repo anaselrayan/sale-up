@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.features.products.service;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.products.dto.ProductStatisticsSummaryDTO;
 import com.anaselrayan.springcashiero.features.products.repository.ProductRepository;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleItemRepository;

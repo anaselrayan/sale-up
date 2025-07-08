@@ -1,6 +1,6 @@
 package com.anaselrayan.springcashiero.features.sales.service;
 
-import com.anaselrayan.springcashiero.core.constatnts.Upload;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.Upload;
 import com.anaselrayan.springcashiero.features.sales.model.Sale;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleRepository;
 import com.anaselrayan.springcashiero.features.sales.request.ReceiptItemRequest;
@@ -62,6 +62,7 @@ public class SaleReceiptService {
             params.put("staffName", getSeller(sale));
             params.put("subTotal", Math.round(sale.getSubTotal() * 100) / 100.0);
             params.put("total", Math.round(sale.getGrandTotal() * 100) / 100.0);
+            params.put("discount", Math.round(sale.getDiscount() * 100) / 100.0);
             params.put("billFooter", getReceiptFooter());
             params.put("logoImage", getLogoImageBytes());
             params.put("barcode", sale.getBarcode());

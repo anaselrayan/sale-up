@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.features.dashboard.service;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.customers.repository.CustomerRepository;
 import com.anaselrayan.springcashiero.features.dashboard.data.BestSellingProduct;
 import com.anaselrayan.springcashiero.features.dashboard.data.DashboardSnapshotResponse;

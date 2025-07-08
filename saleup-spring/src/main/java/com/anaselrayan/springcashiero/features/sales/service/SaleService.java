@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.features.sales.service;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.customers.repository.CustomerRepository;
 import com.anaselrayan.springcashiero.features.products.model.Product;
 import com.anaselrayan.springcashiero.features.products.repository.ProductRepository;
@@ -12,6 +12,7 @@ import com.anaselrayan.springcashiero.features.sales.model.Sale;
 import com.anaselrayan.springcashiero.features.sales.model.SaleItem;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleItemRepository;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleRepository;
+import com.anaselrayan.springcashiero.features.sales.repository.SaleReturnRepository;
 import com.anaselrayan.springcashiero.features.sales.request.SaleItemRequest;
 import com.anaselrayan.springcashiero.features.sales.request.SaleRequest;
 import com.anaselrayan.springcashiero.features.sales.util.SaleUtil;
@@ -32,6 +33,7 @@ import java.util.List;
 public class SaleService {
 
     private final SaleRepository saleRepository;
+    private final SaleReturnRepository saleReturnRepository;
     private final SaleItemRepository saleItemRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
@@ -56,7 +58,7 @@ public class SaleService {
             savedSale.setBarcode(SaleUtil.generateBarcode(savedSale));
             List<SaleItem> savedItems = new ArrayList<>();
             request.getSaleItems().forEach(req -> savedItems.add(this.saveSaleItem(req, savedSale)));
-            this.updateQuantityAfterSale(savedItems);
+            this.updateQuantityAfterSale(savedItems, false);
             savedSale.setSaleItems(savedItems);
             saleRepository.save(savedSale);
             this.saleReceiptService.generateSaleReceipt(savedSale);
@@ -94,7 +96,6 @@ public class SaleService {
 
     private ApiResponse validateSale(SaleRequest request) {
         // Validate Sale discount
-        // TODO
         // Validate Items quantities
         Double total = 0.0;
         for (SaleItemRequest req : request.getSaleItems()) {
@@ -110,7 +111,7 @@ public class SaleService {
             return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid sub total, should be: " + total);
         }
         // Validate grandTotal
-        Double grandTotal = total - (request.getDiscount() * total / 100);
+        Double grandTotal = total - request.getDiscount();
         if (!grandTotal.equals(request.getGrandTotal())) {
             return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid grand total, should be: " + grandTotal);
         }
@@ -131,14 +132,29 @@ public class SaleService {
         return saleItemRepository.save(toSave);
     }
 
-    private void updateQuantityAfterSale(List<SaleItem> saleItems) {
+    private void updateQuantityAfterSale(List<SaleItem> saleItems, boolean isDelete) {
         saleItems.forEach(saleItem -> {
             Product product = productRepository.findById(saleItem.getProduct().getId()).orElseThrow();
             int oldQty = product.getProductBasic().getQuantity();
-            int newQty = oldQty - saleItem.getQuantity();
+            int newQty = isDelete ? oldQty + saleItem.getQuantity() : oldQty - saleItem.getQuantity();
             product.getProductBasic().setQuantity(newQty);
             productRepository.save(product);
         });
+    }
+
+    public ApiResponse deleteSale(Long saleId) {
+        try {
+            Sale sale = saleRepository.findById(saleId).orElseThrow();
+            // Check if the sale has returns
+            if (saleReturnRepository.countBySaleId(saleId) > 0)
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "Sale has some returns!");
+            updateQuantityAfterSale(sale.getSaleItems(), true);
+            saleRepository.delete(sale);
+            return new ApiResponse(true, StatusCode.OK);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
+        }
     }
 
 }

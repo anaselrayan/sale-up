@@ -1,10 +1,10 @@
 package com.anaselrayan.springcashiero.features.sales.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.SALE_RETURN_ITEM;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.SALE_RETURN_ITEM;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity

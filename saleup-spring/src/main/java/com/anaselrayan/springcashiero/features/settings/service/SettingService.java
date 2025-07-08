@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.features.settings.service;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.settings.SettingNotFoundException;
 import com.anaselrayan.springcashiero.features.settings.converter.SettingConverter;
 import com.anaselrayan.springcashiero.features.settings.dto.SettingDTO;

@@ -1,8 +1,8 @@
 package com.anaselrayan.springcashiero.features.app.service;
 
-import com.anaselrayan.springcashiero.core.constatnts.Upload;
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.Upload;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.shared.UploadFileRequest;
 import com.anaselrayan.springcashiero.shared.UploadFileResponse;
 import com.anaselrayan.springcashiero.shared.UploadService;

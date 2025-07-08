@@ -7,7 +7,10 @@
     </ng-template>
 
     <ng-template #end>
-        <p-button [label]="'EXPORT' | translate" icon="pi pi-upload" severity="secondary" />
+        <div class="flex items-center gap-2">
+            <p-button [label]="'IMPORT' | translate" icon="pi pi-download" severity="secondary" (onClick)="showImportDialog()" />
+            <p-button [label]="'EXPORT' | translate" icon="pi pi-upload" severity="secondary" (onClick)="showExportDialog()" />
+        </div>
     </ng-template>
 </p-toolbar>
 
@@ -147,3 +150,77 @@
 (success)="discountSuccess($event)"
 (visibleChange)="discountDialogToggle($event)">
 </app-product-discount-create>
+
+<p-dialog [(visible)]="importDialog" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h5 class="m-0">{{ 'IMPORT_PRODUCTS' | translate }}</h5>
+    </ng-template>
+    <div class="p-fluid">
+        <p class="mb-4">
+            {{ 'IMPORT_INSTRUCTIONS' | translate }}
+        </p>
+        <!-- Table to display required column names for the import file -->
+        <p-table [value]="importColumnsSpec" [tableStyle]="{ 'min-width': '20rem' }">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>{{ 'COLUMN_NAME' | translate }}</th>
+                    <th>{{ 'DATA_TYPE' | translate }}</th>
+                    <th>{{ 'OPTIONAL' | translate }}</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-col>
+                <tr>
+                    <td>{{ col.columnName }}</td>
+                    <td>{{ col.dataType | translate }}</td>
+                    <td>{{ col.optional ? ( 'YES' | translate) : 'NO' | translate }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        <!-- File upload input -->
+        <div class="mt-4">
+            <p-fileupload mode="basic" [chooseLabel]="'CHOOSE_FILE' | translate" chooseIcon="pi pi-upload" name="catImage" accept=".xls,.xlsx" maxFileSize="1000000" (onSelect)="onSelectImportFile($event)" />
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="{{ 'CANCEL' | translate }}" icon="pi pi-times" severity="secondary" (onClick)="hideImportDialog()" />
+        <p-button label="{{ 'IMPORT' | translate }}" icon="pi pi-check" [disabled]="!selectedImportFile" [loading]="importLoading" severity="primary" (onClick)="confirmImport()" />
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="exportDialog" [modal]="true" [style]="{ width: '40vw' }" [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h5 class="m-0">{{ 'EXPORT_PRODUCTS' | translate }}</h5>
+    </ng-template>
+    <div class="p-fluid">
+        <div class="field mb-4">
+            <label for="columns" class="font-bold block mb-2">{{ 'SELECT_COLUMNS_TO_EXPORT' | translate }}</label>
+            <p-multiSelect
+                appendTo="body"
+                [options]="exportColumns"
+                [(ngModel)]="selectedExportColumns"
+                optionLabel="header"
+                display="chip"
+                placeholder="{{ 'SELECT_COLUMNS_PLACEHOLDER' | translate }}"
+                class="multiselect-custom"
+            />
+        </div>
+
+        <div class="field">
+            <label class="font-bold block mb-4">{{ 'EXPORT_TO' | translate }}</label>
+            <div class="flex flex-wrap gap-3">
+                <div class="flex gap-2 items-center">
+                    <p-radioButton name="exportType" value="excel" [(ngModel)]="exportType" inputId="excel" />
+                    <label for="excel" class="ml-2">Excel (.xlsx)</label>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <p-radioButton [disabled]="true" name="exportType" value="pdf" [(ngModel)]="exportType" inputId="pdf" />
+                    <label for="pdf" class="ml-2">PDF (.pdf)</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="{{ 'CANCEL' | translate }}" icon="pi pi-times" severity="secondary" (onClick)="hideExportDialog()" />
+        <p-button label="{{ 'EXPORT' | translate }}" icon="pi pi-download" [disabled]="!selectedExportColumns || selectedExportColumns.length === 0" [loading]="exportLoading" severity="primary" (onClick)="confirmExport()" />
+    </ng-template>
+</p-dialog>

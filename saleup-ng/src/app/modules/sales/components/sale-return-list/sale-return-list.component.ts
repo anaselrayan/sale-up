@@ -23,6 +23,8 @@ import { SaleReturnService } from '@module/sales/services/sale-return.service';
 import { SaleReturn } from '@module/sales/models/sale-return.model';
 import { DateFtPipe } from "@shared/pipes/date-ft.pipe";
 import { SaleService } from '@module/sales/services/sale.service';
+import { ConfirmService } from '@shared/services/confirm.service';
+import { ToastService } from '@shared/services/toast.service';
 
 @Component({
   selector: 'app-sale-return-list',
@@ -65,6 +67,8 @@ export class SaleReturnListComponent {
     private saleReturnService: SaleReturnService,
     private saleService: SaleService,
     private translate: TranslateService,
+    private confirmService: ConfirmService,
+    private toast: ToastService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -111,17 +115,25 @@ export class SaleReturnListComponent {
     this.menuItems =  [
       { label: this.translate.instant('SHOW_DETAILS'), icon: 'pi pi-eye', command: ()=> { this.showDetails(sr) } },
       { label: this.translate.instant('EDIT'), icon: 'pi pi-pencil', command: ()=> {  } },
-      { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: ()=> {  } },
+      { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: ()=> { this.deleteSaleReturn(sr) } },
     ];
   }
 
-  deleteSale(sale: Sale) {}
-
-  deleteSelectedSales() {}
-
-  showSaleDetails(sale: Sale) {
-    
+  deleteSaleReturn(saleReturn: SaleReturn) {
+    const msg = this.translate.instant("DELETE_ALERT", { name: saleReturn.barcode })
+    this.confirmService.dialogAlert(msg, ()=> {
+      this.saleReturnService.deleteSaleReturn(saleReturn.saleReturnId)
+      .subscribe(res => {
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+          this.getSaleReturnsPage();
+        } else {
+          this.toast.showError(res.message);
+        }
+      })
+    })
   }
+
 
   fetchSaleDetails() {
     this.loading = true;

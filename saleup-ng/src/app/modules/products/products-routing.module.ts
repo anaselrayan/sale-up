@@ -7,7 +7,7 @@ import { AuthGuard } from '@module/auth/services/auth.guard';
 import { ProductBrandsComponent } from './components/product-brands/product-brands.component';
 import { ProductUnitsComponent } from './components/product-units/product-units.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
-import { QuickStockUpdateComponent } from './components/quick-stock-update/quick-stock-update.component';
+import { QuickStockUpdateComponent } from '../stock/components/quick-stock-update/quick-stock-update.component';
 
 const routes: Routes = [
   {
@@ -51,12 +51,6 @@ const routes: Routes = [
     component: ProductUnitsComponent,
     canActivate: [AuthGuard],
     data: { perms: ['perm.access.product'] }
-  },
-  {
-    path: 'stock-update',
-    component: QuickStockUpdateComponent,
-    canActivate: [AuthGuard],
-    data: {perms: ['perm.access.product']}
   }
 ];
 

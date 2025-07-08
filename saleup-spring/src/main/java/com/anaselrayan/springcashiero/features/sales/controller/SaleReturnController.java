@@ -1,6 +1,6 @@
 package com.anaselrayan.springcashiero.features.sales.controller;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.sales.request.SaleReturnRequest;
 import com.anaselrayan.springcashiero.features.sales.service.SaleReturnService;
 import jakarta.validation.Valid;
@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Endpoint.API_URL;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
 @RequestMapping(API_URL + "/sale-return")
@@ -41,5 +41,12 @@ public class SaleReturnController {
         ApiResponse res = saleReturnService.getSaleReturnsBySaleId(saleId, PageRequest.of(page, size));
         return ResponseEntity.ok(res);
     }
+
+    @DeleteMapping("{saleReturnId}")
+    public ResponseEntity<ApiResponse> deleteSaleReturn(@PathVariable Long saleReturnId) {
+        ApiResponse res = saleReturnService.deleteSaleReturn(saleReturnId);
+        return ResponseEntity.ok(res);
+    }
+
 
 }

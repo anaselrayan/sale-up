@@ -32,6 +32,10 @@ export class SaleService {
         return this.http.get(`${this.basUrl}/receipt/${saleId}`, { responseType: 'blob' });
     }
 
+    public deleteSale(saleId: number): Observable<ApiResponse<any>> {
+        return this.http.delete<any>(`${this.basUrl}/${saleId}`);
+    }
+
     public previewSaleReceipt(sale: Sale) {
         this.getSaleReceipt(sale.saleId)
             .subscribe(res => {

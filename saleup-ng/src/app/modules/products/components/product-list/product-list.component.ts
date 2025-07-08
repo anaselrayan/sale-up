@@ -12,12 +12,12 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { DialogModule } from 'primeng/dialog';
+import { DialogModule } from 'primeng/dialog'; // Import DialogModule for the new import modal
 import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Product } from '../../models/product.model';
+import { Product, ProductImportColumnSpec } from '../../models/product.model';
 import { PageRequest } from '@shared/models/page-request.model';
 import { ProductService } from '../../services/product.service';
 import { PaginatorModule } from 'primeng/paginator';
@@ -32,7 +32,15 @@ import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { SubstringPipe } from '@shared/pipes/substring.pipe';
 import { ConfirmService } from '@shared/services/confirm.service';
 import { ToastService } from '@shared/services/toast.service';
+import { ProductImportService } from '@module/products/services/product-import.service';
+import { FileUpload } from 'primeng/fileupload';
+import { ProductExportService } from '@module/products/services/product-export.service';
+import { MultiSelect } from 'primeng/multiselect';
 
+interface ExportColumn {
+  field: string;
+  header: string;
+}
 
 @Component({
   selector: 'app-product-list',
@@ -52,6 +60,8 @@ import { ToastService } from '@shared/services/toast.service';
     RadioButtonModule,
     InputNumberModule,
     TranslateModule,
+    MultiSelect,
+    FileUpload,
     DialogModule,
     TagModule,
     InputIconModule,
@@ -79,6 +89,17 @@ export class ProductListComponent implements OnInit {
 
   product!: Product;
   discountDialog = false;
+  
+  importDialog = false;
+  importLoading =  false;
+  importColumnsSpec: ProductImportColumnSpec[] = [];
+  selectedImportFile!: File;
+
+  exportDialog = false;
+  exportLoading = false;
+  exportColumns: ExportColumn[] = [];
+  selectedExportColumns!: ExportColumn[] | null;
+  exportType: 'excel' | 'pdf' = 'excel';
 
   statuses!: any[];
 
@@ -88,6 +109,8 @@ export class ProductListComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
+    private productImportService: ProductImportService,
+    private productExportService: ProductExportService,
     private confirmService: ConfirmService,
     private translate: TranslateService,
     private toast: ToastService,
@@ -100,6 +123,8 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit() {
     this.getProducts();
+    this.getImportSpec();
+    this.initializeExportColumns();
   }
 
   getProducts() {
@@ -115,12 +140,29 @@ export class ProductListComponent implements OnInit {
       })
   }
 
+  getImportSpec() {
+    this.productImportService
+        .getImportSpec()
+        .subscribe(res => {this.importColumnsSpec = res})
+  }
+
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
   deleteSelectedProducts() {
-
+    if (this.selectedProducts && this.selectedProducts.length > 0) {
+      const productNames = this.selectedProducts.map(p => p.basicDetails.productName).join(', ');
+      const msg = this.translate.instant("DELETE_SELECTED_ALERT", { names: productNames });
+      this.confirmService.dialogAlert(msg, () => {
+        console.log('Deleting selected products:', this.selectedProducts);
+        this.toast.showSuccess(this.translate.instant("DELETE_SUCCESS"));
+        this.selectedProducts = null;
+        this.getProducts();
+      });
+    } else {
+      this.toast.showWarn(this.translate.instant("NO_PRODUCTS_SELECTED"));
+    }
   }
 
   deleteProduct(product: Product) {
@@ -203,6 +245,96 @@ export class ProductListComponent implements OnInit {
 
   productDetails(product: Product) {
     this.router.navigate(['products/detail', product.productId])
+  }
+
+  showImportDialog() {
+    this.importDialog = true;
+  }
+
+  hideImportDialog() {
+    this.importDialog = false;
+  }
+
+  onSelectImportFile(event: any) {
+    if (event.currentFiles && event.currentFiles.length > 0) {
+      this.selectedImportFile = event.currentFiles[0];
+    }
+  }
+
+  confirmImport() {
+    if (this.selectedImportFile) {
+      this.importLoading = true;
+      const form = new FormData();
+      form.append('file', this.selectedImportFile);
+      this.productImportService
+          .importProducts(form)
+          .subscribe(res => {
+            if (res.success) {
+              this.getProducts();
+              this.toast.showSuccess(this.translate.instant("IMPORTED_SUCCESSFULLY"));
+            } else {
+              this.toast.showError(res.message)
+            }
+            console.log(res)
+            this.importLoading = false;
+            this.hideImportDialog();
+      })
+    }
+  }
+
+  showExportDialog() {
+    this.exportDialog = true;
+    // Pre-select all available columns when the dialog opens
+    this.selectedExportColumns = [...this.exportColumns];
+  }
+
+  hideExportDialog() {
+    this.exportDialog = false;
+    this.selectedExportColumns = null;
+    this.exportType = 'excel'; // Reset to default
+  }
+
+  initializeExportColumns() {
+    // Define the columns available for export.
+    // These should ideally map to your product data structure.
+    this.exportColumns = [
+      { field: 'basicDetails.barcode', header: this.translate.instant('BARCODE') },
+      { field: 'basicDetails.productName', header: this.translate.instant('NAME') },
+      { field: 'basicDetails.productCategory.name', header: this.translate.instant('CATEGORY') },
+      { field: 'basicDetails.productBrand.name', header: this.translate.instant('BRAND') },
+      { field: 'priceDetails.costPrice', header: this.translate.instant('COST') },
+      { field: 'priceDetails.sellingPrice', header: this.translate.instant('PRICE') },
+      { field: 'priceDetails.priceWithDiscount', header: this.translate.instant('PRICE_AFTER_DISCOUNT') },
+      { field: 'basicDetails.quantity', header: this.translate.instant('QUANTITY') }
+    ];
+  }
+
+  confirmExport() {
+    if (!this.selectedExportColumns || this.selectedExportColumns.length === 0) {
+      this.toast.showWarn(this.translate.instant("SELECT_AT_LEAST_ONE_COLUMN"));
+      return;
+    }
+
+    this.exportLoading = true;
+    const columnsToExport = this.selectedExportColumns.map(col => col.field);
+
+    const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15); // YYYYMMDDTHHMMSS
+    const fileName = `product_list_${timestamp}`;
+
+    this.productExportService.exportProducts(this.products, columnsToExport, this.exportType, fileName)
+      .subscribe({
+        next: () => {
+          this.toast.showSuccess(this.translate.instant("EXPORT_SUCCESS"));
+          this.hideExportDialog();
+        },
+        error: (err) => {
+          this.toast.showError(this.translate.instant("EXPORT_ERROR", { message: err.message || 'Unknown error' }));
+          console.error('Export error:', err);
+        },
+        complete: () => {
+          this.exportLoading = false;
+        }
+      });
   }
 
 }

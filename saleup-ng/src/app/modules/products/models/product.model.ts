@@ -77,3 +77,9 @@ export interface ProductStatisticsSummary {
     totalSoldAmount: number,
     totalSoldUnits: number
 }
+
+export interface ProductImportColumnSpec {
+    columnName: string,
+    dataType: string,
+    required: boolean
+}

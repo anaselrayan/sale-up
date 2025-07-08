@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.features.products.service;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.products.converter.ProductCategoryConverter;
 import com.anaselrayan.springcashiero.features.products.dto.ProductCategoryDTO;
 import com.anaselrayan.springcashiero.features.products.model.ProductCategory;
@@ -22,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Upload.UPLOAD_CATEGORY_IMAGE_DIR;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Upload.UPLOAD_CATEGORY_IMAGE_DIR;
 
 @Service
 @Slf4j

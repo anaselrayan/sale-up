@@ -1,6 +1,6 @@
 package com.anaselrayan.springcashiero.security.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
@@ -9,7 +9,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.APP_USER;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.APP_USER;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity

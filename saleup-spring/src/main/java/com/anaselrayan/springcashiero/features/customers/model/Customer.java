@@ -1,12 +1,11 @@
 package com.anaselrayan.springcashiero.features.customers.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
-import jakarta.persistence.Column;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.CUSTOMER;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.CUSTOMER;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity

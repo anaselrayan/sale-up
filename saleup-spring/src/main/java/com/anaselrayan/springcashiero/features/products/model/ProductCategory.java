@@ -1,11 +1,11 @@
 package com.anaselrayan.springcashiero.features.products.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.PRODUCT_CATEGORY;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.PRODUCT_CATEGORY;
 
 
 @EqualsAndHashCode(callSuper = true)

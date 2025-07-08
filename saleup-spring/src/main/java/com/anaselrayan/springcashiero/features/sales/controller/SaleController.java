@@ -1,6 +1,6 @@
 package com.anaselrayan.springcashiero.features.sales.controller;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.sales.request.SaleRequest;
 import com.anaselrayan.springcashiero.features.sales.service.SaleReceiptService;
 import com.anaselrayan.springcashiero.features.sales.service.SaleService;
@@ -11,7 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Endpoint.API_URL;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
 @RequestMapping(API_URL + "/sale")
@@ -43,6 +43,12 @@ public class SaleController {
     @GetMapping("/receipt/{saleId}")
     public ResponseEntity<Resource> getSaleReceipt(@PathVariable Long saleId) {
         return saleReceiptService.getSaleReceipt(saleId);
+    }
+
+    @DeleteMapping("/{saleId}")
+    public ResponseEntity<ApiResponse> deleteSale(@PathVariable Long saleId) {
+        ApiResponse res = saleService.deleteSale(saleId);
+        return ResponseEntity.ok(res);
     }
 
 }

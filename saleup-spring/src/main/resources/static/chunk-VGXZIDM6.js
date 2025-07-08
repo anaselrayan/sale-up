@@ -1,0 +1,1 @@
+import{ib as n}from"./chunk-HRECHPDI.js";var s=class i{transform(e,t="medium"){if(!e)return"";let r;switch(t){case"short":r=50;break;case"medium":r=100;break;case"long":r=150;break;default:r=100}return e.length<=r?e:e.substring(0,r)+"..."}static \u0275fac=function(t){return new(t||i)};static \u0275pipe=n({name:"substring",type:i,pure:!0})};export{s as a};

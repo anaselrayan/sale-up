@@ -110,6 +110,10 @@ export class PosSaleDetailsComponent implements OnInit {
       })
   }
 
+  updateDiscount() {
+    this.cartService.updateDiscount(this.cart);
+  }
+
   toggleDialog(e: any) {
     this.customerDialog = e;
   }

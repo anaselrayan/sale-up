@@ -1,11 +1,11 @@
 package com.anaselrayan.springcashiero.security.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.ROLE_PERMISSION;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.ROLE_PERMISSION;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity

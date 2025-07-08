@@ -1,13 +1,13 @@
 package com.anaselrayan.springcashiero.features.products.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
 import com.anaselrayan.springcashiero.features.products.enums.DiscountType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.PRODUCT_PRICE;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.PRODUCT_PRICE;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity

@@ -14,7 +14,7 @@ public class SaleUtil {
             totalCost += ((item.getQuantity() - item.getReturnedQuantity()) * item.getUnitCost());
             totalPrice += ((item.getQuantity() - item.getReturnedQuantity()) * item.getUnitPrice());
         }
-        return totalPrice - totalCost;
+        return totalPrice - (totalCost + sale.getDiscount());
     }
 
     public static String generateBarcode(Sale sale) {

@@ -2,7 +2,7 @@
     <ng-template #start>
         <div class="flex items-center gap-2">
             <p-button [label]="'ADD' | translate" icon="pi pi-plus" severity="secondary" class="mr-2" />
-            <p-button severity="secondary" [label]="'DELETE' | translate" icon="pi pi-trash" outlined (onClick)="deleteSelectedSales()" [disabled]="!selectedSales || !selectedSales.length" />
+            <p-button severity="secondary" [label]="'DELETE' | translate" icon="pi pi-trash" outlined [disabled]="!selectedSales || !selectedSales.length" />
         </div>
     </ng-template>
 
@@ -115,3 +115,6 @@
     [showCurrentPageReport]="true"
     [showJumpToPageDropdown]="false"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
+
+<p-confirmdialog [style]="{ width: '450px' }" />
+<p-toast></p-toast>

@@ -1,6 +1,6 @@
 package com.anaselrayan.springcashiero.features.products.controller;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.products.request.ProductCategoryRequest;
 import com.anaselrayan.springcashiero.features.products.service.ProductCategoryService;
 import jakarta.validation.Valid;
@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Endpoint.API_URL;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
 @RequestMapping(API_URL + "/product-category")

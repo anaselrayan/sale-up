@@ -1,8 +1,8 @@
 package com.anaselrayan.springcashiero.features.customers.service;
 
-import com.anaselrayan.springcashiero.core.constatnts.ActionType;
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.ActionType;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.customers.converter.CustomerConverter;
 import com.anaselrayan.springcashiero.features.customers.dto.CustomerDTO;
 import com.anaselrayan.springcashiero.features.customers.model.Customer;

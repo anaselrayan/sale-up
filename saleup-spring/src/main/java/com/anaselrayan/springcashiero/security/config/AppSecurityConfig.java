@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Endpoint.API_URL;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @Configuration
 @RequiredArgsConstructor

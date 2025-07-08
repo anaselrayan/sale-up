@@ -1,6 +1,6 @@
 package com.anaselrayan.springcashiero.features.roles.controller;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.roles.request.RoleRequest;
 import com.anaselrayan.springcashiero.features.roles.service.RoleService;
 import jakarta.validation.Valid;
@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Endpoint.API_URL;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
 @RequestMapping(API_URL + "/role")

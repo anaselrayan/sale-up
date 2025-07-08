@@ -86,7 +86,7 @@ export class PosComponent {
   }
 
   ngAfterViewInit() {
-    this.barcodeScanner.start();
+    // this.barcodeScanner.start();
   }
 
   onValueChanges(value: any) {

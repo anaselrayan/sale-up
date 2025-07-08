@@ -95,7 +95,7 @@ export class ProductCreateComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.barcodeScanner.start();
+    // this.barcodeScanner.start();
   }
 
   fetchProductToEdit() {

@@ -29,18 +29,25 @@ export class AppMenu {
                         icon: 'pi pi-box', 
                         items: [
                             { label: 'ADD_PRODUCTS', icon: 'pi pi-plus', routerLink: ['/products/new'] },
-                            { label: 'PRODUCT_LIST', icon: 'pi pi pi-list', routerLink: ['/products/list'] },
+                            { label: 'PRODUCT_LIST', icon: 'pi pi-list', routerLink: ['/products/list'] },
                             { label: 'PRODUCT_CATEGORIES', icon: 'pi pi-clone', routerLink: ['/products/categories'] },
                             { label: 'BRANDS', icon: 'pi pi-tags', routerLink: ['/products/brands'] },
                             { label: 'PRODUCT_UNITS', icon: 'pi pi-gauge', routerLink: ['/products/units'] },
-                            { label: 'QUICK_STOCK_UPDATE', icon: 'pi pi-sync', routerLink: ['/products/stock-update'] },
                         ]
                     },
+                    {
+                        label: 'STOCK_MANAGEMENT',
+                        icon: 'pi pi-database', 
+                        items: [
+                            { label: 'QUICK_STOCK_UPDATE', icon: 'pi pi-sync', routerLink: ['/stock/stock-update'] },
+                            { label: 'BARCODE_PRINTING', icon: 'pi pi-barcode', routerLink: ['/stock/manage-barcode'] },
+                        ]
+                    },
+                    { label: 'POS', icon: 'pi pi-shop', routerLink: ['/sales/pos'] },
                     {
                         label: 'SALES',
                         icon: 'pi pi-cart-plus', 
                         items: [
-                            { label: 'POS', icon: 'pi pi-shop', routerLink: ['/sales/pos'] },
                             { label: 'SALE_HISTORY', icon: 'pi pi-cart-arrow-down', routerLink: ['/sales/list'] },
                             { label: 'SALE_RETURN_LIST', icon: 'pi pi-arrow-right-arrow-left', routerLink: ['sales/sale-return/list'] },
                         ]

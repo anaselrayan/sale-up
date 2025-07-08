@@ -1,12 +1,13 @@
 package com.anaselrayan.springcashiero.features.products.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.PRODUCT;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.PRODUCT;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -18,10 +19,10 @@ import static com.anaselrayan.springcashiero.core.constatnts.Table.PRODUCT;
 @ToString
 public class Product extends BaseModel {
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ProductBasic productBasic;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ProductPrice productPrice;
 
 }

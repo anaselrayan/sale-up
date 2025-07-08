@@ -1,11 +1,10 @@
 package com.anaselrayan.springcashiero.features.products.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.PRODUCT_IMAGE;
-import static com.anaselrayan.springcashiero.core.constatnts.Table.PRODUCT_UNIT_OF_MEASURE;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.PRODUCT_UNIT_OF_MEASURE;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity

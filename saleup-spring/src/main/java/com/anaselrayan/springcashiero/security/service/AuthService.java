@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.security.service;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.security.dto.AuthDTO;
 import com.anaselrayan.springcashiero.security.dto.LoginRequest;
 import com.anaselrayan.springcashiero.security.utils.JwtUtil;

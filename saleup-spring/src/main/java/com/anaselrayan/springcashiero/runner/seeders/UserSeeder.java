@@ -2,6 +2,7 @@ package com.anaselrayan.springcashiero.runner.seeders;
 
 import com.anaselrayan.springcashiero.features.permissions.repository.PermissionRepository;
 import com.anaselrayan.springcashiero.features.roles.repository.UserRoleRepository;
+import com.anaselrayan.springcashiero.runner.AdminUserProperties;
 import com.anaselrayan.springcashiero.runner.seeds.PermissionSeeds;
 import com.anaselrayan.springcashiero.security.model.AppUser;
 import com.anaselrayan.springcashiero.security.model.Permission;
@@ -24,9 +25,8 @@ public class UserSeeder {
     private final UserRoleRepository roleRepository;
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
-    private final String USER_ADMIN = "admin";
-    private final String USER_ADMIN_PASS = "123";
-    private final String ROLE_ADMIN = "ADMIN";
+    private final AdminUserProperties adminProps;
+    private final static String ROLE_ADMIN = "ADMIN";
 
     @Bean
     public CommandLineRunner userSeed() {
@@ -50,11 +50,11 @@ public class UserSeeder {
 
     private void createAdminUser() {
         Optional<UserRole> roleAdmin = createRoleAdmin();
-        Optional<AppUser> userAdmin = appUserRepository.findByUsername(USER_ADMIN);
+        Optional<AppUser> userAdmin = appUserRepository.findByUsername(adminProps.getUsername());
         if (roleAdmin.isPresent() && userAdmin.isEmpty()) {
             AppUser user = AppUser.builder()
-                    .username(USER_ADMIN)
-                    .password(passwordEncoder.encode(USER_ADMIN_PASS))
+                    .username(adminProps.getUsername())
+                    .password(passwordEncoder.encode(adminProps.getPassword()))
                     .userRole(roleAdmin.get())
                     .locked(false)
                     .build();

@@ -1,8 +1,8 @@
 package com.anaselrayan.springcashiero.features.products.service;
 
-import com.anaselrayan.springcashiero.core.constatnts.Upload;
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.Upload;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.products.converter.ProductImageConverter;
 import com.anaselrayan.springcashiero.features.products.model.Product;
 import com.anaselrayan.springcashiero.features.products.model.ProductBasic;
@@ -26,7 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Upload.*;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Upload.*;
 
 @Service
 @Slf4j

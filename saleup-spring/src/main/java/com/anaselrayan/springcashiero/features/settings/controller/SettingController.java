@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.features.settings.controller;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.settings.dto.SettingDTO;
 import com.anaselrayan.springcashiero.features.settings.dto.SettingRequest;
 import com.anaselrayan.springcashiero.features.settings.service.SettingService;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Endpoint.API_URL;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
 @RequestMapping(API_URL + "/setting")

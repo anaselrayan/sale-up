@@ -90,8 +90,12 @@ export class CartService {
                 const itemPrice = this.getItemTotal(item) || 0.0;
                 cart.subTotal += itemPrice;
             }
-            cart.grandTotal = cart.subTotal - (cart.subTotal * (cart.discount || 0))
+            cart.grandTotal = cart.subTotal - cart.discount;
         }
+    }
+
+    public updateDiscount(cart: SaleCart): void {
+        cart.grandTotal = cart.subTotal - cart.discount;
     }
 
     public getItemTotal(item: CartItem): number | null {

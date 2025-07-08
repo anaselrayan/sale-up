@@ -1,12 +1,12 @@
 package com.anaselrayan.springcashiero.features.sales.model;
 
-import com.anaselrayan.springcashiero.core.model.BaseModel;
+import com.anaselrayan.springcashiero.infrastructure.model.BaseModel;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.SALE_RETURN;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.SALE_RETURN;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -21,7 +21,7 @@ public class SaleReturn extends BaseModel {
     @ManyToOne
     private Sale sale;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "saleReturn")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "saleReturn")
     private List<SaleReturnItem> returnItems;
 
     private Double subTotal;

@@ -27,4 +27,6 @@ public interface SaleReturnRepository extends JpaRepository<SaleReturn, Long> {
 
     Page<SaleReturn> findAllBySaleId(Long saleId, Pageable pageable);
 
+    int countBySaleId(Long saleId);
+
 }

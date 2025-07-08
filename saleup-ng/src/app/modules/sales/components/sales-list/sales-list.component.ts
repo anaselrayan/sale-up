@@ -21,6 +21,8 @@ import { Paginator } from 'primeng/paginator';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { Router, RouterModule } from '@angular/router';
 import { DateFtPipe } from "@shared/pipes/date-ft.pipe";
+import { ToastService } from '@shared/services/toast.service';
+import { ConfirmService } from '@shared/services/confirm.service';
 
 @Component({
   selector: 'app-sales-list',
@@ -61,6 +63,8 @@ export class SalesListComponent {
   constructor(
     private saleService: SaleService,
     private translate: TranslateService,
+    private toast: ToastService,
+    private confirmService: ConfirmService,
     private router: Router
   ) {}
 
@@ -95,17 +99,26 @@ export class SalesListComponent {
       { label: this.translate.instant('SHOW_DETAILS'), icon: 'pi pi-eye', command: ()=> { this.saleDetails(sale) } },
       { label: this.translate.instant('PRINT_RECEIPT'), icon: 'pi pi-print', command: () => { this.saleService.previewSaleReceipt(sale) } },
       { label: this.translate.instant('RETURN_SALE'), icon: 'pi pi-arrow-right-arrow-left', disabled: sale.totallyReturned, command: ()=> { this.saleReturn(sale) } },
-      { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: () => {  } }
+      { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: () => { this.deleteSale(sale) } }
     ];
   }
 
-  deleteSale(sale: Sale) {}
+  deleteSale(sale: Sale) {
+    const msg = this.translate.instant("DELETE_ALERT", { name: sale.barcode })
+    this.confirmService.dialogAlert(msg, ()=> {
+      this.saleService.deleteSale(sale.saleId)
+      .subscribe(res => {
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+          this.getSalesPage();
+        } else {
+          this.toast.showError(res.message);
+        }
+      })
+    })
+  }
 
   deleteSelectedSales() {}
-
-  showSaleDetails(sale: Sale) {
-    
-  }
 
   downloadReceipt(sale: Sale) {
     this.saleService.previewSaleReceipt(sale);

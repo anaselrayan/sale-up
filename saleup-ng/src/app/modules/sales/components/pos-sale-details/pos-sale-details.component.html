@@ -62,7 +62,7 @@
             </div>
             <div class="flex justify-between">
                 <div class="mb-4 text-surface-400"> {{'DISCOUNT' | translate }} </div>
-                <span>{{ cart.discount | sCurrency }}</span>
+                <p-inputnumber id="discount" [disabled]="!this.cart.items.length" (onInput)="updateDiscount()" [(ngModel)]="cart.discount" mode="currency" currency="USD" showButtons ></p-inputnumber>
             </div>
             <hr class="border-dashed" />
             <div class="flex justify-between">

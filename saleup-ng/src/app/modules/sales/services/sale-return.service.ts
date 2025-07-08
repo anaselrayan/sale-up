@@ -33,4 +33,8 @@ export class SaleReturnService {
         return this.http.get<any>(`${this.baseUrl}/sale/${saleId}?page=${pr.page}&size=${pr.size}`)
     }
 
+    deleteSaleReturn(saleReturnId: number): Observable<ApiResponse<any>> {
+        return this.http.delete<any>(`${this.baseUrl}/${saleReturnId}`)
+    }
+
 }

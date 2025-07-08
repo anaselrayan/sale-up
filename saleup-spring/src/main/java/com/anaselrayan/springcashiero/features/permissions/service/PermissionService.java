@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.features.permissions.service;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.permissions.converter.PermissionConverter;
 import com.anaselrayan.springcashiero.features.permissions.dto.PermissionDTO;
 import com.anaselrayan.springcashiero.features.permissions.dto.PermissionGroupDTO;

@@ -1,7 +1,7 @@
 package com.anaselrayan.springcashiero.features.sales.service;
 
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.products.repository.ProductBasicRepository;
 import com.anaselrayan.springcashiero.features.sales.converter.SaleReturnConverter;
 import com.anaselrayan.springcashiero.features.sales.dto.SaleReturnDTO;
@@ -171,6 +171,32 @@ public class SaleReturnService {
         int oldQty = saleItem.getProduct().getProductBasic().getQuantity();
         saleItem.getProduct().getProductBasic().setQuantity(oldQty + saleReturnItem.getQuantity());
         productBasicRepository.save(saleItem.getProduct().getProductBasic());
+    }
+
+    private void updateQuantityAfterDeleteSaleReturn(SaleReturn saleReturn) {
+        saleReturn.getReturnItems().forEach(saleReturnItem -> {
+            int oldProductQty = saleReturnItem.getSaleItem().getProduct().getProductBasic().getQuantity();
+            int oldReturnQty = saleReturnItem.getSaleItem().getReturnedQuantity();
+            saleReturnItem.getSaleItem().setReturnedQuantity(oldReturnQty - saleReturnItem.getQuantity());
+            saleReturnItem.getSaleItem().getProduct().getProductBasic().setQuantity(oldProductQty - saleReturnItem.getQuantity());
+            productBasicRepository.save(saleReturnItem.getSaleItem().getProduct().getProductBasic());
+        });
+    }
+
+    public ApiResponse deleteSaleReturn(Long saleReturnId) {
+        try {
+            SaleReturn saleReturn = saleReturnRepository.findById(saleReturnId).orElseThrow();
+            Sale sale = saleReturn.getSale();
+            updateQuantityAfterDeleteSaleReturn(saleReturn);
+            saleReturnRepository.delete(saleReturn);
+            sale.setTotallyReturned(false);
+            sale.setPartiallyReturned(saleReturnRepository.countBySaleId(sale.getId()) > 0);
+            saleRepository.save(sale);
+            return new ApiResponse(true, StatusCode.OK, "Deleted Successfully");
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
+        }
     }
 
 }

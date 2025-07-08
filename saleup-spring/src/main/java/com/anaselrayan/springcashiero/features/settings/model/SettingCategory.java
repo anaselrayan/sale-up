@@ -3,7 +3,7 @@ package com.anaselrayan.springcashiero.features.settings.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static com.anaselrayan.springcashiero.core.constatnts.Table.SETTING_CATEGORY;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.SETTING_CATEGORY;
 
 @Entity
 @Table(name = SETTING_CATEGORY)

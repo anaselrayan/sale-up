@@ -3,10 +3,10 @@ import { Product } from "@module/products/models/product.model";
 
 export class SaleCart {
     customer?: Customer;
-    items?: CartItem[];
-    subTotal?: number;
-    discount?: number;
-    grandTotal?: number;
+    items: CartItem[];
+    subTotal: number;
+    discount: number;
+    grandTotal: number;
 
     constructor() {
         this.items = [];

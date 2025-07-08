@@ -1,0 +1,80 @@
+<p-card styleClass="p-4">
+    <ng-template #header>
+        <div class="mb-4 font-bold text-xl">
+            {{ 'BARCODE_PRINTING' | translate }}
+        </div>
+        <div class="text-muted-color mb-2"><i class="pi pi-lightbulb"></i> {{ 'SCAN_ADD_BARCODE_HINT' | translate }}</div>
+        <div class="mb-4 w-full flex justify-center">
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-barcode" />
+                <input #barcodeIn [placeholder]="'SEARCH_PACEHOLDER' | translate" (keydown.enter)="onSearch(barcodeIn.value)"
+                    [(ngModel)]="barcode" pInputText id="barcode" type="text" autofocus />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <div class="mb-4">
+        <div class="flex justify-end mb-4">
+            <p-button *ngIf="products.length || customBarcodes.length" severity="danger" [label]="'REMOVE_ALL' | translate" icon="pi pi-times" class="mr-2" [text]="true" (onClick)="removeAll()" />
+        </div>
+        <div *ngFor="let p of products" class="mb-4 flex gap-4 items-center justify-between">
+            <img class="rounded w-full"
+                    [src]="getProductImageSrc(p)"
+                    [alt]="p.basicDetails.productName"
+                    style="width: 4rem; height: 4rem; object-fit: cover;" />
+            <div class="flex items-center gap-2 w-full">
+                <div class="flex flex-col">
+                    <div style="width: 12rem;" class="mb-2 text-max-lines-1" tooltipPosition="top" [pTooltip]="p.basicDetails.productName">
+                        {{ p.basicDetails.productName }}
+                    </div>
+                    <span class="text-primary">{{ p.priceDetails.priceWithDiscount | sCurrency }}</span>
+                </div>
+            </div>
+            <div class="barcode flex gap-2 items-center">
+                <div class="text-primary"> {{ p.basicDetails.barcode }} </div>
+                <ngx-barcode6
+                    [bc-width]="2"
+                    [bc-height]="30"
+                    [bc-format]="'CODE128'"
+                    [bc-value]="p.basicDetails.barcode" />
+            </div>
+            <p-button (onClick)="removeItem(p)" icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" />
+        </div>
+        <div *ngFor="let barcode of customBarcodes" class="mb-4 flex gap-4 items-center justify-between">
+            <div class="flex items-center gap-2 w-full">
+                {{ 'CUSTOM_BARCODE' | translate }}
+            </div>
+            <div class="barcode flex gap-2 items-center">
+                <div class="text-primary"> {{ barcode }} </div>
+                <ngx-barcode6
+                    [bc-width]="2"
+                    [bc-height]="30"
+                    [bc-format]="'CODE128'"
+                    [bc-value]="barcode" />
+            </div>
+            <p-button (onClick)="removeCustomBarcode(barcode)" icon="pi pi-times" [rounded]="true" [text]="true" severity="danger" />
+        </div>
+    </div>
+    <div *ngIf="products.length || customBarcodes.length" class="print-options mb-4">
+        <div class="mb-4 flex items-center gap-2">
+            <label for="printer">{{ 'SELECT_PRINTER' | translate }}</label>
+            <p-select [style]="{width: '50%'}" id="printer" optionLabel="name" optionValue="name"
+                [options]="printers" [(ngModel)]="printReq.printer"></p-select>
+        </div>
+        <div class="mb-4 flex items-center gap-2">
+            <label for="format">{{ 'BARCODE_TYPE' | translate }}</label>
+            <p-select [style]="{width: '50%'}" id="format" [options]="formats" [(ngModel)]="printReq.barcodeFormat"></p-select>
+        </div>
+        <div class="mb-4 flex items-center gap-2">
+            <label for="size">{{ 'BARCODE_SIZE' | translate }}</label>
+            <p-inputnumber [allowEmpty]="false" [min]="100" [max]="500" id="size" [(ngModel)]="printReq.size" showButtons mode="decimal"></p-inputnumber>
+        </div>
+        <div class="mb-4 flex items-center gap-2">
+            <label for="count">{{ 'COPIES_COUNT' | translate }}</label>
+            <p-inputnumber [allowEmpty]="false" [min]="1" id="count" [(ngModel)]="printReq.copies" showButtons mode="decimal"></p-inputnumber>
+        </div>
+        <p-button type="submit" (onClick)="printBarcodes()" [loading]="saveLoading" [style]="{width: '100%'}" [label]="'PRINT' | translate" />
+    </div>
+</p-card>
+
+<p-toast></p-toast>
+<p-confirmdialog [style]="{ width: '450px' }" />

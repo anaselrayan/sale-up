@@ -1,8 +1,8 @@
 package com.anaselrayan.springcashiero.features.users.service;
 
-import com.anaselrayan.springcashiero.core.constatnts.ActionType;
-import com.anaselrayan.springcashiero.core.response.ApiResponse;
-import com.anaselrayan.springcashiero.core.response.StatusCode;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.ActionType;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.roles.repository.UserRoleRepository;
 import com.anaselrayan.springcashiero.features.users.converter.UserConverter;
 import com.anaselrayan.springcashiero.features.users.dto.UserDTO;
