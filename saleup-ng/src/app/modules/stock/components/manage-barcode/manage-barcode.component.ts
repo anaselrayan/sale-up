@@ -134,7 +134,6 @@ export class ManageBarcodeComponent implements OnInit {
   printBarcodes() {
     this.saveLoading = true;
     this.printReq.barcodes = [...this.products.map(p => p.basicDetails.barcode), ...this.customBarcodes];
-    console.log(this.printReq)
     this.barcodeService.printBarcode(this.printReq)
         .subscribe(res => {
           if  (res.success) {

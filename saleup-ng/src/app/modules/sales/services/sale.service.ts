@@ -20,6 +20,10 @@ export class SaleService {
         return this.http.post<any>(this.basUrl, req);
     }
 
+    public updateSale(req: SaleRequest): Observable<ApiResponse<Sale>> {
+        return this.http.put<any>(this.basUrl, req);
+    }
+
     public getSalesPage(pr: PageRequest): Observable<ApiResponse<PageResponse<Sale>>> {
         return this.http.get<any>(`${this.basUrl}?page=${pr.page}&size=${pr.size}`)
     }

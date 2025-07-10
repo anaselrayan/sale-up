@@ -42,6 +42,7 @@ public class SettingSeeds {
     public static List<Setting> getPOSSettings(SettingCategory category) {
         return List.of(
                 new Setting("pos.receipt.footer", Settings.RECEIPT_FOOTER, SettingType.STRING, category),
+                new Setting("pos.receipt.maxDiscount", Settings.RECEIPT_MAX_DISCOUNT, SettingType.NUMBER, category),
                 new Setting("pos.receipt.showFooter", Settings.RECEIPT_SHOW_FOOTER, SettingType.BOOLEAN, category),
                 new Setting("pos.receipt.showLogo", Settings.RECEIPT_SHOW_LOGO, SettingType.BOOLEAN, category),
                 new Setting("pos.receipt.showSeller", Settings.RECEIPT_SHOW_SELLER, SettingType.BOOLEAN, category),

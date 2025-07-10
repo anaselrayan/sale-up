@@ -98,9 +98,14 @@ export class SalesListComponent {
     this.menuItems =  [
       { label: this.translate.instant('SHOW_DETAILS'), icon: 'pi pi-eye', command: ()=> { this.saleDetails(sale) } },
       { label: this.translate.instant('PRINT_RECEIPT'), icon: 'pi pi-print', command: () => { this.saleService.previewSaleReceipt(sale) } },
+      { label: this.translate.instant('EDIT'), icon: 'pi pi-pen-to-square', disabled: sale.partiallyReturned || sale.totallyReturned, command: () => { this.editSale(sale) } },
       { label: this.translate.instant('RETURN_SALE'), icon: 'pi pi-arrow-right-arrow-left', disabled: sale.totallyReturned, command: ()=> { this.saleReturn(sale) } },
       { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: () => { this.deleteSale(sale) } }
     ];
+  }
+
+  editSale(sale: Sale) {
+    this.router.navigate(['sales/edit', sale.saleId])
   }
 
   deleteSale(sale: Sale) {

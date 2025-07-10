@@ -24,7 +24,7 @@ public class Sale extends BaseModel {
     @ManyToOne(fetch = FetchType.EAGER)
     private Customer customer;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "sale")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "sale")
     List<SaleItem> saleItems;
 
     private Double subTotal;

@@ -81,6 +81,10 @@ export class SaleDetailsComponent {
     this.saleService.previewSaleReceipt(this.sale);
   }
 
+  editReceipt() {
+    this.router.navigate(['/sales/edit', this.sale.saleId])
+  }
+
   getProductImageSrc(product: Product) {
       return ProductUtils.getFirstImageSrc(product)
   }

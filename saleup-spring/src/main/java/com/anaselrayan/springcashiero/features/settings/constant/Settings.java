@@ -14,6 +14,7 @@ public class Settings {
     public static String APP_DEFAULT_LANGUAGE = "en";
 
     public static String RECEIPT_FOOTER = "Thank you!";
+    public static String RECEIPT_MAX_DISCOUNT = "0.0";
     public static String RECEIPT_SHOW_FOOTER = "true";
     public static String RECEIPT_SHOW_LOGO = "true";
     public static String RECEIPT_SHOW_SELLER = "true";

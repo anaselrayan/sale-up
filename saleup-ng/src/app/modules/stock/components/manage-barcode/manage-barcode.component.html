@@ -65,8 +65,22 @@
             <p-select [style]="{width: '50%'}" id="format" [options]="formats" [(ngModel)]="printReq.barcodeFormat"></p-select>
         </div>
         <div class="mb-4 flex items-center gap-2">
-            <label for="size">{{ 'BARCODE_SIZE' | translate }}</label>
-            <p-inputnumber [allowEmpty]="false" [min]="100" [max]="500" id="size" [(ngModel)]="printReq.size" showButtons mode="decimal"></p-inputnumber>
+            <label for="width">{{ 'WIDTH' | translate }}</label>
+            <p-inputnumber [allowEmpty]="false" [min]="50" [max]="500" id="width" [(ngModel)]="printReq.width" showButtons mode="decimal"></p-inputnumber>
+        </div>
+        <div class="mb-4 flex items-center gap-2">
+            <label for="height">{{ 'HEIGHT' | translate }}</label>
+            <p-inputnumber [allowEmpty]="false" [min]="20" [max]="500" id="height" [(ngModel)]="printReq.height" showButtons mode="decimal"></p-inputnumber>
+        </div>
+        <div class="mb-4 flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <label for="marginLeft">{{ 'MARGIN_LEFT' | translate }}</label>
+                <p-inputnumber [allowEmpty]="false" [min]="0" [max]="100" id="marginLeft" [(ngModel)]="printReq.marginLeft" showButtons mode="decimal"></p-inputnumber>
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="marginTop">{{ 'MARGIN_TOP' | translate }}</label>
+                <p-inputnumber [allowEmpty]="false" [min]="0" [max]="100" id="marginTop" [(ngModel)]="printReq.marginTop" showButtons mode="decimal"></p-inputnumber>
+            </div>
         </div>
         <div class="mb-4 flex items-center gap-2">
             <label for="count">{{ 'COPIES_COUNT' | translate }}</label>

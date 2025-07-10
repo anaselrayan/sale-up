@@ -24,14 +24,20 @@ public class SaleController {
     @PostMapping
     public ResponseEntity<ApiResponse> createSale(@RequestBody @Valid SaleRequest request) {
         ApiResponse res = saleService.createSale(request);
-        return ResponseEntity.status(res.getCode()).body(res);
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping
+    public ResponseEntity<ApiResponse> editSale(@RequestBody @Valid SaleRequest request) {
+        ApiResponse res = saleService.editSale(request);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse> getSalePage(@RequestParam Integer page,
                                                    @RequestParam Integer size) {
         ApiResponse res = saleService.getSalePage(PageRequest.of(page, size));
-        return ResponseEntity.status(res.getCode()).body(res);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping("/{saleId}")

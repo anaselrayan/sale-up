@@ -1,5 +1,7 @@
 package com.anaselrayan.springcashiero.features.settings.service;
 
+import com.anaselrayan.springcashiero.features.settings.constant.SettingType;
+import com.anaselrayan.springcashiero.features.settings.model.SettingOption;
 import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.settings.SettingNotFoundException;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -25,6 +26,8 @@ public class SettingService {
     public void updateSetting(String key, String newValue) {
         Setting setting = this.settingRepository.findBySettingKey(key)
                 .orElseThrow(()-> new SettingNotFoundException("Setting with key " + key + " not found"));
+
+        validateSettingValue(setting.getSettingType(), newValue, setting.getOptions());
 
         setting.setSettingValue(newValue);
         this.settingRepository.save(setting);
@@ -43,10 +46,48 @@ public class SettingService {
     }
 
     public ApiResponse updateSettings(List<SettingRequest> settingRequests) {
-        if (settingRequests != null && !settingRequests.isEmpty()) {
-            settingRequests.forEach(req -> this.updateSetting(req.getKey(), req.getValue()));
+        try {
+            if (settingRequests != null && !settingRequests.isEmpty()) {
+                settingRequests.forEach(req -> this.updateSetting(req.getKey(), req.getValue()));
+            }
+            return new ApiResponse("", StatusCode.OK);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, ex.getMessage());
         }
-        return new ApiResponse("", StatusCode.OK);
+    }
+
+    private void validateSettingValue(SettingType type, String value, List<SettingOption> options) {
+        switch (type) {
+            case STRING:
+                break;
+            case NUMBER:
+                try {
+                    Double.parseDouble(value);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid number format for value: " + value);
+                }
+                break;
+            case BOOLEAN:
+                if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
+                    throw new IllegalArgumentException("Invalid boolean value: " + value);
+                }
+                break;
+            case SELECT:
+                boolean match = options.stream()
+                        .anyMatch(option -> option.getValue().equals(value));
+                if (!match) {
+                    throw new IllegalArgumentException("Invalid selection: " + value + " is not in options.");
+                }
+                break;
+            case IMAGE:
+                if (!value.matches(".*\\.(png|jpg|jpeg|gif|bmp)$")) {
+                    throw new IllegalArgumentException("Invalid image file format for value: " + value);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown setting type: " + type);
+        }
     }
 
 }

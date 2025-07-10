@@ -252,10 +252,17 @@
     "BARCODE_TYPE": "نوع الباركود",
     "BARCODE_SIZE": "حجم الباركود",
     "PRINT": "طباعة",
+    "WIDTH": "العرض",
+    "HEIGHT": "الإرتفاع",
+    "MARGIN_LEFT": "إزاحة أفقية",
+    "MARGIN_TOP": "إزاحة رأسية",
     "PRINT_SUCCESS": "تمت الطباعة بنجاح",
     "REMOVE_ALL": "إزالة الكل",
     "BARCODE_ALREADEY_ADDED": "الباركود موجود في القائمة",
     "CUSTOM_BARCODE": "باركود مخصص",
     "PRINT_CUSTOM_BARCODE_ALERT": "لا يوجد منتج مسجل بهذا الباركود! هل تريد إضافته علي أي حال؟",
-    "SCAN_ADD_BARCODE_HINT": "قم بمسح/إضافة الباركود للطباعة"
+    "SCAN_ADD_BARCODE_HINT": "قم بمسح/إضافة الباركود للطباعة",
+    "EDIT_RECEIPT": "تعديل الفاتورة",
+    "SAVE_CHANGES": "حفظ التغييرات",
+    "pos.receipt.maxDiscount": "الحد الأقصي للخصم"
 }

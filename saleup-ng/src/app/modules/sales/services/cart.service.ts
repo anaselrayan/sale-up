@@ -1,7 +1,7 @@
 import { Product } from "@module/products/models/product.model";
 import { CartItem, SaleCart } from "../models/sale-cart";
 import { Injectable } from "@angular/core";
-import { ReplaySubject } from "rxjs";
+import { ReplaySubject, Subject } from "rxjs";
 import { SoundUtils } from "src/app/utils/sound.utils";
 import { SaleItemRequest, SaleRequest } from "../models/sale-request";
 
@@ -10,7 +10,7 @@ import { SaleItemRequest, SaleRequest } from "../models/sale-request";
 })
 export class CartService {
 
-    addProductSubject = new ReplaySubject<Product>();
+    addProductSubject = new Subject<Product>();
 
     public addItem(product: Product, cart: SaleCart) {
         const item = this.getItem(product, cart);

@@ -23,7 +23,9 @@ import { Tooltip } from 'primeng/tooltip';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { SubstringPipe } from "@shared/pipes/substring.pipe";
+import { ActivatedRoute, Router } from '@angular/router';
+import { Sale } from '@module/sales/models/sale.model';
+import { Message } from 'primeng/message';
 
 @Component({
   selector: 'app-pos-sale-details',
@@ -39,6 +41,7 @@ import { SubstringPipe } from "@shared/pipes/substring.pipe";
     Avatar,
     InputNumber,
     Toast,
+    Message,
     CustomerCreateDialogComponent,
     Tooltip,
     SCurrencyPipe,
@@ -51,6 +54,7 @@ import { SubstringPipe } from "@shared/pipes/substring.pipe";
 export class PosSaleDetailsComponent implements OnInit {
 
   cart!: SaleCart;
+  saleToEdit!: Sale;
   customers: Customer[] = [];
   orderLoading = false;
   customerDialog = false;
@@ -61,15 +65,46 @@ export class PosSaleDetailsComponent implements OnInit {
     private customerService: CustomerService,
     private saleService: SaleService,
     private toast: ToastService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.cart = new SaleCart();
+    this.fetchSaleDetails();
+    this.subscribeForProducts();
+  }
+
+  subscribeForProducts() {
     this.cartService.addProductSubject
-    .subscribe(next => {
-      this.cartService.addItem(next, this.cart)
-    })
+        .subscribe(next => {
+          this.cartService.addItem(next, this.cart)
+        })
+  }
+
+  fetchSaleDetails() {
+    // this.loading = true;
+    const idParam = this.route.snapshot.paramMap.get('saleId');
+    if (idParam) {
+      const saleId = Number.parseInt(idParam);
+      if (saleId && Number.isInteger(saleId)) {
+        this.saleService.getSaleById(saleId)
+          .subscribe(res => {
+            if (res.success) {
+              this.saleToEdit = res.data;
+              this.cart.customer = this.saleToEdit.customer;
+              this.cart.discount = this.saleToEdit.discount;
+              this.cart.subTotal = this.saleToEdit.subTotal;
+              this.cart.grandTotal = this.saleToEdit.grandTotal;
+              this.cart.items = this.saleToEdit.saleItems.map(item => new CartItem(item.product, item.quantity))
+            } else {
+              this.router.navigate(['/notfound'])
+            }
+            // this.loading = false;
+          })
+      }
+    }
   }
 
   searchCustomers(event: any) {
@@ -99,11 +134,33 @@ export class PosSaleDetailsComponent implements OnInit {
       .subscribe(res => {
         if (res.success) {
           this.toast.showSuccess(this.translate.instant('ORDER_SAVED'))
-          this.orderLoading = false;
           this.cart.empty();
           this.success.emit(true);
           this.saleService.previewSaleReceipt(res.data);
         }
+        else this.toast.showError(res.message);
+        this.orderLoading = false;
+      }, err => {
+        this.toast.showError(err.error.message)
+        this.orderLoading = false;
+      })
+  }
+
+  editSale() {
+    this.orderLoading = true;
+    const req = this.cartService.cartToSaleRequest(this.cart);
+    req.saleId = this.saleToEdit.saleId;
+    this.saleService.updateSale(req)
+      .subscribe(res => {
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant('ORDER_SAVED'))
+          this.cart.empty();
+          this.success.emit(true);
+          this.router.navigate(['/sales/list'])
+          this.saleService.previewSaleReceipt(res.data);
+        } 
+        else this.toast.showError(res.message);
+        this.orderLoading = false;
       }, err => {
         this.toast.showError(err.error.message)
         this.orderLoading = false;

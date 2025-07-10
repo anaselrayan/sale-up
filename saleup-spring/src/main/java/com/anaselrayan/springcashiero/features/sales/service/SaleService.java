@@ -1,5 +1,6 @@
 package com.anaselrayan.springcashiero.features.sales.service;
 
+import com.anaselrayan.springcashiero.features.settings.service.SettingService;
 import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.customers.repository.CustomerRepository;
@@ -25,7 +26,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -38,6 +41,7 @@ public class SaleService {
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
     private final SaleReceiptService saleReceiptService;
+    private final SettingService settingService;
 
     public ApiResponse createSale(SaleRequest request) {
         try {
@@ -63,6 +67,65 @@ public class SaleService {
             saleRepository.save(savedSale);
             this.saleReceiptService.generateSaleReceipt(savedSale);
             return new ApiResponse(SaleConverter.convert(savedSale), StatusCode.CREATED);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
+        }
+    }
+
+    public ApiResponse editSale(SaleRequest request) {
+        try {
+            // Validate Sale
+            if (request.getSaleId() == null || !saleRepository.existsById(request.getSaleId()))
+                return new ApiResponse(false, StatusCode.NOT_FOUND, "Sale doesn't exist!");
+            if (saleReturnRepository.countBySaleId(request.getSaleId()) > 0)
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "Can't edit sale with returns!");
+            ApiResponse validateSaleRes = validateSale(request);
+            if (!validateSaleRes.getSuccess())
+                return validateSaleRes;
+
+            // Update Sale Details
+            Sale saleToEdit = saleRepository.findById(request.getSaleId()).orElseThrow();
+            saleToEdit.setSubTotal(request.getSubTotal());
+            saleToEdit.setDiscount(request.getDiscount());
+            saleToEdit.setGrandTotal(request.getGrandTotal());
+            if (request.getCustomerId() != null)
+                saleToEdit.setCustomer(customerRepository.getReferenceById(request.getCustomerId()));
+            else saleToEdit.setCustomer(null);
+
+            // Update Sale Items
+            List<SaleItem> oldItems = saleToEdit.getSaleItems();
+            List<SaleItemRequest> newItems = request.getSaleItems();
+
+            // Delete the non-existing items
+            List<SaleItem> itemsToDelete = oldItems.stream()
+                    .filter(oi -> newItems.stream().noneMatch(ni -> Objects.equals(ni.getProductId(), oi.getProduct().getId())))
+                    .toList();
+            saleItemRepository.deleteAll(itemsToDelete);
+            oldItems.removeAll(itemsToDelete);
+
+            // Save the new items
+            newItems.forEach(ni -> {
+                if (oldItems.stream().noneMatch(oi -> Objects.equals(oi.getProduct().getId(), ni.getProductId())))
+                    oldItems.add(saveSaleItem(ni, saleToEdit));
+            });
+
+            // Update the common items
+            oldItems.forEach(oi -> {
+                var itemReq = newItems.stream().filter(ni -> Objects.equals(ni.getProductId(), oi.getProduct().getId()))
+                        .findFirst()
+                        .orElse(null);
+                assert itemReq != null;
+                Double unitPrice = ProductUtils.getProductPriceWithDiscount(oi.getProduct().getProductPrice());
+                oi.setQuantity(itemReq.getQuantity());
+                oi.setUnitPrice(unitPrice);
+                oi.setUnitCost(oi.getProduct().getProductPrice().getCostPrice());
+                oi.setSubTotal(itemReq.getQuantity() * unitPrice);
+                saleItemRepository.save(oi);
+            });
+            Sale saved = saleRepository.save(saleToEdit);
+            saleReceiptService.generateSaleReceipt(saved);
+            return new ApiResponse(SaleConverter.convert(saved), StatusCode.CREATED);
         } catch (Exception ex) {
             log.error(ex.getMessage());
             return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
@@ -96,6 +159,9 @@ public class SaleService {
 
     private ApiResponse validateSale(SaleRequest request) {
         // Validate Sale discount
+        Double discountLimit = Double.parseDouble(settingService.getSetting("pos.receipt.maxDiscount").getValue());
+        if (request.getDiscount() > discountLimit)
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "Maximum allowed discount is " + discountLimit);
         // Validate Items quantities
         Double total = 0.0;
         for (SaleItemRequest req : request.getSaleItems()) {

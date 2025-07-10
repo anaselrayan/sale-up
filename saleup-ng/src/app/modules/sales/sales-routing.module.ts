@@ -21,6 +21,10 @@ const routes: Routes = [
     component: SaleDetailsComponent
   },
   {
+    path: 'edit/:saleId',
+    component: PosComponent
+  },
+  {
     path: 'sale-return',
     children: [
       { path: 'list', component: SaleReturnListComponent},

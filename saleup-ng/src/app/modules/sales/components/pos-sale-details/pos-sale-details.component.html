@@ -1,4 +1,7 @@
 <p-card [style]="{ minWidth: '40rem', overflow: 'hidden'}">
+    <div *ngIf="saleToEdit" class="mb-4 text-center">
+        <p-message severity="warn"> {{ 'EDIT_RECEIPT' | translate}} {{ saleToEdit.barcode }} </p-message>
+    </div>
     <div class="search-customers mb-8">
         <div class="flex flex-col gap-2 mb-4">
             <div class="text-lg">{{'CUSTOMER_DETAILS' | translate }}</div>
@@ -74,7 +77,8 @@
     
     <ng-template #footer>
         <div class="payment text-lg">
-            <p-button (onClick)="submitOrder()" [loading]="orderLoading" [style]="{width: '100%'}" [label]="'SUBMIT_ORDER' | translate" [disabled]="!cart.items || !cart.items.length" />
+            <p-button *ngIf="saleToEdit" (onClick)="editSale()" [loading]="orderLoading" [style]="{width: '100%'}" [label]="'SAVE_CHANGES' | translate" [disabled]="!cart.items || !cart.items.length" />
+            <p-button *ngIf="!saleToEdit" (onClick)="submitOrder()" [loading]="orderLoading" [style]="{width: '100%'}" [label]="'SUBMIT_ORDER' | translate" [disabled]="!cart.items || !cart.items.length" />
         </div>
     </ng-template>
 </p-card>
