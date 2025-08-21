@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
+import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { RatingModule } from 'primeng/rating';
 import { InputTextModule } from 'primeng/inputtext';
@@ -16,6 +17,7 @@ import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductService } from '../service/product.service';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 
@@ -39,6 +41,7 @@ interface ExportColumn {
         FormsModule,
         ButtonModule,
         RippleModule,
+        ToastModule,
         ToolbarModule,
         RatingModule,
         InputTextModule,
@@ -50,6 +53,7 @@ interface ExportColumn {
         TagModule,
         InputIconModule,
         IconFieldModule,
+        ConfirmDialogModule,
         SCurrencyPipe
     ],
     template: `
@@ -204,6 +208,7 @@ interface ExportColumn {
             </ng-template>
         </p-dialog>
 
+        <p-confirmdialog [style]="{ width: '450px' }" />
     `,
     providers: [MessageService, ProductService, ConfirmationService]
 })

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:9090/api/v1',
+  apiBaseUrl: 'http://192.168.3.30:9090/api/v1',
   appName: 'SaleUp',
   version: '1.0'
 };
