@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 @Service
 @Slf4j
@@ -24,8 +25,11 @@ public class UploadService {
             return new UploadFileResponse(false, null, null);
         }
         try {
-            Files.createDirectories(Paths.get(req.uploadPath));
-            Path filePath = Files.write(Paths.get(req.uploadPath + "/" + req.fileName), req.file.getBytes());
+            String uploadDir = Paths.get(req.uploadPath).toString();
+            Files.createDirectories(Paths.get(uploadDir));
+
+            Path filePath = Paths.get(uploadDir, req.fileName);
+            Files.copy(req.file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             log.info("File uploaded successfully to {}", filePath);
             return new UploadFileResponse(true, req.fileName, filePath.toString());
         } catch (IOException e) {

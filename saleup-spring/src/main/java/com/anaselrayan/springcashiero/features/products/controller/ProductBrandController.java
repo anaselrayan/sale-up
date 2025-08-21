@@ -25,7 +25,7 @@ public class ProductBrandController {
         return ResponseEntity.ok(res);
     }
 
-    @PreAuthorize("hasAuthority('perm.update.brand')")
+    @PreAuthorize("hasAuthority('perm.create.brand')")
     @PutMapping
     public ResponseEntity<ApiResponse> updateProductBrand(@ModelAttribute ProductBrandRequest request) {
         ApiResponse res = productBrandService.updateProductBrand(request);
