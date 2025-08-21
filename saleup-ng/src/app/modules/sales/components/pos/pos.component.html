@@ -1,4 +1,4 @@
-<div class="flex gap-2 h-full w-full">
+<div class="flex flex-wrap md:flex-nowrap gap-2 h-full w-full">
     <app-pos-sale-details (success)="orderSuccess($event)"></app-pos-sale-details>
     <p-card>
         <p-dataview #dv [value]="products" layout="grid">
