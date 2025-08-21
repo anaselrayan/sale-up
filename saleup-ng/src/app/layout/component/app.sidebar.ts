@@ -12,13 +12,26 @@ import { Tooltip } from 'primeng/tooltip';
     selector: 'app-sidebar',
     standalone: true,
     imports: [AppMenu, Button, TranslateModule, Avatar, Tooltip],
-    template: ` <div class="layout-sidebar">
-        <app-menu></app-menu>
-        <div class="flex items-center justify-center gap-2 w-full">
-            <p-avatar [pTooltip]="username" tooltipPosition="top" [image]="getUserImg()" class="mr-2" shape="circle" />
-            <p-button icon="pi pi-sign-out" [label]="'SIGN_OUT' | translate" (onClick)="signOut()" variant="text" severity="danger" />
+    template: ` <div class="layout-sidebar flex flex-col h-full">
+            <div class="flex-1 overflow-y-auto">
+                <app-menu></app-menu>
+            </div>
+
+            <div class="flex items-center justify-center gap-2 w-full mt-2">
+                <p-avatar 
+                    [pTooltip]="username" 
+                    tooltipPosition="top" 
+                    [image]="getUserImg()" 
+                    class="mr-2" 
+                    shape="circle" />
+                <p-button 
+                    icon="pi pi-sign-out" 
+                    [label]="'SIGN_OUT' | translate" 
+                    (onClick)="signOut()" 
+                    variant="text" 
+                    severity="danger" />
+            </div>
         </div>
-    </div>
     `,
     styles: [
         `
