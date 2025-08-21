@@ -18,6 +18,7 @@ import { ProgressBar } from 'primeng/progressbar';
 import { Select } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
 import { forkJoin, map } from 'rxjs';
+import { ResourceUtils } from 'src/app/utils/resource-utils';
 
 @Component({
   selector: 'app-system-settings',
@@ -62,6 +63,7 @@ export class SystemSettingsComponent {
     this.settingService.getSettingsByCategory(this.settingCategory.toString())
     .subscribe(res => {
       if (res.success) {
+        console.log(res)
         this.settings = res.data;
       }
       this.loading = false;
@@ -142,6 +144,10 @@ export class SystemSettingsComponent {
     this.settingFiles = [];
     this.settingCategory = cat;
     this.loadCategorySettings();
+  }
+
+  getStaticImageSrc(name: string) {
+    return ResourceUtils.getStaticResource(name);
   }
 
 }

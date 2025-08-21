@@ -308,5 +308,6 @@
     "WELCOME_MESSAGE": "We're glad to have you back. Explore the new features!",
     "SIGN_OUNT_CONFIRM_MSG": "هل أنت متأكد من تسجيل الخروج ؟",
     "BLOCK_ACCESS_MSG": "ليس لديك الصلاحية للقيام بهذا.. تواصل مع المسؤول أولا",
-    "RECEIPT_DISCOUNT": "خصم علي الفاتورة"
+    "RECEIPT_DISCOUNT": "خصم علي الفاتورة",
+    "NO_IMAGE_SELECTED": "لم يتم اختيار صورة"
 }

@@ -41,9 +41,32 @@
                                     [(ngModel)]="setting.value"
                                     (ngModelChange)="settingChange(setting)" [attr.id]="setting.key" binary="true"></p-checkbox>
 
-                                <p-fileupload [id]="setting.key" *ngSwitchCase="'IMAGE'" mode="basic" [chooseLabel]="'CHOOSE_FILE' | translate"
-                                    chooseIcon="pi pi-upload" name="file" (onSelect)="onSelectFile(setting, $event)"
-                                    [url]="getUploadPath()" maxFileSize="10000000" />
+                                <div *ngSwitchCase="'IMAGE'" class="flex items-center gap-2">
+                                    <p-fileupload [id]="setting.key"
+                                                mode="basic"
+                                                [chooseLabel]="'CHOOSE_FILE' | translate"
+                                                chooseIcon="pi pi-upload"
+                                                name="file"
+                                                (onSelect)="onSelectFile(setting, $event)"
+                                                [url]="getUploadPath()"
+                                                maxFileSize="10000000">
+                                    </p-fileupload>
+
+                                    <!-- If an image already exists -->
+                                    <div *ngIf="setting.value; else noImage" class="flex items-center gap-2">
+                                        <img [src]="getStaticImageSrc(setting.value)"
+                                            alt="Uploaded image"
+                                            class="h-20 w-20 object-cover rounded" />
+                                    </div>
+
+                                    <!-- Show when no image exists -->
+                                    <ng-template #noImage>
+                                        <span class="text-surface-400 italic">
+                                            {{ 'NO_IMAGE_SELECTED' | translate }}
+                                        </span>
+                                    </ng-template>
+
+                                </div>
                                 
                                 <!-- Select Dropdown -->
                                 <p-select [style]="{width: '50%'}" [id]="setting.key" *ngSwitchCase="'SELECT'" optionLabel="name" optionValue="value"
