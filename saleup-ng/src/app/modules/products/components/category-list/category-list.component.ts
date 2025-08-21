@@ -9,7 +9,6 @@ import { TextareaModule } from 'primeng/textarea';
 import { DialogModule } from 'primeng/dialog';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ProductCategory } from '../../models/product.model';
 import { PageRequest } from '@shared/models/page-request.model';
 import { Table, TableModule } from 'primeng/table';
@@ -40,7 +39,6 @@ import { Tooltip } from 'primeng/tooltip';
     TranslateModule,
     FileUploadModule,
     Tooltip,
-    ConfirmDialog
   ],
   templateUrl: './category-list.component.html',
   styleUrl: './category-list.component.scss'

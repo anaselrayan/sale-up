@@ -11,11 +11,12 @@ import { Toast } from 'primeng/toast';
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [RouterModule, CommonModule, LoadingComponent, Toast],
+    imports: [RouterModule, CommonModule, ConfirmDialog, LoadingComponent, Toast],
     template: `
     <app-loading *ngIf="isAppLoading || isNavigating"></app-loading>
-    <p-toast></p-toast>
     <router-outlet></router-outlet>
+    <p-toast></p-toast>
+    <p-confirmdialog [style]="{ width: '450px' }" />
     `
 })
 export class AppComponent {

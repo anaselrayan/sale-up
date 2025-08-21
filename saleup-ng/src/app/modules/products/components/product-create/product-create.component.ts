@@ -198,7 +198,7 @@ export class ProductCreateComponent implements OnInit {
 
   submit() {
     if (!this.productForm.valid) {
-      this.toast.showError('Make sure to enter all the required fields')
+      this.toast.showError(this.translate.instant('REQUIRED_FIELDS_MSG'))
       return;
     }
     if (this.mode == 'new') {

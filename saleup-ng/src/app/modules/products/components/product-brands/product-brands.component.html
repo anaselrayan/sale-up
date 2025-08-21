@@ -79,7 +79,7 @@
     </ng-template>
 </p-table>
 
-<p-dialog [(visible)]="brandDialog" [style]="{ width: '450px' }" [header]="dialogHeader" [modal]="true">
+<p-dialog [(visible)]="brandDialog" [style]="{ 'min-width': '20rem', 'width': '40%' }" [header]="dialogHeader" [modal]="true">
     <form [formGroup]="brandForm" (ngSubmit)="onSaveBrand()">
         <div class="flex items-center gap-4 mb-4">
             <label for="name" class="font-semibold w-24">{{'NAME' | translate }}</label>
@@ -100,4 +100,3 @@
     </form>
 </p-dialog>
 <p-toast></p-toast>
-<p-confirm-dialog />

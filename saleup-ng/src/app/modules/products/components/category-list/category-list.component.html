@@ -76,7 +76,7 @@
     </ng-template>
 </p-table>
 
-<p-dialog [(visible)]="categoryDialog" [style]="{ width: '450px' }" [header]="dialogHeader" [modal]="true">
+<p-dialog [(visible)]="categoryDialog" [style]="{ 'min-width': '20rem', 'width': '40%' }" [header]="dialogHeader" [modal]="true">
     <form [formGroup]="catForm" (ngSubmit)="onSaveCategory()">
         <div class="flex items-center gap-4 mb-4">
             <label for="name" class="font-semibold w-24">{{'NAME' | translate }}</label>
@@ -98,4 +98,3 @@
 </p-dialog>
 
 <p-toast></p-toast>
-<p-confirm-dialog />

@@ -144,7 +144,6 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
 </p-card>
 
-<p-confirmdialog [style]="{ width: '450px' }" />
 <p-toast></p-toast>
 
 <app-product-discount-create *ngIf="discountDialog" [product]="product"
@@ -152,7 +151,7 @@
 (visibleChange)="discountDialogToggle($event)">
 </app-product-discount-create>
 
-<p-dialog [(visible)]="importDialog" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+<p-dialog [(visible)]="importDialog" [modal]="true" [style]="{ 'min-width': '20rem', 'width': '40%' }" [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
         <h5 class="m-0">{{ 'IMPORT_PRODUCTS' | translate }}</h5>
     </ng-template>
@@ -188,7 +187,7 @@
     </ng-template>
 </p-dialog>
 
-<p-dialog [(visible)]="exportDialog" [modal]="true" [style]="{ width: '40vw' }" [draggable]="false" [resizable]="false">
+<p-dialog [(visible)]="exportDialog" [modal]="true" [style]="{ 'min-width': '20rem', 'width': '40%' }" [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
         <h5 class="m-0">{{ 'EXPORT_PRODUCTS' | translate }}</h5>
     </ng-template>

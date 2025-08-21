@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Table, TableModule } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Sale } from '@module/sales/models/sale.model';
@@ -34,7 +33,6 @@ import { ConfirmService } from '@shared/services/confirm.service';
     ToastModule,
     InputTextModule,
     ToolbarModule,
-    ConfirmDialogModule,
     TranslateModule,
     IconField,
     InputIcon,

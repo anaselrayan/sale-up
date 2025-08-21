@@ -21,7 +21,6 @@ import { PrintBarcodeRequest } from '@module/stock/models/print';
 import { Select } from 'primeng/select';
 import { InputNumber } from 'primeng/inputnumber';
 import { Tooltip } from 'primeng/tooltip';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ConfirmService } from '@shared/services/confirm.service';
 import { BarcodeService } from '@shared/services/barcode.service';
 
@@ -40,7 +39,6 @@ import { BarcodeService } from '@shared/services/barcode.service';
     Button,
     Card,
     Toast,
-    ConfirmDialog,
     TranslateModule,
     BarcodeScannerLivestreamModule,
     NgxBarcode6Module,

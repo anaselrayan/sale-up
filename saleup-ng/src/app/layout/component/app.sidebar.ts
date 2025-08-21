@@ -4,7 +4,6 @@ import { Button } from "primeng/button";
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConfirmService } from '@shared/services/confirm.service';
 import { AuthService } from '@module/auth/services/auth.service';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { UserUtils } from 'src/app/utils/user.utils';
 import { Avatar } from 'primeng/avatar';
 import { Tooltip } from 'primeng/tooltip';
@@ -12,7 +11,7 @@ import { Tooltip } from 'primeng/tooltip';
 @Component({
     selector: 'app-sidebar',
     standalone: true,
-    imports: [AppMenu, Button, ConfirmDialog, TranslateModule, Avatar, Tooltip],
+    imports: [AppMenu, Button, TranslateModule, Avatar, Tooltip],
     template: ` <div class="layout-sidebar">
         <app-menu></app-menu>
         <div class="flex items-center justify-center gap-2 w-full">
@@ -20,7 +19,6 @@ import { Tooltip } from 'primeng/tooltip';
             <p-button icon="pi pi-sign-out" [label]="'SIGN_OUT' | translate" (onClick)="signOut()" variant="text" severity="danger" />
         </div>
     </div>
-    <p-confirmdialog [style]="{ width: '450px' }" />
     `,
     styles: [
         `

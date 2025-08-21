@@ -1,4 +1,4 @@
-<p-dialog (visibleChange)="onVisibleChange($event)" [visible]="true" [style]="{ width: '40rem' }" [modal]="true">
+<p-dialog (visibleChange)="onVisibleChange($event)" [style]="{ 'min-width': '20rem', 'width': '40%' }" [modal]="true">
     <ng-template #header>
         <div class="header font-semibold">
             <div class="text-primary mb-2">{{ 'ADD_DISCOUNT' | translate }}</div>

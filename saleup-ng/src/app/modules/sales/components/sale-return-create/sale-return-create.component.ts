@@ -24,7 +24,6 @@ import { SaleReturnService } from '@module/sales/services/sale-return.service';
 import { ToastService } from '@shared/services/toast.service';
 import { DateFtPipe } from "../../../../shared/pipes/date-ft.pipe";
 import { ConfirmService } from '@shared/services/confirm.service';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { Product } from '@module/products/models/product.model';
 
@@ -48,7 +47,6 @@ import { Product } from '@module/products/models/product.model';
     InputNumber,
     Toast,
     DateFtPipe,
-    ConfirmDialog
 ],
   templateUrl: './sale-return-create.component.html',
   styleUrl: './sale-return-create.component.scss'

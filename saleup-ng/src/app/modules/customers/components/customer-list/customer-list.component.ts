@@ -10,7 +10,6 @@ import { TextareaModule } from 'primeng/textarea';
 import { DialogModule } from 'primeng/dialog';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PageRequest } from '@shared/models/page-request.model';
 import { Table, TableModule } from 'primeng/table';
 import { ToastService } from '@shared/services/toast.service';
@@ -38,7 +37,6 @@ import { ConfirmService } from '@shared/services/confirm.service';
     DialogModule,
     InputIconModule,
     IconFieldModule,
-    ConfirmDialogModule,
     TranslateModule,
     Avatar,
     Tooltip,

@@ -13,7 +13,6 @@ import { PageRequest } from '@shared/models/page-request.model';
 import { Table, TableModule } from 'primeng/table';
 import { ToastService } from '@shared/services/toast.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ProductUnitOfMeasure } from '@module/products/models/product.model';
 import { ProductUnitService } from '@module/products/services/product-unit.service';
 import { Tooltip } from 'primeng/tooltip';
@@ -35,7 +34,6 @@ import { Tooltip } from 'primeng/tooltip';
     IconFieldModule,
     TranslateModule,
     Tooltip,
-    ConfirmDialog
   ],
   templateUrl: './product-units.component.html',
   styleUrl: './product-units.component.scss'

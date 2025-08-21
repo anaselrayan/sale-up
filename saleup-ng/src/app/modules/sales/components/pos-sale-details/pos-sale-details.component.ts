@@ -22,7 +22,6 @@ import { CustomerCreateDialogComponent } from "@module/customers/components/cust
 import { Tooltip } from 'primeng/tooltip';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Sale } from '@module/sales/models/sale.model';
 import { Message } from 'primeng/message';
@@ -46,7 +45,6 @@ import { Message } from 'primeng/message';
     Tooltip,
     SCurrencyPipe,
     TranslateModule,
-    ConfirmDialog
 ],
   templateUrl: './pos-sale-details.component.html',
   styleUrl: './pos-sale-details.component.scss'

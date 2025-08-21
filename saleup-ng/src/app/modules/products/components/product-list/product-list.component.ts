@@ -16,7 +16,6 @@ import { DialogModule } from 'primeng/dialog'; // Import DialogModule for the ne
 import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductImportColumnSpec } from '../../models/product.model';
 import { PageRequest } from '@shared/models/page-request.model';
 import { ProductService } from '../../services/product.service';
@@ -63,7 +62,6 @@ import { debounceTime, finalize, switchMap } from 'rxjs';
     TagModule,
     InputIconModule,
     IconFieldModule,
-    ConfirmDialogModule,
     PaginatorModule,
     CardModule,
     Tooltip,

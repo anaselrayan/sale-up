@@ -18,7 +18,6 @@ import { ProductBrand } from '@module/products/models/product.model';
 import { ProductBrandService } from '@module/products/services/product-brand.service';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ProductUtils } from 'src/app/utils/product.utils';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Tooltip } from 'primeng/tooltip';
 
 @Component({
@@ -40,7 +39,6 @@ import { Tooltip } from 'primeng/tooltip';
     PaginatorModule,
     FileUploadModule,
     Tooltip,
-    ConfirmDialog
   ],
   templateUrl: './product-brands.component.html',
   styleUrl: './product-brands.component.scss'
