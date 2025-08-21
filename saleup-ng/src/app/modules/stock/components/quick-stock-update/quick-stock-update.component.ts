@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Product } from '@module/products/models/product.model';
 import { ProductService } from '@module/products/services/product.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from '@shared/services/toast.service';
-import { BarcodeScannerLivestreamComponent, BarcodeScannerLivestreamModule } from 'ngx-barcode-scanner';
 import { NgxBarcode6Module } from 'ngx-barcode6';
 import { Card } from 'primeng/card';
 import { IconField } from 'primeng/iconfield';
@@ -31,7 +30,6 @@ import { Button } from 'primeng/button';
     Card,
     Tag,
     TranslateModule,
-    BarcodeScannerLivestreamModule,
     NgxBarcode6Module,
     SCurrencyPipe
 ],
@@ -45,9 +43,6 @@ export class QuickStockUpdateComponent {
   product!: Product;
   barcode!: string;
   form!: FormGroup;
-
-  @ViewChild(BarcodeScannerLivestreamComponent)
-  barcodeScanner!: BarcodeScannerLivestreamComponent;
 
   constructor(
     private productService: ProductService,
@@ -64,9 +59,6 @@ export class QuickStockUpdateComponent {
     })
   }
 
-  ngAfterViewInit() {
-    // this.barcodeScanner.start();
-  }
 
   onScanBarcodeChanges(value: any) {
     if (this.loading)

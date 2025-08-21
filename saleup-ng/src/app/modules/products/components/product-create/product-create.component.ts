@@ -26,7 +26,6 @@ import { environment } from '@env/environment';
 import { ProductBrandService } from '@module/products/services/product-brand.service';
 import { InputIcon } from 'primeng/inputicon';
 import { IconField } from 'primeng/iconfield';
-import { BarcodeScannerLivestreamComponent, BarcodeScannerLivestreamModule } from 'ngx-barcode-scanner';
 
 
 @Component({
@@ -49,7 +48,6 @@ import { BarcodeScannerLivestreamComponent, BarcodeScannerLivestreamModule } fro
     Tag,
     InputIcon,
     IconField,
-    BarcodeScannerLivestreamModule
   ],
   templateUrl: './product-create.component.html'
 })
@@ -66,9 +64,6 @@ export class ProductCreateComponent implements OnInit {
   imageUpload!: ElementRef;
 
   product!: Product;
-
-  @ViewChild(BarcodeScannerLivestreamComponent)
-  barcodeScanner!: BarcodeScannerLivestreamComponent;
 
   constructor(
     private productService: ProductService,
@@ -90,10 +85,6 @@ export class ProductCreateComponent implements OnInit {
     this.getCategories();
     this.getBrands();
     this.getUnits();
-  }
-
-  ngAfterViewInit() {
-    // this.barcodeScanner.start();
   }
 
   fetchProductToEdit() {

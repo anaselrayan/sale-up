@@ -5,7 +5,6 @@ import { Product } from '@module/products/models/product.model';
 import { ProductService } from '@module/products/services/product.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastService } from '@shared/services/toast.service';
-import { BarcodeScannerLivestreamModule } from 'ngx-barcode-scanner';
 import { NgxBarcode6Module } from 'ngx-barcode6';
 import { Card } from 'primeng/card';
 import { IconField } from 'primeng/iconfield';
@@ -38,7 +37,6 @@ import { BarcodeService } from '@shared/services/barcode.service';
     Button,
     Card,
     TranslateModule,
-    BarcodeScannerLivestreamModule,
     NgxBarcode6Module,
     SCurrencyPipe
   ],

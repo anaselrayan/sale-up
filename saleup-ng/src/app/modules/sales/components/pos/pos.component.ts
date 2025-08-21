@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { DataView } from 'primeng/dataview';
 import { Tag } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -15,7 +15,6 @@ import { PosSaleDetailsComponent } from "../pos-sale-details/pos-sale-details.co
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { CartService } from '@module/sales/services/cart.service';
 import { debounceTime, finalize, switchMap } from 'rxjs';
-import { BarcodeScannerLivestreamComponent, BarcodeScannerLivestreamModule } from "ngx-barcode-scanner";
 import { PaginatorModule } from 'primeng/paginator';
 import { Page } from '@shared/models/page-response.mdel';
 import { Tooltip } from 'primeng/tooltip';
@@ -41,7 +40,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     InputTextModule,
     CardModule,
     PosSaleDetailsComponent,
-    BarcodeScannerLivestreamModule,
     PaginatorModule,
     Tooltip,
     SCurrencyPipe,
@@ -59,9 +57,6 @@ export class PosComponent {
   products: Product[] = [];
   loading = false;
   searching = false;
-
-  @ViewChild(BarcodeScannerLivestreamComponent)
-  barcodeScanner!: BarcodeScannerLivestreamComponent;
 
   constructor(
     private productService: ProductService,
@@ -81,10 +76,6 @@ export class PosComponent {
     if (!this.lasyoutService.isSidebarActive()) {
       this.lasyoutService.onMenuToggle();
     }
-  }
-
-  ngAfterViewInit() {
-    // this.barcodeScanner.start();
   }
 
   onValueChanges(value: any) {
