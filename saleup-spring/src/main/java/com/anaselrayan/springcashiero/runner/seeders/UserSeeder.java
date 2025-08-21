@@ -36,16 +36,20 @@ public class UserSeeder {
 
 
     private Optional<UserRole> createRoleAdmin() {
-        if (roleRepository.findByRoleName(ROLE_ADMIN).isEmpty()) {
+        var roleOpt = roleRepository.findByRoleName(ROLE_ADMIN);
+        if (roleOpt.isEmpty()) {
             List<Permission> perms = permissionRepository.findAll();
             UserRole role = UserRole.builder()
                     .roleName(ROLE_ADMIN)
-                    .description("System Administrator who has all the permissions")
+                    .description("System Administrator")
                     .permissions(perms)
                     .build();
             return Optional.of(roleRepository.save(role));
         }
-        return Optional.empty();
+        else {
+            roleOpt.get().setPermissions(permissionRepository.findAll());
+            return Optional.of(roleRepository.save(roleOpt.get()));
+        }
     }
 
     private void createAdminUser() {
@@ -60,12 +64,18 @@ public class UserSeeder {
                     .build();
             appUserRepository.save(user);
         }
+        if (userAdmin.isPresent() && userAdmin.get().getLocked()) {
+            userAdmin.get().setLocked(false);
+            appUserRepository.save(userAdmin.get());
+        }
     }
 
     private void createPermissions() {
-        if (permissionRepository.count() == 0) {
-            permissionRepository.saveAll(PermissionSeeds.getPermList());
-        }
+        PermissionSeeds.getPermList().forEach(p -> {
+            if (!permissionRepository.existsByPermCode(p.getPermCode())) {
+                permissionRepository.save(p);
+            }
+        });
     }
 
 }

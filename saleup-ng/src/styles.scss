@@ -46,6 +46,20 @@ body {
 
 .layout-topbar {
     border-bottom: 1px solid var(--surface-border);
+    background: radial-gradient(
+    circle at bottom right,
+    var(--surface-card),
+    color-mix(in srgb, var(--primary-color) 5%, var(--surface-card))
+    );
+    padding: 2rem;
+}
+
+.card, .p-datatable, .layout-sidebar {
+    background: radial-gradient(
+    circle at bottom right,
+    var(--surface-card),
+    color-mix(in srgb, var(--primary-color) 5%, var(--surface-card))
+    );
 }
 
 .app-configurator {

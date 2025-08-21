@@ -1,0 +1,83 @@
+<p-card>
+    <div class="mb-6">
+        <div class="mb-4 text-xl">
+            <p-message icon="pi pi-chart-line" [size]="'large'" class="text-lg">
+            {{ 'PRODUCT_REPORT_HEADER' | translate }}
+        </p-message>
+        </div>
+        <p-button [loading]="loading" [label]="'LOAD_DATA' | translate" (onClick)="loadData()" icon="pi pi-play" severity="info" />
+    </div>
+    <p-table
+        #dt
+        [value]="data"
+        [rows]="10"
+        [loading]="loading"
+        [paginator]="true"
+        [tableStyle]="{ 'min-width': '75rem' }"
+        [rowHover]="true"
+        dataKey="productBarcode"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} rows"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 50, 100]">
+
+        <ng-template #caption>
+            <div class="flex items-center justify-between">
+                <h5 class="m-0 text-muted-color flex gap-2">{{'TOTAL_PRODUCTS' | translate}} <div class="text-primary">{{data.length}}</div></h5>
+                <div class="export">
+                    <p-button [loading]="exportLoading" [disabled]="!data.length" [label]="'SAVE_RESULTS' | translate" (onClick)="exportData()" icon="pi pi-file-excel" severity="secondary" />
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th>
+                    {{'BARCODE' | translate}}
+                </th>
+                <th style="min-width:16rem">
+                    {{'PRODUCT_NAME' | translate}}
+                </th>
+                <th pSortableColumn="soldQty">
+                    {{'REP_SOLD_QTY' | translate}}
+                    <p-sortIcon field="solQty" />
+                </th>
+                <th pSortableColumn="returnedQty">
+                    {{'REP_RETURNED_QTY' | translate}}
+                    <p-sortIcon field="returnedQty" />
+                </th>
+                <th pSortableColumn="soldAmount">
+                    {{'REP_SOLD_AMOUNT' | translate}}
+                    <p-sortIcon field="soldAmount" />
+                </th>
+                <th pSortableColumn="soldProfit">
+                    {{'REP_SOLD_PROFIT' | translate}}
+                    <p-sortIcon field="soldProfit" />
+                </th>
+                <th pSortableColumn="availableQty">
+                    {{'REP_AVAILABLE_QTY' | translate}}
+                    <p-sortIcon field="availableQty" />
+                </th>
+                <th pSortableColumn="availableProfit">
+                    {{'REP_AVAILABLE_PROFIT' | translate}}
+                    <p-sortIcon field="availableProfit" />
+                </th>
+                <th>
+                    {{'REP_ALL_QTY_PROFIT' | translate}}
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr>
+                <td style="min-width: 12rem">{{ item.productBarcode }}</td>
+                <td style="min-width: 16rem">{{ item.productName }}</td>
+                <td>{{ item.soldQty }}</td>
+                <td class="text-red-500">{{ item.returnedQty }}</td>
+                <td>{{ item.soldAmount | sCurrency }}</td>
+                <td class="text-green-500">{{ item.soldProfit | sCurrency }}</td>
+                <td>{{ item.availableQty }}</td>
+                <td class="text-orange-500">{{ item.availableProfit | sCurrency }}</td>
+                <td>{{ (item.soldProfit + item.availableProfit) | sCurrency }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>
+<p-toast></p-toast>

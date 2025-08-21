@@ -28,7 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           authService.signOut();
         }
         else if (error.status === 403) {
-          router.navigate(['/auth/access'])
+          authService.handleForbiddenAccess(req.url);
         }
       }
     )

@@ -85,6 +85,7 @@ public class AppSecurityConfig {
             auth.requestMatchers(HttpMethod.GET, API_URL + "/app/public").permitAll();
             auth.requestMatchers(HttpMethod.GET, API_URL + "/resource/**").permitAll();
             auth.requestMatchers(HttpMethod.GET, API_URL + "/product-image/file/**").permitAll();
+            auth.requestMatchers(HttpMethod.GET, API_URL + "/user/image/**").permitAll();
             auth.anyRequest().authenticated();
         });
     }

@@ -35,7 +35,8 @@
                 <h5 class="m-0">{{ 'PRODUCT_LIST' | translate }}</h5>
                 <p-iconfield>
                     <p-inputicon styleClass="pi pi-search" />
-                    <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" [placeholder]="'SEARCH_PACEHOLDER' | translate" />
+                    <input pInputText class="w-80" [formControl]="globalSearchControl" type="text"
+                            [placeholder]="'SEARCH_PACEHOLDER' | translate" />
                 </p-iconfield>
             </div>
         </ng-template>

@@ -1,12 +1,12 @@
 package com.anaselrayan.springcashiero.features.products.controller;
 
-import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.products.request.ProductCategoryRequest;
 import com.anaselrayan.springcashiero.features.products.service.ProductCategoryService;
-import jakarta.validation.Valid;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
@@ -18,18 +18,21 @@ public class ProductCategoryController {
 
     private final ProductCategoryService productCategoryService;
 
+    @PreAuthorize("hasAuthority('perm.create.category')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createProductCategory(@ModelAttribute @Valid ProductCategoryRequest request) {
+    public ResponseEntity<ApiResponse> createProductCategory(@ModelAttribute ProductCategoryRequest request) {
         ApiResponse res = productCategoryService.createProductCategory(request);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.update.category')")
     @PutMapping
-    public ResponseEntity<ApiResponse> editProductCategory(@ModelAttribute @Valid ProductCategoryRequest request) {
+    public ResponseEntity<ApiResponse> editProductCategory(@ModelAttribute ProductCategoryRequest request) {
         ApiResponse res = productCategoryService.updateProductCategory(request);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.access.category')")
     @GetMapping
     public ResponseEntity<ApiResponse> getCategoriesPage(@RequestParam int page, @RequestParam int size) {
         ApiResponse res = productCategoryService.getCategoriesPage(PageRequest.of(page, size));
@@ -42,12 +45,14 @@ public class ProductCategoryController {
         return ResponseEntity.status(res.getCode()).body(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.access.category')")
     @GetMapping("/{categoryId}")
     public ResponseEntity<ApiResponse> getById(@PathVariable Long categoryId) {
         ApiResponse res = productCategoryService.getCategoryById(categoryId);
         return ResponseEntity.status(res.getCode()).body(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.delete.category')")
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long categoryId) {
         ApiResponse res = productCategoryService.deleteCategory(categoryId);

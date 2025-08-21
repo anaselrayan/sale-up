@@ -26,6 +26,7 @@ import { Role } from '@module/roles/models/role.model';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { Tooltip } from 'primeng/tooltip';
 import { ConfirmService } from '@shared/services/confirm.service';
+import { UserUtils } from 'src/app/utils/user.utils';
 
 @Component({
   selector: 'app-user-list',
@@ -68,6 +69,7 @@ export class UserListComponent {
   cols!: any[];
 
   userForm!: FormGroup;
+  imageFile!: File;
   mode!: 'create' | 'update';
 
   constructor(
@@ -158,9 +160,11 @@ export class UserListComponent {
   getUserPayload(): FormData {
     const formData = new FormData();
     const val = this.userForm.value;
-    if (this.user) {
+    if (this.user)
       formData.append('userId', this.user.userId + '');
-    }
+    if (this.imageFile)
+      formData.append('imageFile', this.imageFile);
+
     formData.append('username', val['username']);
     formData.append('password', val['password']);
     formData.append('passwordConfirm', val['passwordConfirm']);
@@ -184,7 +188,9 @@ export class UserListComponent {
   }
 
   onSelectImage(e: any) {
-    console.log(e)
+    if (e.currentFiles) {
+      this.imageFile = e.currentFiles[0]
+    }
   }
 
   toggleUserLock(user: User) {
@@ -227,6 +233,10 @@ export class UserListComponent {
           }
         })
     })
+  }
+
+  getUserImg(user: User) {
+    return UserUtils.getUserImageSrc(user);
   }
 
 }

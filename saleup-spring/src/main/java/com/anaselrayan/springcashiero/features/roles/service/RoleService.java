@@ -10,6 +10,7 @@ import com.anaselrayan.springcashiero.features.roles.repository.UserRoleReposito
 import com.anaselrayan.springcashiero.features.roles.request.RoleRequest;
 import com.anaselrayan.springcashiero.security.model.Permission;
 import com.anaselrayan.springcashiero.security.model.UserRole;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class RoleService {
     private final UserRoleRepository userRoleRepository;
     private final PermissionRepository permissionRepository;
 
-    public ApiResponse createUserRole(RoleRequest request) {
+    public ApiResponse createUserRole(@Valid RoleRequest request) {
         ApiResponse validationRes = validRoleRequest(request, ActionType.CREATE);
         if (!validationRes.getSuccess())
             return validationRes;
@@ -44,7 +45,7 @@ public class RoleService {
         }
     }
 
-    public ApiResponse updateUserRole(RoleRequest request) {
+    public ApiResponse updateUserRole(@Valid RoleRequest request) {
         ApiResponse validationRes = validRoleRequest(request, ActionType.UPDATE);
         if (!validationRes.getSuccess())
             return validationRes;
@@ -83,9 +84,6 @@ public class RoleService {
             if (existingRole.isEmpty())
                 return new ApiResponse(false, StatusCode.INTERNAL_ERROR, "Role not found");
             if (!existingRole.get().getRoleName().equals(req.getRoleName()) && userRoleRepository.existsByRoleName(req.getRoleName()))
-                return new ApiResponse(false, StatusCode.INTERNAL_ERROR, "Role name already in use");
-
-            if (userRoleRepository.existsByRoleName(req.getRoleName()))
                 return new ApiResponse(false, StatusCode.INTERNAL_ERROR, "Role name already in use");
         }
         for (Long permId : req.getPermissionsIDs()) {

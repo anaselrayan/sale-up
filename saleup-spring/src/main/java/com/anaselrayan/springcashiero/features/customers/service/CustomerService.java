@@ -8,6 +8,7 @@ import com.anaselrayan.springcashiero.features.customers.dto.CustomerDTO;
 import com.anaselrayan.springcashiero.features.customers.model.Customer;
 import com.anaselrayan.springcashiero.features.customers.repository.CustomerRepository;
 import com.anaselrayan.springcashiero.features.customers.request.CustomerRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    public ApiResponse createCustomer(CustomerRequest request) {
+    public ApiResponse createCustomer(@Valid CustomerRequest request) {
         try {
             ApiResponse validateRes = validateCustomerRequest(request, ActionType.CREATE);
             if (!validateRes.getSuccess()) return validateRes;
@@ -45,7 +46,7 @@ public class CustomerService {
         }
     }
 
-    public ApiResponse updateCustomer(CustomerRequest request) {
+    public ApiResponse updateCustomer(@Valid CustomerRequest request) {
         try {
             ApiResponse validateRes = validateCustomerRequest(request, ActionType.UPDATE);
             if (!validateRes.getSuccess()) return validateRes;

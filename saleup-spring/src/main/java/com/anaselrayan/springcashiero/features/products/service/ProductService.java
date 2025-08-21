@@ -38,7 +38,7 @@ public class ProductService {
     private final ProductUnitOfMeasureRepository productUnitOfMeasureRepository;
     private final ProductImageService productImageService;
 
-    public ApiResponse createProduct(ProductRequest request) {
+    public ApiResponse createProduct(@Valid ProductRequest request) {
         ApiResponse validationRes = validateProductRequest(request, ActionType.CREATE);
         if (!validationRes.getSuccess())
             return validationRes;
@@ -76,7 +76,7 @@ public class ProductService {
         return new ApiResponse(ProductConverter.convert(savedProduct), StatusCode.CREATED);
     }
 
-    public ApiResponse updateProduct(ProductRequest request) {
+    public ApiResponse updateProduct(@Valid ProductRequest request) {
         try {
             ApiResponse validationRes = validateProductRequest(request, ActionType.UPDATE);
             if (!validationRes.getSuccess())
@@ -166,7 +166,7 @@ public class ProductService {
         }
     }
 
-    public ApiResponse createProductDiscount(ProductDiscountRequest req) {
+    public ApiResponse createProductDiscount(@Valid ProductDiscountRequest req) {
         Long productId = req.getProductId();
         if (productId == null || !productRepository.existsById(productId))
             return new ApiResponse(false, StatusCode.BAD_REQUEST, "product doesn't exist");

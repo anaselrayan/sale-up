@@ -175,4 +175,8 @@ export class PosSaleDetailsComponent implements OnInit {
     this.customerDialog = e;
   }
 
+  getDiscountAmount(product: Product) {
+    return ProductUtils.getDiscountLabel(product);
+  }
+
 }

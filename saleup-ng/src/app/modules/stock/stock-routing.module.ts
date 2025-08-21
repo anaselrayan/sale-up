@@ -9,13 +9,13 @@ const routes: Routes = [
     path: 'stock-update',
     component: QuickStockUpdateComponent,
     canActivate: [AuthGuard],
-    data: {perms: []}
+    data: {perms: ['perm.access.product']}
   },
   {
     path: 'manage-barcode',
     component: ManageBarcodeComponent,
     canActivate: [AuthGuard],
-    data: {perms: []}
+    data: {perms: ['perm.print-barcodes']}
   },
 ];
 

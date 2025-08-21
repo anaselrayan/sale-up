@@ -7,6 +7,7 @@ import com.anaselrayan.springcashiero.features.settings.dto.SettingRequest;
 import com.anaselrayan.springcashiero.features.settings.service.SettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,18 +21,21 @@ public class SettingController {
 
     private final SettingService settingService;
 
+    @PreAuthorize("hasAuthority('perm.access.setting')")
     @GetMapping("/category")
     public ResponseEntity<ApiResponse> getSettingsByCategory(@RequestParam String type) {
         ApiResponse res = settingService.getAllSettingsByCategory(type);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.access.setting')")
     @GetMapping
     public ApiResponse getSetting(@RequestParam String key) {
         SettingDTO setting = settingService.getSetting(key);
         return new ApiResponse(setting, StatusCode.OK);
     }
 
+    @PreAuthorize("hasAuthority('perm.update.setting')")
     @PutMapping
     public ResponseEntity<ApiResponse> updateSettings(@RequestBody List<SettingRequest> settingRequests) {
         ApiResponse res = settingService.updateSettings(settingRequests);

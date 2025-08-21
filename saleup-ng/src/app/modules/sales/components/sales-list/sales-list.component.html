@@ -51,6 +51,10 @@
                 {{'GRAND_TOTAL'| translate}}
                 <p-sortIcon field="grandTotal" />
             </th>
+            <th pSortableColumn="discount">
+                {{'RECEIPT_DISCOUNT'| translate}}
+                <p-sortIcon field="discount" />
+            </th>
             <th>
                 {{'SALE_RETURN_STATUS'| translate}}
             </th>
@@ -80,6 +84,14 @@
             </td>
             <td>
                 {{ sale.grandTotal | sCurrency }}
+            </td>
+            <td>
+                <div *ngIf="sale.discount">
+                    {{ sale.discount | sCurrency }}
+                </div>
+                <div *ngIf="!sale.discount" class="text-muted-color">
+                     {{ 'NO_EXIST' | translate }}
+                </div>
             </td>
             <td>
                 <div class="flex gap-2 mb-2" *ngIf="sale.totallyReturned">

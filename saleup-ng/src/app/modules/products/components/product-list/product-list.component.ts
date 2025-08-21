@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
@@ -34,13 +34,9 @@ import { ConfirmService } from '@shared/services/confirm.service';
 import { ToastService } from '@shared/services/toast.service';
 import { ProductImportService } from '@module/products/services/product-import.service';
 import { FileUpload } from 'primeng/fileupload';
-import { ProductExportService } from '@module/products/services/product-export.service';
 import { MultiSelect } from 'primeng/multiselect';
-
-interface ExportColumn {
-  field: string;
-  header: string;
-}
+import { ExportColumn, ExportUtils } from 'src/app/utils/export.utils';
+import { debounceTime, finalize, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -49,6 +45,7 @@ interface ExportColumn {
     CommonModule,
     TableModule,
     FormsModule,
+    ReactiveFormsModule,
     ButtonModule,
     RippleModule,
     ToastModule,
@@ -82,7 +79,8 @@ export class ProductListComponent implements OnInit {
   loading = false;
   pageReq = new PageRequest(0, 10);
   pageDetails?: Page;
-
+  globalSearchControl = new FormControl('');
+  
   products: Product[] = [];
 
   selectedProducts!: Product[] | null;
@@ -98,7 +96,7 @@ export class ProductListComponent implements OnInit {
   exportDialog = false;
   exportLoading = false;
   exportColumns: ExportColumn[] = [];
-  selectedExportColumns!: ExportColumn[] | null;
+  selectedExportColumns: ExportColumn[] = [];
   exportType: 'excel' | 'pdf' = 'excel';
 
   statuses!: any[];
@@ -110,7 +108,6 @@ export class ProductListComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private productImportService: ProductImportService,
-    private productExportService: ProductExportService,
     private confirmService: ConfirmService,
     private translate: TranslateService,
     private toast: ToastService,
@@ -123,8 +120,9 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit() {
     this.getProducts();
+    this.subscribeForGlobalSearch();
     this.getImportSpec();
-    this.initializeExportColumns();
+    this.initExportColumns();
   }
 
   getProducts() {
@@ -146,8 +144,21 @@ export class ProductListComponent implements OnInit {
         .subscribe(res => {this.importColumnsSpec = res})
   }
 
-  onGlobalFilter(table: Table, event: Event) {
-    table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  subscribeForGlobalSearch() {
+    this.pageReq = new PageRequest(0, 8);
+    this.loading = true;
+    this.globalSearchControl.valueChanges.pipe(
+      debounceTime(300),
+      switchMap((searchTerm) => this.productService.searchByKeyword(searchTerm || '', this.pageReq)
+      .pipe(finalize(() => this.loading = false))
+    )
+    ).subscribe(res => {
+      if (res.success) {
+        this.products = res.data.content;
+        this.pageDetails = res.data.page;
+      }
+      this.loading = false;
+    });
   }
 
   deleteSelectedProducts() {
@@ -290,13 +301,11 @@ export class ProductListComponent implements OnInit {
 
   hideExportDialog() {
     this.exportDialog = false;
-    this.selectedExportColumns = null;
+    this.selectedExportColumns = [];
     this.exportType = 'excel'; // Reset to default
   }
 
-  initializeExportColumns() {
-    // Define the columns available for export.
-    // These should ideally map to your product data structure.
+  initExportColumns() {
     this.exportColumns = [
       { field: 'basicDetails.barcode', header: this.translate.instant('BARCODE') },
       { field: 'basicDetails.productName', header: this.translate.instant('NAME') },
@@ -304,37 +313,17 @@ export class ProductListComponent implements OnInit {
       { field: 'basicDetails.productBrand.name', header: this.translate.instant('BRAND') },
       { field: 'priceDetails.costPrice', header: this.translate.instant('COST') },
       { field: 'priceDetails.sellingPrice', header: this.translate.instant('PRICE') },
+      { header: this.translate.instant('DISCOUNT'), valueGetter: (row: any) => this.getDiscountLabel(row) || this.translate.instant('NO_EXIST') },
       { field: 'priceDetails.priceWithDiscount', header: this.translate.instant('PRICE_AFTER_DISCOUNT') },
       { field: 'basicDetails.quantity', header: this.translate.instant('QUANTITY') }
     ];
   }
 
   confirmExport() {
-    if (!this.selectedExportColumns || this.selectedExportColumns.length === 0) {
-      this.toast.showWarn(this.translate.instant("SELECT_AT_LEAST_ONE_COLUMN"));
-      return;
-    }
-
     this.exportLoading = true;
-    const columnsToExport = this.selectedExportColumns.map(col => col.field);
-
-    const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15); // YYYYMMDDTHHMMSS
-    const fileName = `product_list_${timestamp}`;
-
-    this.productExportService.exportProducts(this.products, columnsToExport, this.exportType, fileName)
-      .subscribe({
-        next: () => {
-          this.toast.showSuccess(this.translate.instant("EXPORT_SUCCESS"));
-          this.hideExportDialog();
-        },
-        error: (err) => {
-          this.toast.showError(this.translate.instant("EXPORT_ERROR", { message: err.message || 'Unknown error' }));
-          console.error('Export error:', err);
-        },
-        complete: () => {
-          this.exportLoading = false;
-        }
-      });
+    ExportUtils.exportDataToExcel(this.products, this.selectedExportColumns, 'product_list');
+    this.hideExportDialog();
+    this.exportLoading = false;
   }
 
 }

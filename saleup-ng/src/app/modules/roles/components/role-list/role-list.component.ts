@@ -66,7 +66,7 @@ export class RoleListComponent {
     private roleService: RoleService,
     private toast: ToastService,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.getRoles();
@@ -83,13 +83,13 @@ export class RoleListComponent {
       })
   }
 
-  getPermissions() {
-    this.roleService.getPermissionGroups()
-      .subscribe(res => {
-        if (res.success) {
-          this.permList = this.mapPermissionsToTreeData(res.data)
-        }
-      })
+  getPermissions(callback?: () => void) {
+    this.roleService.getPermissionGroups().subscribe(res => {
+      if (res.success) {
+        this.permList = this.mapPermissionsToTreeData(res.data);
+        if (callback) callback();
+      }
+    });
   }
 
   initRoleForm() {
@@ -100,27 +100,27 @@ export class RoleListComponent {
   }
 
   onSaveRole() {
-    this.saveLoading = true;
-    if (this.roleForm.invalid) {
+    if (this.roleForm.invalid || !this.selectedPerms.length) {
       this.toast.showWarn(this.translate.instant('REQUIRED_FIELDS_MSG'));
       return;
     }
+    this.saveLoading = true;
     if (this.mode == 'create') {
       this.roleService.createRole({
         roleName: this.roleForm.value['roleName'],
         description: this.roleForm.value['description'],
         permissionsIDs: this.selectedPerms.filter(p => p.data != 'group').map(p => p.data)
       }).subscribe(res => {
-          if (res.success) {
-            this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
-            this.getRoles();
-            this.roleForm.reset();
-            this.selectedPerms = [];
-            this.roleDialog = false;
-          }
-          else { this.toast.showError(res.message); }
-          this.saveLoading = false;
-        })
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+          this.getRoles();
+          this.roleForm.reset();
+          this.selectedPerms = [];
+          this.roleDialog = false;
+        }
+        else { this.toast.showError(res.message); }
+        this.saveLoading = false;
+      })
     } else if (this.mode == 'update' && this.role) {
       this.roleService.updateRole({
         roleId: this.role.roleId,
@@ -128,54 +128,87 @@ export class RoleListComponent {
         description: this.roleForm.value['description'],
         permissionsIDs: this.selectedPerms.filter(p => p.data != 'group').map(p => p.data)
       }).subscribe(res => {
-          if (res.success) {
-            this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
-            this.getRoles();
-            this.roleForm.reset();
-            this.selectedPerms = [];
-            this.roleDialog = false;
-          }
-          else { this.toast.showError(res.message); }
-          this.saveLoading = false;
-        })
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+          this.getRoles();
+          this.roleForm.reset();
+          this.selectedPerms = [];
+          this.roleDialog = false;
+        }
+        else { this.toast.showError(res.message); }
+        this.saveLoading = false;
+      })
     }
   }
 
   mapPermissionsToTreeData(permGroups: PermissionGroup[]) {
     return permGroups.map(group => {
-        return {
-            label: this.translate.instant(group.group),
-            data: 'group',
-            children: group.permissions.map(permission => ({
-              label: this.translate.instant(permission.permName),
-              data: permission.permId,
-              expanded: false
-            }))
-        };
+      return {
+        label: this.translate.instant(group.group),
+        data: 'group',
+        children: group.permissions.map(permission => ({
+          label: this.translate.instant(permission.permName),
+          data: permission.permId,
+          expanded: false
+        }))
+      };
     });
   }
 
   editRole(role: Role) {
     this.mode = 'update';
-    this.dialogHeader = this.translate.instant('EDIT_ROLE', {name: role.roleName});
+    this.dialogHeader = this.translate.instant('EDIT_ROLE', { name: role.roleName });
     this.roleDialog = true;
     this.role = role;
+
     this.roleForm.patchValue({
       roleName: role.roleName,
       description: role.description,
-    })
+    });
+
+    const permissionIds = role.permissions.map(p => p.permId);
+    this.selectedPerms = this.findPermissionNodesByIds(permissionIds, this.permList);
   }
+
+  findPermissionNodesByIds(permissionIds: number[], nodes: TreeNode[]): TreeNode[] {
+    const selectedNodes: TreeNode[] = [];
+
+    for (const node of nodes) {
+      if (node.children && node.children.length > 0) {
+        const childSelections = this.findPermissionNodesByIds(permissionIds, node.children);
+
+        // If all children are selected, select the group node too
+        const allChildrenSelected = node.children.every(child =>
+          childSelections.find(sel => sel.data === child.data)
+        );
+
+        if (allChildrenSelected) {
+          selectedNodes.push(node);
+        }
+
+        selectedNodes.push(...childSelections);
+      } else {
+        if (permissionIds.includes(node.data)) {
+          selectedNodes.push(node);
+        }
+      }
+    }
+
+    return selectedNodes;
+  }
+
 
   openNew() {
     this.mode = 'create';
+    this.selectedPerms = [];
     this.dialogHeader = this.translate.instant('ADD_ROLE');
     this.roleDialog = true;
   }
 
-  deleteSelectedRoles() {}
+  deleteSelectedRoles() { }
 
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
-  
+
 }

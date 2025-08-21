@@ -17,6 +17,7 @@ import com.anaselrayan.springcashiero.features.sales.repository.SaleReturnReposi
 import com.anaselrayan.springcashiero.features.sales.request.SaleItemRequest;
 import com.anaselrayan.springcashiero.features.sales.request.SaleRequest;
 import com.anaselrayan.springcashiero.features.sales.util.SaleUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -43,7 +44,7 @@ public class SaleService {
     private final SaleReceiptService saleReceiptService;
     private final SettingService settingService;
 
-    public ApiResponse createSale(SaleRequest request) {
+    public ApiResponse createSale(@Valid SaleRequest request) {
         try {
             ApiResponse validateSaleRes = validateSale(request);
             if (!validateSaleRes.getSuccess())
@@ -73,7 +74,7 @@ public class SaleService {
         }
     }
 
-    public ApiResponse editSale(SaleRequest request) {
+    public ApiResponse editSale(@Valid SaleRequest request) {
         try {
             // Validate Sale
             if (request.getSaleId() == null || !saleRepository.existsById(request.getSaleId()))

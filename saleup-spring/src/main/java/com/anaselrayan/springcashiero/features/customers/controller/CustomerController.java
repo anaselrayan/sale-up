@@ -1,12 +1,12 @@
 package com.anaselrayan.springcashiero.features.customers.controller;
 
-import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.customers.request.CustomerRequest;
 import com.anaselrayan.springcashiero.features.customers.service.CustomerService;
-import jakarta.validation.Valid;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
@@ -18,18 +18,21 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @PreAuthorize("hasAuthority('perm.create.customer')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createCustomer(@RequestBody @Valid CustomerRequest request) {
+    public ResponseEntity<ApiResponse> createCustomer(@RequestBody CustomerRequest request) {
         ApiResponse res = customerService.createCustomer(request);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.update.customer')")
     @PutMapping
-    public ResponseEntity<ApiResponse> updateCustomer(@RequestBody @Valid CustomerRequest request) {
+    public ResponseEntity<ApiResponse> updateCustomer(@RequestBody CustomerRequest request) {
         ApiResponse res = customerService.updateCustomer(request);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.access.customer')")
     @GetMapping
     public ResponseEntity<ApiResponse> getCustomersPage(@RequestParam Integer page,
                                                         @RequestParam Integer size) {
@@ -37,18 +40,21 @@ public class CustomerController {
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.access.customer')")
     @GetMapping("/filter")
     public ResponseEntity<ApiResponse> filterCustomers(@RequestParam String key) {
         ApiResponse res = customerService.filterCustomers(key);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.access.customer')")
     @GetMapping("/{customerId}")
     public ResponseEntity<ApiResponse> getCustomerById(@PathVariable Long customerId) {
         ApiResponse res = customerService.getCustomerById(customerId);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.delete.customer')")
     @DeleteMapping("/{customerId}")
     public ResponseEntity<ApiResponse> deleteCustomer(@PathVariable Long customerId) {
         ApiResponse res = customerService.deleteCustomer(customerId);

@@ -1,0 +1,1 @@
+import{a as r}from"./chunk-UFISI3L3.js";var s=class{static getUserImageSrc(e){return e.imageUrl?r.apiBaseUrl+"/user/image/"+e.userId+"/"+e.imageUrl:"assets/images/users/placeholder.png"}static getUserImage(e){return e&&r.apiBaseUrl+"/user/image/"+e||"assets/images/users/placeholder.png"}};export{s as a};

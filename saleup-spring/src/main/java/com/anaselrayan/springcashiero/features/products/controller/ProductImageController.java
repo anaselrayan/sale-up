@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
@@ -36,18 +37,21 @@ public class ProductImageController {
         return productImageService.getBrandImageResource(brandId, fileName);
     }
 
+    @PreAuthorize("hasAuthority('perm.update.product')")
     @PutMapping("/primary/{imageId}")
     public ResponseEntity<ApiResponse> setPrimaryImage(@PathVariable Long imageId) {
         ApiResponse res = productImageService.setPrimaryImage(imageId);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.update.product')")
     @DeleteMapping("/{imageId}")
     public ResponseEntity<ApiResponse> deleteProductImage(@PathVariable Long imageId) {
         ApiResponse res = productImageService.deleteProductImage(imageId);
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.update.product')")
     @PostMapping("/{productId}")
     public ResponseEntity<ApiResponse> addProductImages(@PathVariable Long productId, @ModelAttribute ProductImagesRequest req) {
         req.setProductId(productId);

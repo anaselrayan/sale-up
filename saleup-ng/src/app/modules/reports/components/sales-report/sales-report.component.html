@@ -1,0 +1,220 @@
+<p-card>
+    <div>
+        <div class="mb-4 text-xl">
+            <p-message icon="pi pi-chart-line" [size]="'large'" class="text-lg">
+                {{ 'SALES_REPORT_HEADER' | translate }}
+            </p-message>
+        </div>
+
+        <div class="mb-4">
+            <p-datePicker 
+                [placeholder]="'SELECT_DATE_RANGE' | translate"
+                id="range"
+                [(ngModel)]="rangeDate"
+                appendTo="body"
+                selectionMode="range"
+            />
+        </div>
+
+        <p-button 
+            [loading]="loading"
+            [label]="'LOAD_DATA' | translate"
+            (onClick)="loadData()"
+            icon="pi pi-play"
+            severity="info"
+        />
+    </div>
+</p-card>
+<br/>
+<p-card *ngIf="kpiData && salesData">
+    <div class="result mb-4">
+        <div class="text-center text-lg text-muted-color font-semibold mb-4 flex justify-center gap-2">
+            {{ 'SHOWING_RESULTS_IN' | translate }}
+            {{ ('FROM' | translate) }}
+            <div class="text-primary">
+                {{ rangeDate[0] | dateFt:'short'}}
+            </div>
+            {{ ('TO' | translate) }}
+            <div class="text-primary">
+                {{ rangeDate[1] | dateFt:'short'}}
+            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="shadow-sm border border-surface rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-receipt text-2xl"></i>
+                    <div>
+                        <div class="text-sm">{{ 'RECEIPT_COUNT' | translate }}</div>
+                        <div class="text-lg font-semibold">{{ kpiData.totalSales }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shadow-sm border border-surface rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-dollar text-2xl text-green-500"></i>
+                    <div>
+                        <div class="text-sm">{{ 'TOTAL_SALES' | translate }}</div>
+                        <div class="text-lg font-semibold">{{ (kpiData.totalRevenue || 0) | sCurrency }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shadow-sm border border-surface rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-box text-2xl text-blue-400"></i>
+                    <div>
+                        <div class="text-sm">{{ 'TOTAL_SOLD_ITEMS' | translate }}</div>
+                        <div class="text-lg font-semibold">{{ (kpiData.totalItemsSold || 0) }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div 
+                class="shadow-sm border border-surface rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-percentage text-2xl text-orange-400"></i>
+                    <div>
+                        <div class="text-sm">{{ 'RETURN_RATE' | translate }}</div>
+                        <div class="text-lg font-semibold">
+                            {{ (((kpiData.totalItemsReturned / kpiData.totalItemsSold) || 0.0) * 100) | number:'1.2-2' }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shadow-sm border border-surface rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-undo text-2xl text-pink-400"></i>
+                    <div>
+                        <div class="text-sm">{{ 'TOTAL_RETURNS_AMOUNT' | translate }}</div>
+                        <div class="text-lg font-semibold">{{ (kpiData.totalReturnsValue || 0.0) | sCurrency }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shadow-sm border border-surface rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-replay text-2xl text-red-400"></i>
+                    <div>
+                        <div class="text-sm">{{ 'TOTAL_RETURNED_ITEMS' | translate }}</div>
+                        <div class="text-lg font-semibold">{{ (kpiData.totalItemsReturned || 0) }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shadow-sm border border-teal-400 rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-chart-line text-2xl text-teal-400"></i>
+                    <div>
+                        <div class="text-sm">{{ 'TOTAL_PROFIT' | translate }}</div>
+                        <div class="text-lg font-semibold">{{ (kpiData.totalProfit || 0.0) | sCurrency }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shadow-sm border border-surface rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-wallet text-2xl text-indigo-400"></i>
+                    <div>
+                        <div class="text-sm">{{ 'AVG_RECEIPT_VALUE' | translate }}</div>
+                        <div class="text-lg font-semibold">{{ (kpiData.averageSaleValue || 0.0) | sCurrency }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="shadow-sm border border-surface rounded-xl p-4 surface-card">
+                <div class="flex items-center gap-3">
+                    <i class="pi pi-tags text-2xl text-yellow-500"></i>
+                    <div>
+                        <div class="text-sm">{{ 'TOTAL_DISCOUNT' | translate }}</div>
+                        <div class="text-lg font-semibold">{{ (kpiData.totalDiscount || 0.0) | sCurrency }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p-table
+        #dt
+        [value]="salesData"
+        [rows]="10"
+        [loading]="loading"
+        [paginator]="true"
+        [tableStyle]="{ 'min-width': '75rem' }"
+        [rowHover]="true"
+        dataKey="barcode"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} rows"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 50, 100]">
+
+        <ng-template #caption>
+            <div class="flex items-center justify-between">
+                <h5 class="m-0 text-muted-color flex gap-2">{{'TOTAL_RECEIPTS' | translate}} <div class="text-primary">{{salesData.length}}</div></h5>
+                <div class="export">
+                    <p-button [loading]="exportLoading" [disabled]="!salesData.length" [label]="'SAVE_RESULTS' | translate" (onClick)="exportData()" icon="pi pi-file-excel" severity="secondary" />
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th>
+                    {{'BARCODE' | translate}}
+                </th>
+                <th pSortableColumn="customer">
+                    {{'CUSTOMER' | translate}}
+                    <p-sortIcon field="customer" />
+                </th>
+                <th pSortableColumn="numberOfItems">
+                    {{'CATEGORY_COUNT' | translate}}
+                    <p-sortIcon field="numberOfItems" />
+                </th>
+                <th pSortableColumn="totalQuantity">
+                    {{'ITEMS_COUNT' | translate}}
+                    <p-sortIcon field="totalQuantity" />
+                </th>
+                <th pSortableColumn="returnedQuantity">
+                    {{'RETURNED_ITEMS' | translate}}
+                    <p-sortIcon field="returnedQuantity" />
+                </th>
+                <th pSortableColumn="subTotal">
+                    {{'SUB_TOTAL' | translate}}
+                    <p-sortIcon field="subTotal" />
+                </th>
+                <th pSortableColumn="discount">
+                    {{'DISCOUNT' | translate}}
+                    <p-sortIcon field="discount" />
+                </th>
+                <th pSortableColumn="grandTotal">
+                    {{'GRAND_TOTAL' | translate}}
+                    <p-sortIcon field="grandTotal" />
+                </th>
+                <th pSortableColumn="profit">
+                    {{'RECEIPT_PROFIT' | translate}}
+                    <p-sortIcon field="profit" />
+                </th>
+                <th pSortableColumn="createdAt">
+                    {{'CREATED_AT' | translate}}
+                    <p-sortIcon field="createdAt" />
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-item>
+            <tr>
+                <td style="min-width: 12rem">{{ item.barcode }}</td>
+                <td style="min-width: 16rem">
+                    {{ item.customerName }}
+                    <div *ngIf="!item.customerName" class="text-muted-color">{{ 'NOT_REGISTERED_CUSTOMER' | translate }}</div>
+                </td>
+                <td>{{ item.numberOfItems }}</td>
+                <td>{{ item.totalQuantity }}</td>
+                <td class="text-red-500">{{ item.returnedQuantity }}</td>
+                <td>{{ item.subTotal | sCurrency }}</td>
+                <td class="text-orange-500">{{ item.discount | sCurrency }}</td>
+                <td class="text-blue-500">{{ item.grandTotal | sCurrency }}</td>
+                <td class="text-green-500">{{ item.profit | sCurrency }}</td>
+                <td class="text-muted-color">{{ item.createdAt | dateFt: 'medium' }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-card>
+<p-toast></p-toast>

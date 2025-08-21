@@ -1,12 +1,12 @@
 package com.anaselrayan.springcashiero.features.products.controller;
 
 
-import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import com.anaselrayan.springcashiero.features.products.request.ProductUnitOfMeasureRequest;
 import com.anaselrayan.springcashiero.features.products.service.ProductUnitOfMeasureService;
-import jakarta.validation.Valid;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
@@ -18,14 +18,16 @@ public class ProductUnitOfMeasureController {
 
     private final ProductUnitOfMeasureService productUnitOfMeasureService;
 
+    @PreAuthorize("hasAuthority('perm.create.product')")
     @PostMapping
-    public ResponseEntity<ApiResponse> createProductUnit(@RequestBody @Valid ProductUnitOfMeasureRequest request) {
+    public ResponseEntity<ApiResponse> createProductUnit(@RequestBody ProductUnitOfMeasureRequest request) {
         ApiResponse res = productUnitOfMeasureService.createProductUnit(request);
         return ResponseEntity.status(res.getCode()).body(res);
     }
 
+    @PreAuthorize("hasAuthority('perm.create.product')")
     @PutMapping
-    public ResponseEntity<ApiResponse> updateProductUnit(@RequestBody @Valid ProductUnitOfMeasureRequest request) {
+    public ResponseEntity<ApiResponse> updateProductUnit(@RequestBody ProductUnitOfMeasureRequest request) {
         ApiResponse res = productUnitOfMeasureService.updateProductUnit(request);
         return ResponseEntity.status(res.getCode()).body(res);
     }

@@ -4,13 +4,16 @@ import { Dashboard } from './app/modules/dashboard/dashboard';
 import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
+import { WelcomePageComponent } from '@shared/components/welcome-page/welcome-page.component';
+import { AuthGuard } from '@module/auth/services/auth.guard';
 
 export const appRoutes: Routes = [
     {
         path: '',
         component: AppLayout,
         children: [
-            { path: '', component: Dashboard },
+            { path: '', component: WelcomePageComponent},
+            { path: 'dashboard', component: Dashboard, canActivate: [AuthGuard], data: {perms: ['perm.access.dashboard']} },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             {
                 path: 'products',
@@ -39,6 +42,10 @@ export const appRoutes: Routes = [
             {
                 path: 'roles',
                 loadChildren: () => import('@module/roles/roles.module').then(m => m.RolesModule)
+            },
+            {
+                path: 'reports',
+                loadChildren: () => import('@module/reports/reports.module').then(m => m.ReportsModule)
             },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },

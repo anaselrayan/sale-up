@@ -14,4 +14,6 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
     List<String> selectUniquePermissionCategories();
 
     List<Permission> findAllByPermCategory(String permCategory);
+
+    boolean existsByPermCode(String code);
 }

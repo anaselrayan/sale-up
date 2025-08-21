@@ -7,7 +7,6 @@ import { AuthGuard } from '@module/auth/services/auth.guard';
 import { ProductBrandsComponent } from './components/product-brands/product-brands.component';
 import { ProductUnitsComponent } from './components/product-units/product-units.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
-import { QuickStockUpdateComponent } from '../stock/components/quick-stock-update/quick-stock-update.component';
 
 const routes: Routes = [
   {
@@ -26,7 +25,7 @@ const routes: Routes = [
     path: 'edit/:productId',
     component: ProductCreateComponent,
     canActivate: [AuthGuard],
-    data: { perms: ['perm.create.product'] }
+    data: { perms: ['perm.update.product'] }
   },
   {
     path: 'detail/:productId',
@@ -44,7 +43,7 @@ const routes: Routes = [
     path: 'brands',
     component: ProductBrandsComponent,
     canActivate: [AuthGuard],
-    data: { perms: ['perm.access.product'] }
+    data: { perms: ['perm.access.brand'] }
   },
   {
     path: 'units',

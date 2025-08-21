@@ -1,23 +1,35 @@
 package com.anaselrayan.springcashiero.features.users.service;
 
-import com.anaselrayan.springcashiero.infrastructure.constatnts.ActionType;
-import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
-import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.roles.repository.UserRoleRepository;
 import com.anaselrayan.springcashiero.features.users.converter.UserConverter;
 import com.anaselrayan.springcashiero.features.users.dto.UserDTO;
 import com.anaselrayan.springcashiero.features.users.request.UserRequest;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.ActionType;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.security.model.AppUser;
 import com.anaselrayan.springcashiero.security.repository.AppUserRepository;
+import com.anaselrayan.springcashiero.shared.UploadFileRequest;
+import com.anaselrayan.springcashiero.shared.UploadFileResponse;
+import com.anaselrayan.springcashiero.shared.UploadService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
+
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Upload.UPLOAD_CATEGORY_IMAGE_DIR;
+import static com.anaselrayan.springcashiero.infrastructure.constatnts.Upload.UPLOAD_USER_IMAGE_DIR;
 
 @Service
 @Slf4j
@@ -27,8 +39,9 @@ public class UserService {
     private final AppUserRepository appUserRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UploadService uploadService;
 
-    public ApiResponse createUser(UserRequest request) {
+    public ApiResponse createUser(@Valid UserRequest request) {
         ApiResponse validRes = this.validateUserRequest(request, ActionType.CREATE);
         if (!validRes.getSuccess()) return validRes;
 
@@ -42,6 +55,9 @@ public class UserService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .build();
             AppUser saved = appUserRepository.save(toSave);
+            String imageUrl = uploadUserImage(request.getImageFile(), saved);
+            saved.setImageUrl(imageUrl);
+            appUserRepository.save(saved);
             return new ApiResponse(UserConverter.convert(saved), StatusCode.CREATED);
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -49,7 +65,7 @@ public class UserService {
         }
     }
 
-    public ApiResponse updateUser(UserRequest request) {
+    public ApiResponse updateUser(@Valid UserRequest request) {
         ApiResponse validRes = this.validateUserRequest(request, ActionType.UPDATE);
         if (!validRes.getSuccess()) return validRes;
 
@@ -59,6 +75,14 @@ public class UserService {
             toSave.setEmail(request.getEmail());
             toSave.setUsername(request.getUsername());
             toSave.setUserRole(userRoleRepository.getReferenceById(request.getRoleId()));
+            if (request.getImageFile() != null && !request.getImageFile().isEmpty()) {
+                if (toSave.getImageUrl() != null) {
+                    String oldPath = UPLOAD_CATEGORY_IMAGE_DIR + "/" + request.getUserId() + "/" + toSave.getImageUrl();
+                    Files.deleteIfExists(Paths.get(oldPath));
+                }
+                String imagePath = uploadUserImage(request.getImageFile(), toSave);
+                toSave.setImageUrl(imagePath);
+            }
             AppUser saved = appUserRepository.save(toSave);
             return new ApiResponse(UserConverter.convert(saved), StatusCode.CREATED);
         } catch (Exception ex) {
@@ -128,6 +152,26 @@ public class UserService {
             return new ApiResponse(false, StatusCode.BAD_REQUEST, "Role does not exist");
 
         return new ApiResponse("valid", StatusCode.OK);
+    }
+
+    public String uploadUserImage(MultipartFile file, AppUser user) {
+        if (file != null && !file.isEmpty()) {
+            String path = UPLOAD_USER_IMAGE_DIR + "/" + user.getId();
+            UploadFileResponse res = uploadService.uploadFile(
+                    new UploadFileRequest(file, file.getOriginalFilename(), path)
+            );
+            return res.fileName;
+        }
+        return null;
+    }
+
+    public ResponseEntity<Resource> getUserImageResource(Long userId, String fileName) {
+        return uploadService.downloadResource(UPLOAD_USER_IMAGE_DIR + "/" + userId, fileName);
+    }
+
+    public ResponseEntity<Resource> getUserImageResource(String username) {
+        AppUser user = appUserRepository.findByUsername(username).orElseThrow();
+        return uploadService.downloadResource(UPLOAD_USER_IMAGE_DIR + "/" + user.getId(), user.getImageUrl());
     }
 
 }

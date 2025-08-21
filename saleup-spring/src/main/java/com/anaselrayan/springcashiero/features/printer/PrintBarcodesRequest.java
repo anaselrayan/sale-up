@@ -29,7 +29,7 @@ public class PrintBarcodesRequest {
     private Integer width;
 
     @NotNull(message = "barcode size can't be null")
-    @Min(value = 20, message = "barcode height should be at least 20")
+    @Min(value = 10, message = "barcode height should be at least 10")
     @Max(value = 500, message = "barcode height should be at most 500")
     private Integer height;
 

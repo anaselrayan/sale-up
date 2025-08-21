@@ -13,7 +13,7 @@ export class PrintBarcodeRequest {
         this.barcodeFormat = 'CODE_128';
         this.copies = 1;
         this.width = 50;
-        this.height = 20;
+        this.height = 10;
         this.marginLeft = 0;
         this.marginTop = 0;
     }

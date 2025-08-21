@@ -74,7 +74,7 @@
                 <p-tableCheckbox [value]="user.userId" />
             </td>
             <td>
-                <p-avatar [label]="'US'"  />
+                <p-avatar [image]="getUserImg(user)" class="mr-2" size="large" shape="circle" />
             </td>
             <td>
                 {{ user.username }}
@@ -113,7 +113,7 @@
     [showJumpToPageDropdown]="false"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
 
-<p-dialog [(visible)]="userDialog" [style]="{ width: '450px' }" [header]="dialogHeader" [modal]="true">
+<p-dialog [(visible)]="userDialog" [style]="{ 'min-width': '20rem', 'width': '40%' }" [header]="dialogHeader" [modal]="true">
     <form *ngIf="userForm" [formGroup]="userForm" (ngSubmit)="onSaveUser()">
         <div class="flex items-center gap-4 mb-4">
             <label for="username" class="font-semibold w-24">{{'USERNAME' | translate }}</label>
@@ -121,7 +121,7 @@
         </div>
         <div class="flex justify-between items-center gap-4 mb-4">
             <label for="role" class="font-semibold w-24">{{'ROLE' | translate }}</label>
-            <p-multiselect id="role" [options]="roles" [filter]="true"
+            <p-multiselect [style]="{'width': '100%'}" id="role" [options]="roles" [filter]="true"
                 [emptyMessage]="'NO_DATA' | translate"
                 optionLabel="roleName" optionValue="roleId" 
                 [placeholder]="'SELECT_FROM_LIST' | translate" selectionLimit="1"

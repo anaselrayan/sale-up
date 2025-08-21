@@ -78,10 +78,10 @@
     </ng-template>
 </p-table>
 
-<p-dialog [(visible)]="roleDialog" [style]="{ width: '450px' }" [header]="dialogHeader" [modal]="true">
+<p-dialog [(visible)]="roleDialog" [style]="{ 'min-width': '20rem', 'width': '40%' }" [header]="dialogHeader" [modal]="true">
     <form [formGroup]="roleForm" (ngSubmit)="onSaveRole()">
         <div class="flex items-center gap-4 mb-4">
-            <label for="roleName" class="font-semibold w-24">{{'TITLE' | translate }}</label>
+            <label for="roleName" class="font-semibold w-24">{{'NAME' | translate }}</label>
             <input formControlName="roleName" pInputText id="roleName" class="flex-auto" autocomplete="off" />
         </div>
         <div class="flex items-center gap-4 mb-6">

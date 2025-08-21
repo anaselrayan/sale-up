@@ -10,6 +10,7 @@ import com.anaselrayan.springcashiero.features.products.request.ProductBrandRequ
 import com.anaselrayan.springcashiero.shared.UploadFileRequest;
 import com.anaselrayan.springcashiero.shared.UploadFileResponse;
 import com.anaselrayan.springcashiero.shared.UploadService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class ProductBrandService {
     public final ProductBrandRepository productBrandRepository;
     private final UploadService uploadService;
 
-    public ApiResponse createProductBrand(ProductBrandRequest request) {
+    public ApiResponse createProductBrand(@Valid ProductBrandRequest request) {
         try {
             ProductBrand toSave = ProductBrand.builder()
                     .name(request.getName())
@@ -49,7 +50,7 @@ public class ProductBrandService {
         }
     }
 
-    public ApiResponse updateProductBrand(ProductBrandRequest req) {
+    public ApiResponse updateProductBrand(@Valid ProductBrandRequest req) {
         try {
             Long catId = req.getProductBrandId();
             if (catId == null || !productBrandRepository.existsById(catId)) {

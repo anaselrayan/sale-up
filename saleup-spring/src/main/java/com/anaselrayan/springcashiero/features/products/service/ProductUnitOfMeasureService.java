@@ -7,6 +7,7 @@ import com.anaselrayan.springcashiero.features.products.dto.ProductUnitOfMeasure
 import com.anaselrayan.springcashiero.features.products.model.ProductUnitOfMeasure;
 import com.anaselrayan.springcashiero.features.products.repository.ProductUnitOfMeasureRepository;
 import com.anaselrayan.springcashiero.features.products.request.ProductUnitOfMeasureRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class ProductUnitOfMeasureService {
 
     private final ProductUnitOfMeasureRepository productUnitOfMeasureRepository;
 
-    public ApiResponse createProductUnit(ProductUnitOfMeasureRequest request) {
+    public ApiResponse createProductUnit(@Valid ProductUnitOfMeasureRequest request) {
         try {
             ProductUnitOfMeasure toSave = ProductUnitOfMeasure.builder()
                     .code(request.getCode())
@@ -34,7 +35,7 @@ public class ProductUnitOfMeasureService {
         }
     }
 
-    public ApiResponse updateProductUnit(ProductUnitOfMeasureRequest req) {
+    public ApiResponse updateProductUnit(@Valid ProductUnitOfMeasureRequest req) {
         try {
             Long catId = req.getUnitOfMeasureId();
             if (catId == null || !productUnitOfMeasureRepository.existsById(catId)) {

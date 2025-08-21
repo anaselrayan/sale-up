@@ -5,6 +5,7 @@ import com.google.zxing.BarcodeFormat;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -20,6 +21,7 @@ public class BarcodeController {
     private final PrintingService printingService;
 
     @GetMapping("/format")
+    @PreAuthorize("hasAuthority('perm.print-barcodes')")
     public List<String> getBarcodeFormats() {
         return Arrays.stream(BarcodeFormat.values()).map(String::valueOf).toList();
     }

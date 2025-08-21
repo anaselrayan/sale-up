@@ -5,14 +5,16 @@ import { environment } from "@env/environment";
 import { ApiResponse } from "@shared/models/api-response";
 import { AuthResponse } from "@module/auth/models/auth-response";
 import { LoginRequest } from "@module/auth/models/login-request";
-import { Observable } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { jwtDecode } from 'jwt-decode';
+import { Permissions } from "./permissions";
 
 @Injectable({
   providedIn: "root"
 })
 export class AuthService {
 
+  forbiddenSub = new Subject<string>();
   baseUrl = environment.apiBaseUrl + "/auth"
 
   constructor(
@@ -22,6 +24,14 @@ export class AuthService {
 
   getToken() {
     return sessionStorage.getItem('token');
+  }
+
+  getUsername() {
+    const token = this.getToken();
+    if (!token)
+      return '';
+
+    return jwtDecode(token).sub;
   }
 
   signOut() {
@@ -35,6 +45,10 @@ export class AuthService {
 
   handleLoginSuccess(res: AuthResponse) {
     sessionStorage.setItem('token', res.token);
+    if (this.noPermissions()) {
+      this.signOut();
+      return;
+    }
     this.router.navigate(['/'])
   }
 
@@ -56,8 +70,40 @@ export class AuthService {
     }
   }
 
+  noPermissions():  boolean {
+    const token = this.getToken();
+    if (!token)
+      return false;
+
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const userAuthorities: string[] = decodedToken?.authorities?.split(',') || [];
+      return !userAuthorities.some(p => Permissions.getAllPermissions().includes(p));
+    } catch (error) {
+      return false;
+    }
+  }
+
+  hasAnyPermission(perms: string[]): boolean {
+    const token = this.getToken();
+    if (!token)
+      return false;
+
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const userAuthorities: string[] = decodedToken?.authorities?.split(',') || [];
+      return perms.some(p => userAuthorities.includes(p));
+    } catch (error) {
+      return false;
+    }
+  }
+
   redirectToLogin() {
     this.router.navigate(['/auth/login'])
+  }
+
+  handleForbiddenAccess(url: string) {
+    this.forbiddenSub.next(url);
   }
 
 }

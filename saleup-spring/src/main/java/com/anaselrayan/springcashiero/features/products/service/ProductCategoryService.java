@@ -10,6 +10,7 @@ import com.anaselrayan.springcashiero.features.products.request.ProductCategoryR
 import com.anaselrayan.springcashiero.shared.UploadFileRequest;
 import com.anaselrayan.springcashiero.shared.UploadFileResponse;
 import com.anaselrayan.springcashiero.shared.UploadService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class ProductCategoryService {
     private final ProductCategoryRepository productCategoryRepository;
     private final UploadService uploadService;
 
-    public ApiResponse createProductCategory(ProductCategoryRequest request) {
+    public ApiResponse createProductCategory(@Valid ProductCategoryRequest request) {
         try {
             ProductCategory toSave = ProductCategory.builder()
                     .name(request.getName())
@@ -51,7 +52,7 @@ public class ProductCategoryService {
         }
     }
 
-    public ApiResponse updateProductCategory(ProductCategoryRequest req) {
+    public ApiResponse updateProductCategory(@Valid ProductCategoryRequest req) {
         try {
             Long catId = req.getProductCategoryId();
             if (catId == null || !productCategoryRepository.existsById(catId)) {

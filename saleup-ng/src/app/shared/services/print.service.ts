@@ -17,6 +17,4 @@ export class PrintService {
         return this.http.get<any>(`${this.baseUrl}`);
     }
 
-    
-
 }
