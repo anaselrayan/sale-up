@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Table, TableModule } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -30,7 +29,6 @@ import { ConfirmService } from '@shared/services/confirm.service';
     TableModule,
     FormsModule,
     ButtonModule,
-    ToastModule,
     InputTextModule,
     ToolbarModule,
     TranslateModule,

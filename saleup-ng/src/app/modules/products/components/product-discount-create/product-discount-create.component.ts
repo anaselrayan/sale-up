@@ -9,7 +9,6 @@ import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputNumber } from 'primeng/inputnumber';
 import { Select } from 'primeng/select';
-import { ToastModule } from 'primeng/toast';
 import { DatePicker } from 'primeng/datepicker';
 import { DateUtils } from 'src/app/utils/date.utils';
 import { ToggleButton } from 'primeng/togglebutton';
@@ -27,7 +26,6 @@ import { SubstringPipe } from "@shared/pipes/substring.pipe";
     Button,
     InputNumber,
     Select,
-    ToastModule,
     DatePicker,
     ToggleButton,
     SubstringPipe

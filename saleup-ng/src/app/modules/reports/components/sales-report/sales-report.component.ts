@@ -9,7 +9,6 @@ import { TextareaModule } from 'primeng/textarea';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { ToastModule } from 'primeng/toast';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { GalleriaModule } from 'primeng/galleria';
 import { ReportService } from '@module/reports/services/report.service';
@@ -38,7 +37,6 @@ import { DateFtPipe } from "@shared/pipes/date-ft.pipe";
     MultiSelectModule,
     ReactiveFormsModule,
     FileUploadModule,
-    ToastModule,
     TranslateModule,
     GalleriaModule,
     TableModule,

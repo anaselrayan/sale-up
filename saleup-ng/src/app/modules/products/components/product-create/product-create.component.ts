@@ -14,7 +14,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { FileSelectEvent, FileUploadModule, UploadEvent } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastService } from '@shared/services/toast.service';
-import { ToastModule } from 'primeng/toast';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GalleriaModule } from 'primeng/galleria';
@@ -44,7 +43,6 @@ import { BarcodeScannerLivestreamComponent, BarcodeScannerLivestreamModule } fro
     MultiSelectModule,
     ReactiveFormsModule,
     FileUploadModule,
-    ToastModule,
     ConfirmPopup,
     TranslateModule,
     GalleriaModule,

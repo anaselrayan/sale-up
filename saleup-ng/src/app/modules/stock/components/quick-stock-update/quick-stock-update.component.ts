@@ -12,7 +12,6 @@ import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 import { Tag } from 'primeng/tag';
-import { Toast } from 'primeng/toast';
 import { SCurrencyPipe } from "../../../../shared/pipes/s-currency.pipe";
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { InputNumber } from 'primeng/inputnumber';
@@ -31,7 +30,6 @@ import { Button } from 'primeng/button';
     Button,
     Card,
     Tag,
-    Toast,
     TranslateModule,
     BarcodeScannerLivestreamModule,
     NgxBarcode6Module,

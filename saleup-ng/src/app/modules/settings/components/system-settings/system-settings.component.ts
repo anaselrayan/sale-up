@@ -17,7 +17,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ProgressBar } from 'primeng/progressbar';
 import { Select } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
-import { ToastModule } from 'primeng/toast';
 import { forkJoin, map } from 'rxjs';
 
 @Component({
@@ -32,7 +31,6 @@ import { forkJoin, map } from 'rxjs';
     InputIconModule,
     TranslateModule,
     Select,
-    ToastModule,
     FileUploadModule,
     ProgressBar,
     Checkbox

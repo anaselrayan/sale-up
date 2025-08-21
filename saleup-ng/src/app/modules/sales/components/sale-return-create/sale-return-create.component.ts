@@ -19,7 +19,6 @@ import { SubstringPipe } from "@shared/pipes/substring.pipe";
 import { InputNumber } from 'primeng/inputnumber';
 import { SaleReturnCart } from '@module/sales/models/sale-return-cart';
 import { SaleReturnRequest } from '@module/sales/models/sale-return-request';
-import { Toast } from 'primeng/toast';
 import { SaleReturnService } from '@module/sales/services/sale-return.service';
 import { ToastService } from '@shared/services/toast.service';
 import { DateFtPipe } from "../../../../shared/pipes/date-ft.pipe";
@@ -45,7 +44,6 @@ import { Product } from '@module/products/models/product.model';
     Tooltip,
     SubstringPipe,
     InputNumber,
-    Toast,
     DateFtPipe,
 ],
   templateUrl: './sale-return-create.component.html',

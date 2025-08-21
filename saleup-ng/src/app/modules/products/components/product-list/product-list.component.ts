@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { RatingModule } from 'primeng/rating';
 import { InputTextModule } from 'primeng/inputtext';
@@ -30,12 +29,12 @@ import { Tooltip } from 'primeng/tooltip';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { SubstringPipe } from '@shared/pipes/substring.pipe';
 import { ConfirmService } from '@shared/services/confirm.service';
-import { ToastService } from '@shared/services/toast.service';
 import { ProductImportService } from '@module/products/services/product-import.service';
 import { FileUpload } from 'primeng/fileupload';
 import { MultiSelect } from 'primeng/multiselect';
 import { ExportColumn, ExportUtils } from 'src/app/utils/export.utils';
 import { debounceTime, finalize, switchMap } from 'rxjs';
+import { ToastService } from '@shared/services/toast.service';
 
 @Component({
   selector: 'app-product-list',
@@ -47,7 +46,6 @@ import { debounceTime, finalize, switchMap } from 'rxjs';
     ReactiveFormsModule,
     ButtonModule,
     RippleModule,
-    ToastModule,
     ToolbarModule,
     RatingModule,
     InputTextModule,

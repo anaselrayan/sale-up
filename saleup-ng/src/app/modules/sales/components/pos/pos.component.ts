@@ -23,7 +23,6 @@ import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
 import { LayoutService } from '@layout/service/layout.service';
 import { Skeleton } from 'primeng/skeleton';
 import { ToastService } from '@shared/services/toast.service';
-import { Toast } from 'primeng/toast';
 import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -47,7 +46,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     Tooltip,
     SCurrencyPipe,
     Skeleton,
-    Toast,
     RouterModule,
     TranslateModule
 ],

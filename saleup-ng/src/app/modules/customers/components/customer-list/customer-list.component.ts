@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -30,7 +29,6 @@ import { ConfirmService } from '@shared/services/confirm.service';
     FormsModule,
     ReactiveFormsModule,
     ButtonModule,
-    ToastModule,
     ToolbarModule,
     InputTextModule,
     TextareaModule,

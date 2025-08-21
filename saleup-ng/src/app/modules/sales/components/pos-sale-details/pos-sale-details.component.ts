@@ -17,7 +17,6 @@ import { Customer } from '@module/customers/models/customer.model';
 import { CustomerService } from '@module/customers/service/customer.service';
 import { SaleService } from '@module/sales/services/sale.service';
 import { ToastService } from '@shared/services/toast.service';
-import { Toast } from 'primeng/toast';
 import { CustomerCreateDialogComponent } from "@module/customers/components/customer-create-dialog/customer-create-dialog.component";
 import { Tooltip } from 'primeng/tooltip';
 import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
@@ -39,7 +38,6 @@ import { Message } from 'primeng/message';
     AutoCompleteModule,
     Avatar,
     InputNumber,
-    Toast,
     Message,
     CustomerCreateDialogComponent,
     Tooltip,

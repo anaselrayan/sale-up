@@ -144,8 +144,6 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
 </p-card>
 
-<p-toast></p-toast>
-
 <app-product-discount-create *ngIf="discountDialog" [product]="product"
 (success)="discountSuccess($event)"
 (visibleChange)="discountDialogToggle($event)">

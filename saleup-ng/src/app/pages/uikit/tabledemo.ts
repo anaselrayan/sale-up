@@ -7,7 +7,6 @@ import { SliderModule } from 'primeng/slider';
 import { Table, TableModule } from 'primeng/table';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToggleButtonModule } from 'primeng/togglebutton';
-import { ToastModule } from 'primeng/toast';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -36,7 +35,6 @@ interface expandedRows {
         SliderModule,
         ProgressBarModule,
         ToggleButtonModule,
-        ToastModule,
         CommonModule,
         FormsModule,
         ButtonModule,

@@ -13,13 +13,12 @@ import { environment } from '@env/environment';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@module/auth/services/auth.service';
 import { ToastService } from '@shared/services/toast.service';
-import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-login',
     standalone: true,
     imports: [CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, ReactiveFormsModule,
-        FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, TranslateModule, ToastModule],
+        FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, TranslateModule],
     template: `
         <app-floating-configurator />
         <div *ngIf="appService.appDetails$ | async as appDetails" class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
@@ -71,7 +70,6 @@ import { ToastModule } from 'primeng/toast';
                 </div>
             </div>
         </div>
-        <p-toast></p-toast>
     `
 })
 export class Login {
