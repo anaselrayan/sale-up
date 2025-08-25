@@ -37,4 +37,8 @@ export class SaleReturnService {
         return this.http.delete<any>(`${this.baseUrl}/${saleReturnId}`)
     }
 
+    public deleteAll(rets: number[]): Observable<ApiResponse<any>> {
+        return this.http.post<any>(`${this.baseUrl}/multi-delete`, {IDs: rets});
+    }
+
 }

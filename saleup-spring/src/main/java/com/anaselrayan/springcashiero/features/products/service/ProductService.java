@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -241,6 +242,11 @@ public class ProductService {
         productBasicRepository.save(product.getProductBasic());
         productPriceRepository.save(product.getProductPrice());
         return new ApiResponse(ProductConverter.convert(product), StatusCode.OK);
+    }
+
+    public ApiResponse deleteAll(List<Long> productIds) {
+        productIds.forEach(this::deleteProduct);
+        return new ApiResponse(true, StatusCode.OK);
     }
 
 }

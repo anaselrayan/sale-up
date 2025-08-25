@@ -13,6 +13,7 @@ public class PermissionSeeds {
                 Permission.builder().permCode(Permissions.PERM_ACCESS_PRODUCT).permName("PERM_ACCESS_PRODUCT").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_CREATE_PRODUCT).permName("PERM_CREATE_PRODUCT").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_UPDATE_PRODUCT).permName("PERM_UPDATE_PRODUCT").permCategory("PRODUCTS").build(),
+                Permission.builder().permCode(Permissions.PERM_DELETE_PRODUCT).permName("PERM_DELETE_PRODUCT").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_CATEGORY).permName("PERM_ACCESS_CATEGORY").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_CREATE_CATEGORY).permName("PERM_CREATE_CATEGORY").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_BRAND).permName("PERM_ACCESS_BRAND").permCategory("PRODUCTS").build(),

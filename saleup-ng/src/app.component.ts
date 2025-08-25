@@ -49,7 +49,7 @@ export class AppComponent {
             this.isAppLoading = false;
             if (!this.authService.getToken() || this.authService.noPermissions())
                 this.authService.signOut();
-        }, 1500);
+        }, 1000);
     }
 
     subscribeForForbiddenAccess() {

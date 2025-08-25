@@ -33,7 +33,9 @@ export class FilterDrawerComponent {
   constructor(
     private fb: FormBuilder,
     private translate: TranslateService
-  ) {}
+  ) {
+    this.initFilterOperators();
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -43,8 +45,6 @@ export class FilterDrawerComponent {
     this.configs.forEach(cfg => {
       this.filters.push(this.buildFilterGroup(cfg));
     });
-    
-    this.initFilterOperators();
   }
 
   initFilterOperators() {

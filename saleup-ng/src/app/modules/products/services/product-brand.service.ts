@@ -32,4 +32,8 @@ export class ProductBrandService {
         return this.http.put<any>(`${this.baseUrl}/product-brand`, req);
     }
 
+    public deleteAll(brands: number[]): Observable<ApiResponse<any>> {
+        return this.http.post<any>(`${this.baseUrl}/multi-delete`, {IDs: brands});
+    }
+
 }

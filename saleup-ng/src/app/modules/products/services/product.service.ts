@@ -58,6 +58,10 @@ export class ProductService {
         return this.http.delete<any>(`${this.baseUrl}/${productId}`);
     }
 
+    public deleteAll(products: number[]): Observable<ApiResponse<any>> {
+        return this.http.delete<any>(`${this.baseUrl}/multi-delete`, {body: products});
+    }
+
     updateProductStock(req: ProductStockRequest) {
         return this.http.put<any>(`${this.baseUrl}/stock-update`, req);
     }

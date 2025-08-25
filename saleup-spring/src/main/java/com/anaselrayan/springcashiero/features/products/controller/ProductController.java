@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
@@ -49,7 +51,7 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority('perm.access.product')")
     @GetMapping("/filter")
-    public ResponseEntity<ApiResponse> getProductPage(@RequestParam String keyword,
+    public ResponseEntity<ApiResponse> filterProducts(@RequestParam String keyword,
                                                       @RequestParam Integer page,
                                                       @RequestParam Integer size) {
         ApiResponse res = productService.searchByKeyword(keyword, PageRequest.of(page, size));
@@ -58,7 +60,7 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority('perm.access.product')")
     @PostMapping("/filter/criteria")
-    public ResponseEntity<ApiResponse> filterProducts(@RequestBody FilterCriteria criteria,
+    public ResponseEntity<ApiResponse> findByCriteria(@RequestBody FilterCriteria criteria,
                                                       @RequestParam Integer page,
                                                       @RequestParam Integer size) {
         ApiResponse res = productFilterService.findByCriteria(criteria, PageRequest.of(page, size));
@@ -98,6 +100,13 @@ public class ProductController {
     @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long productId) {
         ApiResponse res = productService.deleteProduct(productId);
+        return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.delete.product')")
+    @DeleteMapping("/multi-delete")
+    public ResponseEntity<ApiResponse> deleteMultipleProducts(@RequestBody List<Long> productIds) {
+        ApiResponse res = productService.deleteAll(productIds);
         return ResponseEntity.ok(res);
     }
 

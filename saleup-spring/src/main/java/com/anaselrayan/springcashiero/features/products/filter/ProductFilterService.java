@@ -22,7 +22,7 @@ public class ProductFilterService {
     private final ProductRepository productRepository;
 
     public ApiResponse findByCriteria(FilterCriteria criteria, Pageable pageable) {
-        Specification<Product> spec = Specification.where(null);
+        Specification<Product> spec = ProductSpecs.defaultSpec();
 
         var nameFilter = criteria.getFilterOn("name");
         if (nameFilter.isPresent()) {

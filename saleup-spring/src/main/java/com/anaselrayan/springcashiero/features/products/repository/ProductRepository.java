@@ -17,8 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     boolean existsByProductBasicBarcode(String barcode);
 
     @Query("""
-    SELECT p FROM Product  p WHERE p.productBasic.productName LIKE %:keyword% OR p.productBasic.barcode LIKE %:keyword%
-    OR p.productBasic.description LIKE %:keyword%""")
+    SELECT p FROM Product  p WHERE (p.productBasic.productName LIKE %:keyword% OR p.productBasic.barcode LIKE %:keyword%)
+    AND p.deleted = false""")
     Page<Product> findByKeywordAndDeletedFalse(String keyword, Pageable pageable);
 
     Optional<Product> findByProductBasicBarcode(String barcode);

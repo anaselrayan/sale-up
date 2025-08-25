@@ -157,6 +157,7 @@
     "PERM_ACCESS_PRODUCT": "الوصول إلي المنتجات",
     "PERM_CREATE_PRODUCT": "إضافة منتج جديد",
     "PERM_UPDATE_PRODUCT": "تعديل منتج",
+    "PERM_DELETE_PRODUCT": "حذف منتج",
     "PERM_ACCESS_CATEGORY": "الوصول إلي الأصناف",
     "PERM_CREATE_CATEGORY": "إضافة صنف",
     "PERM_ACCESS_BRAND": "الوصول إلي البراندات",
@@ -328,5 +329,6 @@
     "FILTER": "فلترة",
     "FILTER_RESULTS": "فلترة النتائج",
     "APPLY": "تطبيق",
-    "REMOVE_FILTERS": "إزالة الفلاتر"
+    "REMOVE_FILTERS": "إزالة الفلاتر",
+    "DELETE_SELECTED_ALERT": "هل أنت متأكد من حذف ({{count}}) : {{names}}"
 }

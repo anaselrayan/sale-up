@@ -12,32 +12,36 @@ import { Sale } from "../models/sale.model";
     providedIn: 'root'
 })
 export class SaleService {
-    basUrl = environment.apiBaseUrl + '/sale';
+    baseUrl = environment.apiBaseUrl + '/sale';
 
     constructor(private http: HttpClient) {}
 
     public createSale(req: SaleRequest): Observable<ApiResponse<Sale>> {
-        return this.http.post<any>(this.basUrl, req);
+        return this.http.post<any>(this.baseUrl, req);
     }
 
     public updateSale(req: SaleRequest): Observable<ApiResponse<Sale>> {
-        return this.http.put<any>(this.basUrl, req);
+        return this.http.put<any>(this.baseUrl, req);
     }
 
     public getSalesPage(pr: PageRequest): Observable<ApiResponse<PageResponse<Sale>>> {
-        return this.http.get<any>(`${this.basUrl}?page=${pr.page}&size=${pr.size}`)
+        return this.http.get<any>(`${this.baseUrl}?page=${pr.page}&size=${pr.size}`)
     }
 
     public getSaleById(saleId: number): Observable<ApiResponse<Sale>> {
-        return this.http.get<any>(`${this.basUrl}/${saleId}`)
+        return this.http.get<any>(`${this.baseUrl}/${saleId}`)
     }
 
     public getSaleReceipt(saleId: number): Observable<any> {
-        return this.http.get(`${this.basUrl}/receipt/${saleId}`, { responseType: 'blob' });
+        return this.http.get(`${this.baseUrl}/receipt/${saleId}`, { responseType: 'blob' });
     }
 
     public deleteSale(saleId: number): Observable<ApiResponse<any>> {
-        return this.http.delete<any>(`${this.basUrl}/${saleId}`);
+        return this.http.delete<any>(`${this.baseUrl}/${saleId}`);
+    }
+
+    public deleteAll(sales: number[]): Observable<ApiResponse<any>> {
+        return this.http.post<any>(`${this.baseUrl}/multi-delete`, {IDs: sales});
     }
 
     public previewSaleReceipt(sale: Sale) {

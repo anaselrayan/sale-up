@@ -9,6 +9,10 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class ProductSpecs {
 
+    public static Specification<Product> defaultSpec() throws NotSupportedFilterCriteriaException {
+        return (root, query, cb) -> cb.isFalse(root.get("deleted"));
+    }
+
     public static Specification<Product> nameSpec(String givenName, FilterOperator oper) throws NotSupportedFilterCriteriaException {
         return (root, query, cb) -> {
             var productName = cb.lower(root.get("productBasic").get("productName"));

@@ -11,7 +11,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { DialogModule } from 'primeng/dialog'; // Import DialogModule for the new import modal
+import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -212,12 +212,17 @@ export class ProductListComponent implements OnInit {
   deleteSelectedProducts() {
     if (this.selectedProducts && this.selectedProducts.length > 0) {
       const productNames = this.selectedProducts.map(p => p.basicDetails.productName).join(', ');
-      const msg = this.translate.instant("DELETE_SELECTED_ALERT", { names: productNames });
+      const msg = this.translate.instant("DELETE_SELECTED_ALERT", { count: this.selectedProducts.length, names: productNames });
       this.confirmService.dialogAlert(msg, () => {
-        console.log('Deleting selected products:', this.selectedProducts);
-        this.toast.showSuccess(this.translate.instant("DELETE_SUCCESS"));
-        this.selectedProducts = null;
-        this.getProducts();
+        console.log(msg)
+        console.log(this.selectedProducts!.map(p => p.productId))
+        this.productService.deleteAll(this.selectedProducts!.map(p => p.productId))
+            .subscribe(res => {
+              if (res.success) {
+                this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+                this.getProducts();
+              }
+            })
       });
     } else {
       this.toast.showWarn(this.translate.instant("NO_PRODUCTS_SELECTED"));

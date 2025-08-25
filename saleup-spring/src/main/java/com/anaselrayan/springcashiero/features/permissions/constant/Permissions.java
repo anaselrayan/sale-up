@@ -7,6 +7,7 @@ public class Permissions {
     public static final String PERM_ACCESS_PRODUCT = "perm.access.product";
     public static final String PERM_CREATE_PRODUCT = "perm.create.product";
     public static final String PERM_UPDATE_PRODUCT = "perm.update.product";
+    public static final String PERM_DELETE_PRODUCT = "perm.delete.product";
     public static final String PERM_ACCESS_CATEGORY = "perm.access.category";
     public static final String PERM_CREATE_CATEGORY = "perm.create.category";
     public static final String PERM_ACCESS_BRAND = "perm.access.brand";

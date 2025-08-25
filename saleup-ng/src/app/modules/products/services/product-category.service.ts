@@ -36,4 +36,8 @@ export class ProductCategoryService {
         return this.http.delete<any>(`${this.baseUrl}/product-category/${catId}`);
     }
 
+    public deleteAll(cats: number[]): Observable<ApiResponse<any>> {
+        return this.http.post<any>(`${this.baseUrl}/multi-delete`, {IDs: cats});
+    }
+
 }
