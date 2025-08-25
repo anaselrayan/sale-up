@@ -375,14 +375,12 @@ export class ProductListComponent implements OnInit {
   }
 
   onFiltersApplied(criteria: FilterCriteria) {
-    console.log(criteria)
     this.pageReq.page = 0;
     this.filterCriteria = criteria;
     this.filterByCriteria();
   }
 
   removeFilters() {
-    console.log('clicks')
     this.searchMode = 'all';
     this.getProducts();
   }
