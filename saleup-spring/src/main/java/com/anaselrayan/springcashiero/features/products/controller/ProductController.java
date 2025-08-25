@@ -1,11 +1,13 @@
 package com.anaselrayan.springcashiero.features.products.controller;
 
+import com.anaselrayan.springcashiero.features.products.filter.ProductFilterService;
 import com.anaselrayan.springcashiero.features.products.request.ProductDiscountRequest;
 import com.anaselrayan.springcashiero.features.products.request.ProductRequest;
 import com.anaselrayan.springcashiero.features.products.request.ProductStockSimpleRequest;
 import com.anaselrayan.springcashiero.features.products.service.ProductService;
 import com.anaselrayan.springcashiero.features.products.service.ProductStatisticsService;
 import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.shared.filter.FilterCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductFilterService productFilterService;
     private final ProductStatisticsService productStatisticsService;
 
     @PreAuthorize("hasAuthority('perm.create.product')")
@@ -50,6 +53,15 @@ public class ProductController {
                                                       @RequestParam Integer page,
                                                       @RequestParam Integer size) {
         ApiResponse res = productService.searchByKeyword(keyword, PageRequest.of(page, size));
+        return ResponseEntity.status(res.getCode()).body(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.access.product')")
+    @PostMapping("/filter/criteria")
+    public ResponseEntity<ApiResponse> filterProducts(@RequestBody FilterCriteria criteria,
+                                                      @RequestParam Integer page,
+                                                      @RequestParam Integer size) {
+        ApiResponse res = productFilterService.findByCriteria(criteria, PageRequest.of(page, size));
         return ResponseEntity.status(res.getCode()).body(res);
     }
 

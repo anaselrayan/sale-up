@@ -38,6 +38,19 @@
                     <input pInputText class="w-80" [formControl]="globalSearchControl" type="text"
                             [placeholder]="'SEARCH_PACEHOLDER' | translate" />
                 </p-iconfield>
+                <div class="filter">
+                    <div class="flex gap-2" style="align-items: center;">
+                        <div (click)="removeFilters()" *ngIf="searchMode === 'criteria' && filterCriteria" [pTooltip]="'REMOVE_FILTERS' | translate" class="cursor-pointer">
+                            <i class="pi pi-filter-slash"></i>
+                        </div>
+                        <p-button (onClick)="filterDrawerVisible = !filterDrawerVisible" [label]="'FILTER' | translate" icon="pi pi-filter" severity="secondary" class="mr-2" />
+                    </div>
+                    <app-filter-drawer 
+                        [(visible)]="filterDrawerVisible"
+                        [configs]="entityFilter.getProductFilterConfig()" 
+                        (applyFilters)="onFiltersApplied($event)">
+                    </app-filter-drawer>
+                </div>
             </div>
         </ng-template>
         <ng-template #header>

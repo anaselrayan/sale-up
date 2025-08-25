@@ -7,6 +7,7 @@ import { PageResponse } from "src/app/shared/models/page-response.mdel";
 import { environment } from "src/environments/environment";
 import { Product, ProductStatisticsSummary } from "../models/product.model";
 import { ProductDiscountRequest, ProductStockRequest } from "../models/product-request";
+import { FilterCriteria } from "@shared/models/filter";
 
 @Injectable({
     providedIn: 'root'
@@ -17,12 +18,16 @@ export class ProductService {
 
     constructor(private http: HttpClient) {}
 
-    public getProductsPage(pageReq: PageRequest): Observable<ApiResponse<PageResponse<Product>>> {
-        return this.http.get<any>(`${this.baseUrl}?page=${pageReq.page}&size=${pageReq.size}`)
+    public getProductsPage(pr: PageRequest): Observable<ApiResponse<PageResponse<Product>>> {
+        return this.http.get<any>(`${this.baseUrl}?page=${pr.page}&size=${pr.size}`)
     }
 
     public searchByKeyword(keyword: string, pr: PageRequest): Observable<ApiResponse<PageResponse<Product>>> {
         return this.http.get<any>(`${this.baseUrl}/filter?keyword=${keyword}&page=${pr.page}&size=${pr.size}`)
+    }
+
+    public filterByCriteria(criteria: FilterCriteria, pr: PageRequest): Observable<ApiResponse<PageResponse<Product>>> {
+        return this.http.post<any>(`${this.baseUrl}/filter/criteria?page=${pr.page}&size=${pr.size}`, criteria)
     }
 
     public createProduct(req: FormData): Observable<ApiResponse<Product>> {
@@ -55,6 +60,6 @@ export class ProductService {
 
     updateProductStock(req: ProductStockRequest) {
         return this.http.put<any>(`${this.baseUrl}/stock-update`, req);
-      }
+    }
 
 }

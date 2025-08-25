@@ -35,6 +35,9 @@ import { MultiSelect } from 'primeng/multiselect';
 import { ExportColumn, ExportUtils } from 'src/app/utils/export.utils';
 import { debounceTime, finalize, switchMap } from 'rxjs';
 import { ToastService } from '@shared/services/toast.service';
+import { FilterDrawerComponent } from '@shared/components/filter-drawer/filter-drawer.component';
+import { EntityFilter } from '@shared/config/entity.filter';
+import { FilterCriteria } from '@shared/models/filter';
 
 @Component({
   selector: 'app-product-list',
@@ -65,6 +68,7 @@ import { ToastService } from '@shared/services/toast.service';
     Tooltip,
     SCurrencyPipe,
     ProductDiscountCreateComponent,
+    FilterDrawerComponent,
     SubstringPipe
   ],
   providers: [],
@@ -95,6 +99,11 @@ export class ProductListComponent implements OnInit {
   selectedExportColumns: ExportColumn[] = [];
   exportType: 'excel' | 'pdf' = 'excel';
 
+  filterDrawerVisible = false;
+  filterCriteria!: FilterCriteria;
+  searchKey!: string;
+  searchMode: 'all' | 'quick' | 'criteria' = 'all';
+
   statuses!: any[];
 
   cols!: any[];
@@ -104,6 +113,7 @@ export class ProductListComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private productImportService: ProductImportService,
+    public entityFilter: EntityFilter,
     private confirmService: ConfirmService,
     private translate: TranslateService,
     private toast: ToastService,
@@ -115,13 +125,25 @@ export class ProductListComponent implements OnInit {
 
 
   ngOnInit() {
+    this.subscribeForQuickSearch();
     this.getProducts();
-    this.subscribeForGlobalSearch();
     this.getImportSpec();
     this.initExportColumns();
   }
 
   getProducts() {
+    if (this.searchMode == 'quick' && this.searchKey) {
+      this.quickSearch();
+    }
+    else if (this.searchMode == 'criteria' && this.filterCriteria) {
+      this.filterByCriteria();
+    }
+    else {
+      this.getAllProducts();
+    }
+  }
+
+  getAllProducts() {
     this.loading = true;
     this.productService
       .getProductsPage(this.pageReq)
@@ -134,19 +156,49 @@ export class ProductListComponent implements OnInit {
       })
   }
 
+  quickSearch() {
+    this.loading = true;
+    this.searchMode = 'quick';
+    this.productService.searchByKeyword(this.searchKey, this.pageReq)
+        .subscribe(res => {
+          if (res.success) {
+            this.products = res.data.content
+            this.pageDetails = res.data.page
+          }
+          this.loading = false
+        })
+  }
+
+  filterByCriteria() {
+    this.loading = true;
+    this.searchMode = 'criteria';
+    this.productService.filterByCriteria(this.filterCriteria, this.pageReq)
+      .subscribe(res => {
+        if (res.success) {
+          this.products = res.data.content
+          this.pageDetails = res.data.page
+        }
+        this.loading = false;
+      })
+  }
+
   getImportSpec() {
     this.productImportService
         .getImportSpec()
         .subscribe(res => {this.importColumnsSpec = res})
   }
 
-  subscribeForGlobalSearch() {
-    this.pageReq = new PageRequest(0, 8);
+  subscribeForQuickSearch() {
     this.loading = true;
+    this.searchMode = 'quick';
     this.globalSearchControl.valueChanges.pipe(
       debounceTime(300),
-      switchMap((searchTerm) => this.productService.searchByKeyword(searchTerm || '', this.pageReq)
-      .pipe(finalize(() => this.loading = false))
+      switchMap((searchTerm) => {
+        this.searchKey = searchTerm || '';
+        this.pageReq.page = 0;
+        return this.productService.searchByKeyword(searchTerm || '', this.pageReq)
+          .pipe(finalize(() => this.loading = false));
+      }
     )
     ).subscribe(res => {
       if (res.success) {
@@ -320,6 +372,19 @@ export class ProductListComponent implements OnInit {
     ExportUtils.exportDataToExcel(this.products, this.selectedExportColumns, 'product_list');
     this.hideExportDialog();
     this.exportLoading = false;
+  }
+
+  onFiltersApplied(criteria: FilterCriteria) {
+    console.log(criteria)
+    this.pageReq.page = 0;
+    this.filterCriteria = criteria;
+    this.filterByCriteria();
+  }
+
+  removeFilters() {
+    console.log('clicks')
+    this.searchMode = 'all';
+    this.getProducts();
   }
 
 }

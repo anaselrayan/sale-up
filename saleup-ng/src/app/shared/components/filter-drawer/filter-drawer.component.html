@@ -1,0 +1,58 @@
+<p-drawer [(visible)]="visible" position="right" [baseZIndex]="10000" [style]="{minWidth: '25%'}">
+    <div>
+        
+        <h3 class="mb-3"> {{ 'FILTER_RESULTS' | translate}} <i class="pi pi-filter"></i> </h3>
+    </div>
+
+  <form [formGroup]="form" >
+    <div formArrayName="filters" class="flex gap-4" style="flex-direction: column;">
+      <div *ngFor="let fg of filters.controls; let i = index" [formGroupName]="i" class="mb-4">
+        
+        <!-- Label -->
+        <label class="block text-sm font-medium mb-2">
+          {{ configs[i].label }}
+        </label>
+
+        <div class="flex gap-1" style="flex-direction: column;">
+            <!-- Value inputs -->
+            <ng-container [ngSwitch]="fieldType(fg.value.fieldName)">
+                <!-- TEXT -->
+                 <div *ngSwitchCase="'TEXT'">
+                    <p-select class="mb-1" formControlName="operator" [style]="{minWidth: '12rem'}"
+                        [options]="textOperators">
+                    </p-select>
+                    <input [placeholder]="configs[i].label" pInputText type="text" formControlName="value1" />
+                </div>
+
+                <!-- NUMBER -->
+                <ng-container *ngSwitchCase="'NUMBER'">
+                    <div [style]="{minWidth: '12rem'}" class="mb-1">
+                        <p-select formControlName="operator" [style]="{minWidth: '12rem'}"
+                            [options]="numericOperators">
+                        </p-select>
+                    </div>
+                    <p-inputnumber formControlName="value1" />
+                    <p-inputnumber *ngIf="fg.value.operator === 'between'" formControlName="value2" />
+                </ng-container>
+
+                <!-- DATE -->
+                <ng-container *ngSwitchCase="'DATE'" class="mb-1">
+                    <p-select formControlName="operator" [style]="{minWidth: '12rem'}"
+                        [options]="dateOperators">
+                    </p-select>
+                    <input type="date" formControlName="value1" class="border p-2 rounded w-full mb-2" />
+                    <input *ngIf="fg.value.operator === 'dateBetween'" type="date" formControlName="value2"/>
+                </ng-container>
+            </ng-container>
+        </div>
+        
+      </div>
+    </div>
+  </form>
+  <ng-template #footer>
+        <div class="flex items-center gap-2">
+            <p-button (onClick)="onReset()" severity="secondary" [label]="'REMOVE_FILTERS' | translate" icon="pi pi-filter-slash" class="mr-2" />
+            <p-button (onClick)="onApply()" severity="primary" [label]="'APPLY' | translate" icon="pi pi-filter-fill" outlined  />
+        </div>
+    </ng-template>
+</p-drawer>
