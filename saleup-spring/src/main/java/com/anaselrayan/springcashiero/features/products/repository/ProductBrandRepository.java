@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductBrandRepository extends JpaRepository<ProductBrand, Long> {
+
+    boolean existsByNameAndDeletedFalse(String name);
+
 }

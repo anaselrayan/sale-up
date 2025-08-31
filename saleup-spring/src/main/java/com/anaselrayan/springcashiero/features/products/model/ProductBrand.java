@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.PRODUCT_BRAND;
 
@@ -16,6 +17,7 @@ import static com.anaselrayan.springcashiero.infrastructure.constatnts.Table.PRO
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@SQLRestriction("deleted = false")
 public class ProductBrand extends BaseModel {
 
     @Column(unique = true, nullable = false)

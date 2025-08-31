@@ -18,6 +18,8 @@ public class PermissionSeeds {
                 Permission.builder().permCode(Permissions.PERM_CREATE_CATEGORY).permName("PERM_CREATE_CATEGORY").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_BRAND).permName("PERM_ACCESS_BRAND").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_CREATE_BRAND).permName("PERM_CREATE_BRAND").permCategory("PRODUCTS").build(),
+                Permission.builder().permCode(Permissions.PERM_UPDATE_BRAND).permName("PERM_UPDATE_BRAND").permCategory("PRODUCTS").build(),
+                Permission.builder().permCode(Permissions.PERM_DELETE_BRAND).permName("PERM_DELETE_BRAND").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_PRINT_BARCODE).permName("PERM_PRINT_BARCODE").permCategory("PRODUCTS").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_POS).permName("PERM_ACCESS_POS").permCategory("SALES").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_SALE).permName("PERM_ACCESS_SALE").permCategory("SALES").build(),
@@ -31,12 +33,18 @@ public class PermissionSeeds {
                 Permission.builder().permCode(Permissions.PERM_SALES_REPORT).permName("PERM_SALES_REPORT").permCategory("REPORTS").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_CUSTOMER).permName("PERM_ACCESS_CUSTOMER").permCategory("CUSTOMERS").build(),
                 Permission.builder().permCode(Permissions.PERM_CREATE_CUSTOMER).permName("PERM_CREATE_CUSTOMER").permCategory("CUSTOMERS").build(),
+                Permission.builder().permCode(Permissions.PERM_UPDATE_CUSTOMER).permName("PERM_UPDATE_CUSTOMER").permCategory("CUSTOMERS").build(),
+                Permission.builder().permCode(Permissions.PERM_DELETE_CUSTOMER).permName("PERM_DELETE_CUSTOMER").permCategory("CUSTOMERS").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_SETTINGS).permName("PERM_ACCESS_SETTINGS").permCategory("SETTINGS").build(),
                 Permission.builder().permCode(Permissions.PERM_UPDATE_SETTINGS).permName("PERM_UPDATE_SETTINGS").permCategory("SETTINGS").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_ROLE).permName("PERM_ACCESS_ROLE").permCategory("USERS").build(),
                 Permission.builder().permCode(Permissions.PERM_CREATE_ROLE).permName("PERM_CREATE_ROLE").permCategory("USERS").build(),
+                Permission.builder().permCode(Permissions.PERM_UPDATE_ROLE).permName("PERM_UPDATE_ROLE").permCategory("USERS").build(),
+                Permission.builder().permCode(Permissions.PERM_DELETE_ROLE).permName("PERM_DELETE_ROLE").permCategory("USERS").build(),
                 Permission.builder().permCode(Permissions.PERM_ACCESS_USER).permName("PERM_ACCESS_USER").permCategory("USERS").build(),
-                Permission.builder().permCode(Permissions.PERM_CREATE_USER).permName("PERM_CREATE_USER").permCategory("USERS").build()
+                Permission.builder().permCode(Permissions.PERM_CREATE_USER).permName("PERM_CREATE_USER").permCategory("USERS").build(),
+                Permission.builder().permCode(Permissions.PERM_UPDATE_USER).permName("PERM_UPDATE_USER").permCategory("USERS").build(),
+                Permission.builder().permCode(Permissions.PERM_DELETE_USER).permName("PERM_DELETE_USER").permCategory("USERS").build()
         );
     }
 

@@ -10,8 +10,12 @@ public class Permissions {
     public static final String PERM_DELETE_PRODUCT = "perm.delete.product";
     public static final String PERM_ACCESS_CATEGORY = "perm.access.category";
     public static final String PERM_CREATE_CATEGORY = "perm.create.category";
+    public static final String PERM_UPDATE_CATEGORY = "perm.update.category";
+    public static final String PERM_DELETE_CATEGORY = "perm.delete.category";
     public static final String PERM_ACCESS_BRAND = "perm.access.brand";
     public static final String PERM_CREATE_BRAND = "perm.create.brand";
+    public static final String PERM_UPDATE_BRAND = "perm.update.brand";
+    public static final String PERM_DELETE_BRAND = "perm.delete.brand";
     public static final String PERM_PRINT_BARCODE = "perm.print-barcodes";
 
     public static final String PERM_ACCESS_POS = "perm.access.pos";
@@ -26,15 +30,21 @@ public class Permissions {
 
     public static final String PERM_ACCESS_CUSTOMER = "perm.access.customer";
     public static final String PERM_CREATE_CUSTOMER = "perm.create.customer";
+    public static final String PERM_UPDATE_CUSTOMER = "perm.update.customer";
+    public static final String PERM_DELETE_CUSTOMER = "perm.delete.customer";
 
     public static final String PERM_ACCESS_SETTINGS = "perm.access.setting";
     public static final String PERM_UPDATE_SETTINGS = "perm.update.setting";
 
     public static final String PERM_ACCESS_ROLE = "perm.access.role";
     public static final String PERM_CREATE_ROLE = "perm.create.role";
+    public static final String PERM_UPDATE_ROLE = "perm.update.role";
+    public static final String PERM_DELETE_ROLE = "perm.delete.role";
 
     public static final String PERM_ACCESS_USER = "perm.access.user";
     public static final String PERM_CREATE_USER = "perm.create.user";
+    public static final String PERM_UPDATE_USER = "perm.update.user";
+    public static final String PERM_DELETE_USER = "perm.delete.user";
 
     public static final String PERM_PRODUCTS_REPORT = "perm.product-report";
     public static final String PERM_SALES_REPORT = "perm.sales-report";

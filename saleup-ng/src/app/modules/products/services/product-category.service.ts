@@ -12,32 +12,32 @@ import { PageResponse } from "@shared/models/page-response.mdel";
 })
 export class ProductCategoryService {
 
-    baseUrl = environment.apiBaseUrl;
+    baseUrl = environment.apiBaseUrl + '/product-category';
     
     constructor(private http: HttpClient) {}
 
     public getAllCategories(): Observable<ApiResponse<ProductCategory[]>> {
-        return this.http.get<any>(`${this.baseUrl}/product-category/all`);
+        return this.http.get<any>(`${this.baseUrl}/all`);
     }
 
     public getCategoriesPage(pr: PageRequest): Observable<ApiResponse<PageResponse<ProductCategory>>> {
-        return this.http.get<any>(`${this.baseUrl}/product-category?page=${pr.page}&size=${pr.size}`);
+        return this.http.get<any>(`${this.baseUrl}?page=${pr.page}&size=${pr.size}`);
     }
 
     public createProductCategory(req: FormData): Observable<ApiResponse<ProductCategory>> {
-        return this.http.post<any>(`${this.baseUrl}/product-category`, req);
+        return this.http.post<any>(`${this.baseUrl}`, req);
     }
 
     public updateProductCategory(req: FormData): Observable<ApiResponse<ProductCategory>> {
-        return this.http.put<any>(`${this.baseUrl}/product-category`, req);
+        return this.http.put<any>(`${this.baseUrl}`, req);
     }
 
     public deleteCategory(catId: number): Observable<ApiResponse<any>> {
-        return this.http.delete<any>(`${this.baseUrl}/product-category/${catId}`);
+        return this.http.delete<any>(`${this.baseUrl}/${catId}`);
     }
 
     public deleteAll(cats: number[]): Observable<ApiResponse<any>> {
-        return this.http.post<any>(`${this.baseUrl}/multi-delete`, {IDs: cats});
+        return this.http.delete<any>(`${this.baseUrl}/multi-delete`, { body: cats });
     }
 
 }

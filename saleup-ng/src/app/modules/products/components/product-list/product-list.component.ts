@@ -214,8 +214,6 @@ export class ProductListComponent implements OnInit {
       const productNames = this.selectedProducts.map(p => p.basicDetails.productName).join(', ');
       const msg = this.translate.instant("DELETE_SELECTED_ALERT", { count: this.selectedProducts.length, names: productNames });
       this.confirmService.dialogAlert(msg, () => {
-        console.log(msg)
-        console.log(this.selectedProducts!.map(p => p.productId))
         this.productService.deleteAll(this.selectedProducts!.map(p => p.productId))
             .subscribe(res => {
               if (res.success) {
@@ -225,7 +223,7 @@ export class ProductListComponent implements OnInit {
             })
       });
     } else {
-      this.toast.showWarn(this.translate.instant("NO_PRODUCTS_SELECTED"));
+      this.toast.showWarn(this.translate.instant("NO_SELECTED_ITEMS"));
     }
   }
 

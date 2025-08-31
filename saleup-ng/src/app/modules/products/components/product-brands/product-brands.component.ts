@@ -18,6 +18,7 @@ import { ProductBrandService } from '@module/products/services/product-brand.ser
 import { FileUploadModule } from 'primeng/fileupload';
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { Tooltip } from 'primeng/tooltip';
+import { ConfirmService } from '@shared/services/confirm.service';
 
 @Component({
   selector: 'app-product-brands',
@@ -60,6 +61,7 @@ export class ProductBrandsComponent {
   constructor(
     private brandService: ProductBrandService,
     private toast: ToastService,
+    private confirm: ConfirmService,
     private translate: TranslateService
   ) {}
 
@@ -149,7 +151,16 @@ export class ProductBrandsComponent {
   }
 
   deleteBrand(brand: ProductBrand) {
-
+    const msg = this.translate.instant("DELETE_ALERT", { name: brand.name })
+    this.confirm.dialogAlert(msg, ()=> {
+      this.brandService.deleteBrand(brand.productBrandId)
+        .subscribe(res => {
+          if (res.success) {
+            this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'))
+            this.getBrands();
+          }
+        })
+    })
   }
 
   openNew() {
@@ -158,7 +169,23 @@ export class ProductBrandsComponent {
     this.brandDialog = true;
   }
 
-  deleteSelectedBrands() {}
+  deleteSelectedBrands() {
+    if (this.selectedBrands && this.selectedBrands.length > 0) {
+      const productNames = this.selectedBrands.map(b => b.name).join(', ');
+      const msg = this.translate.instant("DELETE_SELECTED_ALERT", { count: this.selectedBrands.length, names: productNames });
+      this.confirm.dialogAlert(msg, () => {
+        this.brandService.deleteAll(this.selectedBrands!.map(b => b.productBrandId))
+            .subscribe(res => {
+              if (res.success) {
+                this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+                this.getBrands();
+              }
+            })
+      });
+    } else {
+      this.toast.showWarn(this.translate.instant("NO_SELECTED_ITEMS"));
+    }
+  }
 
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');

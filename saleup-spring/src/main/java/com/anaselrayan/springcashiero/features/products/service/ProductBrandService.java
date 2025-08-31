@@ -1,12 +1,13 @@
 package com.anaselrayan.springcashiero.features.products.service;
 
-import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
-import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.products.converter.ProductBrandConverter;
 import com.anaselrayan.springcashiero.features.products.dto.ProductBrandDTO;
 import com.anaselrayan.springcashiero.features.products.model.ProductBrand;
 import com.anaselrayan.springcashiero.features.products.repository.ProductBrandRepository;
 import com.anaselrayan.springcashiero.features.products.request.ProductBrandRequest;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.ActionType;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.shared.UploadFileRequest;
 import com.anaselrayan.springcashiero.shared.UploadFileResponse;
 import com.anaselrayan.springcashiero.shared.UploadService;
@@ -35,6 +36,10 @@ public class ProductBrandService {
 
     public ApiResponse createProductBrand(@Valid ProductBrandRequest request) {
         try {
+            ApiResponse validationRes = validateBrandRequest(request, ActionType.CREATE);
+            if (!validationRes.getSuccess())
+                return validationRes;
+
             ProductBrand toSave = ProductBrand.builder()
                     .name(request.getName())
                     .description(request.getDescription())
@@ -52,6 +57,10 @@ public class ProductBrandService {
 
     public ApiResponse updateProductBrand(@Valid ProductBrandRequest req) {
         try {
+            ApiResponse validationRes = validateBrandRequest(req, ActionType.UPDATE);
+            if (!validationRes.getSuccess())
+                return validationRes;
+
             Long catId = req.getProductBrandId();
             if (catId == null || !productBrandRepository.existsById(catId)) {
                 return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid product brand id");
@@ -133,4 +142,33 @@ public class ProductBrandService {
             return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
         }
     }
+
+    public ApiResponse deleteMultipleBrands(List<Long> iDs) {
+        if (iDs == null || iDs.isEmpty()) {
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid brand list");
+        }
+        iDs.forEach(this::deleteBrand);
+        return new ApiResponse(true, StatusCode.OK, "Brands have been deleted");
+    }
+
+    private ApiResponse validateBrandRequest(ProductBrandRequest request, ActionType actionType) {
+        if (actionType == ActionType.UPDATE) {
+            if (request.getProductBrandId() == null || !productBrandRepository.existsById(request.getProductBrandId()))
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "Brand id not found");
+
+            var existed = productBrandRepository.getReferenceById(request.getProductBrandId());
+            if (!request.getName().equals(existed.getName()) &&
+                    productBrandRepository.existsByNameAndDeletedFalse(request.getName())) {
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "Brand name already existed");
+            }
+        }
+        else if (actionType == ActionType.CREATE) {
+            if (productBrandRepository.existsByNameAndDeletedFalse(request.getName()))
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "Brand name already existed");
+        }
+
+        return new ApiResponse(true, StatusCode.OK, "Valid");
+    }
+
+
 }

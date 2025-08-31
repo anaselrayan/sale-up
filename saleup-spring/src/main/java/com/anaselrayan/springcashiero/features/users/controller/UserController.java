@@ -26,7 +26,7 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @PreAuthorize("hasAuthority('perm.create.user')")
+    @PreAuthorize("hasAuthority('perm.update.user')")
     @PutMapping
     public ResponseEntity<ApiResponse> updateUser(@ModelAttribute UserRequest request) {
         ApiResponse res = userService.updateUser(request);
@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    @PreAuthorize("hasAuthority('perm.create.user')")
+    @PreAuthorize("hasAuthority('perm.update.user')")
     @GetMapping("lock/{userId}")
     public ResponseEntity<ApiResponse> toggleUserStatus(@PathVariable Long userId, @RequestParam boolean lock) {
         ApiResponse res = userService.toggleUserStatus(userId, lock);

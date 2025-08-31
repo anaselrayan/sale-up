@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
@@ -25,7 +27,7 @@ public class ProductBrandController {
         return ResponseEntity.ok(res);
     }
 
-    @PreAuthorize("hasAuthority('perm.create.brand')")
+    @PreAuthorize("hasAuthority('perm.update.brand')")
     @PutMapping
     public ResponseEntity<ApiResponse> updateProductBrand(@ModelAttribute ProductBrandRequest request) {
         ApiResponse res = productBrandService.updateProductBrand(request);
@@ -56,6 +58,13 @@ public class ProductBrandController {
     @DeleteMapping("/{brandId}")
     public ResponseEntity<ApiResponse> deleteBrand(@PathVariable Long brandId) {
         ApiResponse res = productBrandService.deleteBrand(brandId);
+        return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.delete.brand')")
+    @DeleteMapping("/multi-delete")
+    public ResponseEntity<ApiResponse> deleteMultipleBrands(@RequestBody List<Long> IDs) {
+        ApiResponse res = productBrandService.deleteMultipleBrands(IDs);
         return ResponseEntity.ok(res);
     }
 

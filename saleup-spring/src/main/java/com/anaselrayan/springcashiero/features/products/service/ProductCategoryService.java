@@ -1,12 +1,13 @@
 package com.anaselrayan.springcashiero.features.products.service;
 
-import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
-import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.products.converter.ProductCategoryConverter;
 import com.anaselrayan.springcashiero.features.products.dto.ProductCategoryDTO;
 import com.anaselrayan.springcashiero.features.products.model.ProductCategory;
 import com.anaselrayan.springcashiero.features.products.repository.ProductCategoryRepository;
 import com.anaselrayan.springcashiero.features.products.request.ProductCategoryRequest;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.ActionType;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.shared.UploadFileRequest;
 import com.anaselrayan.springcashiero.shared.UploadFileResponse;
 import com.anaselrayan.springcashiero.shared.UploadService;
@@ -35,6 +36,10 @@ public class ProductCategoryService {
 
     public ApiResponse createProductCategory(@Valid ProductCategoryRequest request) {
         try {
+            ApiResponse validationRes = validateCategoryRequest(request, ActionType.CREATE);
+            if (!validationRes.getSuccess())
+                return validationRes;
+
             ProductCategory toSave = ProductCategory.builder()
                     .name(request.getName())
                     .description(request.getDescription())
@@ -54,6 +59,10 @@ public class ProductCategoryService {
 
     public ApiResponse updateProductCategory(@Valid ProductCategoryRequest req) {
         try {
+            ApiResponse validationRes = validateCategoryRequest(req, ActionType.UPDATE);
+            if (!validationRes.getSuccess())
+                return validationRes;
+
             Long catId = req.getProductCategoryId();
             if (catId == null || !productCategoryRepository.existsById(catId)) {
                 return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid product category id");
@@ -134,6 +143,33 @@ public class ProductCategoryService {
             log.error(ex.getMessage());
             return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
         }
+    }
+
+    public ApiResponse deleteMultipleCategories(List<Long> iDs) {
+        if (iDs == null || iDs.isEmpty()) {
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid category list");
+        }
+        iDs.forEach(this::deleteCategory);
+        return new ApiResponse(true, StatusCode.OK, "Categories have been deleted");
+    }
+
+    private ApiResponse validateCategoryRequest(ProductCategoryRequest request, ActionType actionType) {
+        if (actionType == ActionType.UPDATE) {
+            if (request.getProductCategoryId() == null || !productCategoryRepository.existsById(request.getProductCategoryId()))
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "Category id not found");
+
+            var existed = productCategoryRepository.getReferenceById(request.getProductCategoryId());
+            if (!request.getName().equals(existed.getName()) &&
+                    productCategoryRepository.existsByNameAndDeletedFalse(request.getName())) {
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "Category name already existed");
+            }
+        }
+        else if (actionType == ActionType.CREATE) {
+            if (productCategoryRepository.existsByNameAndDeletedFalse(request.getName()))
+                return new ApiResponse(false, StatusCode.BAD_REQUEST, "Category name already existed");
+        }
+
+        return new ApiResponse(true, StatusCode.OK, "Valid");
     }
 
 }

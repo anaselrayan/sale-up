@@ -60,7 +60,7 @@ export class CategoryListComponent {
     private categoryService: ProductCategoryService,
     private toast: ToastService,
     private confirm: ConfirmService,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {}
 
   ngOnInit() {
@@ -110,7 +110,7 @@ export class CategoryListComponent {
   }
 
   deleteCategory(cat: ProductCategory) {
-    const msg = 'Are you sure you want to proceed?'
+    const msg = this.translate.instant("DELETE_ALERT", { name: cat.name })
     this.confirm.dialogAlert(msg, ()=> {
       this.categoryService.deleteCategory(cat.productCategoryId)
         .subscribe(res => {
@@ -122,7 +122,23 @@ export class CategoryListComponent {
     })
   }
 
-  deleteSelectedProducts() {}
+  deleteSelectedCategories() {
+    if (this.selectedCategories && this.selectedCategories.length > 0) {
+      const productNames = this.selectedCategories.map(c => c.name).join(', ');
+      const msg = this.translate.instant("DELETE_SELECTED_ALERT", { count: this.selectedCategories.length, names: productNames });
+      this.confirm.dialogAlert(msg, () => {
+        this.categoryService.deleteAll(this.selectedCategories!.map(c => c.productCategoryId))
+            .subscribe(res => {
+              if (res.success) {
+                this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+                this.getCategories();
+              }
+            })
+      });
+    } else {
+      this.toast.showWarn(this.translate.instant("NO_SELECTED_ITEMS"));
+    }
+  }
 
   getCategoryRequest() {
     const formVal = this.catForm.value;

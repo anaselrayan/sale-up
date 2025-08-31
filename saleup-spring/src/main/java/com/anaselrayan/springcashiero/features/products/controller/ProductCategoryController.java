@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
@@ -56,6 +58,13 @@ public class ProductCategoryController {
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long categoryId) {
         ApiResponse res = productCategoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.delete.category')")
+    @DeleteMapping("/multi-delete")
+    public ResponseEntity<ApiResponse> deleteMultipleBrands(@RequestBody List<Long> IDs) {
+        ApiResponse res = productCategoryService.deleteMultipleCategories(IDs);
         return ResponseEntity.ok(res);
     }
 
