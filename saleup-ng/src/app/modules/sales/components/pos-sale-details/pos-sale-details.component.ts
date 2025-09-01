@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +24,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Sale } from '@module/sales/models/sale.model';
 import { Message } from 'primeng/message';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-pos-sale-details',
@@ -47,7 +48,7 @@ import { Message } from 'primeng/message';
   templateUrl: './pos-sale-details.component.html',
   styleUrl: './pos-sale-details.component.scss'
 })
-export class PosSaleDetailsComponent implements OnInit {
+export class PosSaleDetailsComponent implements OnInit, OnDestroy {
 
   cart!: SaleCart;
   saleToEdit!: Sale;
@@ -55,6 +56,7 @@ export class PosSaleDetailsComponent implements OnInit {
   orderLoading = false;
   customerDialog = false;
   @Output("success") success = new EventEmitter<boolean>();
+  private productSub$!: Subscription;
 
   constructor(
     public cartService: CartService,
@@ -73,7 +75,7 @@ export class PosSaleDetailsComponent implements OnInit {
   }
 
   subscribeForProducts() {
-    this.cartService.addProductSubject
+    this.productSub$ = this.cartService.addProductSubject
         .subscribe(next => {
           this.cartService.addItem(next, this.cart)
         })
@@ -173,6 +175,10 @@ export class PosSaleDetailsComponent implements OnInit {
 
   getDiscountAmount(product: Product) {
     return ProductUtils.getDiscountLabel(product);
+  }
+
+  ngOnDestroy(): void {
+    this.productSub$.unsubscribe();
   }
 
 }

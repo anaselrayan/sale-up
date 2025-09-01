@@ -1,4 +1,5 @@
-<p-card styleClass="p-4">
+<p-message icon="pi pi-lightbulb" severity="info" closable>{{ 'PRODUCT_SCAN_DETAILS_HINT' | translate }}</p-message>
+<p-card styleClass="p-4 mt-2">
     <ng-template #header>
         <div class="mb-4 font-bold text-xl">
             {{ 'BARCODE_PRINTING' | translate }}
@@ -8,7 +9,7 @@
             <p-iconfield>
                 <p-inputicon styleClass="pi pi-barcode" />
                 <input #barcodeIn [placeholder]="'SEARCH_PACEHOLDER' | translate" (keydown.enter)="onSearch(barcodeIn.value)"
-                    [(ngModel)]="barcode" pInputText id="barcode" type="text" autofocus />
+                    [(ngModel)]="barcode" pInputText id="barcode" type="text" />
             </p-iconfield>
         </div>
     </ng-template>

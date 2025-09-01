@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Product } from '@module/products/models/product.model';
 import { ProductService } from '@module/products/services/product.service';
@@ -15,6 +15,9 @@ import { SCurrencyPipe } from "../../../../shared/pipes/s-currency.pipe";
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { InputNumber } from 'primeng/inputnumber';
 import { Button } from 'primeng/button';
+import { Message } from 'primeng/message';
+import { BarcodeScannerService } from '@shared/services/barcode-scanner.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-quick-stock-update',
@@ -28,6 +31,7 @@ import { Button } from 'primeng/button';
     InputNumber,
     Button,
     Card,
+    Message,
     Tag,
     TranslateModule,
     NgxBarcode6Module,
@@ -36,17 +40,19 @@ import { Button } from 'primeng/button';
   templateUrl: './quick-stock-update.component.html',
   styleUrl: './quick-stock-update.component.scss'
 })
-export class QuickStockUpdateComponent {
+export class QuickStockUpdateComponent implements OnInit, OnDestroy {
 
   loading = false;
   saveLoading = false;
   product!: Product;
   barcode!: string;
   form!: FormGroup;
+  private scannerSub$!: Subscription;
 
   constructor(
     private productService: ProductService,
     private translate: TranslateService,
+    private barcodeScanner: BarcodeScannerService,
     private formBuilder: UntypedFormBuilder,
     private toast: ToastService
   ) {}
@@ -57,15 +63,13 @@ export class QuickStockUpdateComponent {
       price: [null, Validators.required],
       quantity: [null, Validators.required],
     })
+    this.listenForBarcodesScanner();
   }
 
-
-  onScanBarcodeChanges(value: any) {
-    if (this.loading)
-      return;
-    this.loading = true;
-    const barcode = value.codeResult.code.trim();
-    this.findProductByBarcode(barcode);
+  listenForBarcodesScanner() {
+    this.scannerSub$ = this.barcodeScanner.scan$.subscribe(barcode => {
+      this.findProductByBarcode(barcode);
+    })
   }
 
   findProductByBarcode(barcode: string) {
@@ -79,7 +83,7 @@ export class QuickStockUpdateComponent {
           quantity: this.product.basicDetails.quantity,
         })
       } else {
-        this.toast.showError(this.translate.instant('PRODUCT_NOT_FOUND'));
+        this.toast.showWarn(this.translate.instant('PRODUCT_NOT_FOUND'));
         this.loading = false;
       }
     })
@@ -118,6 +122,10 @@ export class QuickStockUpdateComponent {
       }
       this.saveLoading = false;
     })
+  }
+
+  ngOnDestroy(): void {
+    this.scannerSub$.unsubscribe();
   }
   
 }

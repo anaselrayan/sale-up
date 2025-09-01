@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Product } from '@module/products/models/product.model';
 import { ProductService } from '@module/products/services/product.service';
@@ -21,6 +21,9 @@ import { InputNumber } from 'primeng/inputnumber';
 import { Tooltip } from 'primeng/tooltip';
 import { ConfirmService } from '@shared/services/confirm.service';
 import { BarcodeService } from '@shared/services/barcode.service';
+import { Subscription } from 'rxjs';
+import { BarcodeScannerService } from '@shared/services/barcode-scanner.service';
+import { Message } from 'primeng/message';
 
 @Component({
   selector: 'app-manage-barcode',
@@ -34,6 +37,7 @@ import { BarcodeService } from '@shared/services/barcode.service';
     IconField,
     Select,
     Tooltip,
+    Message,
     Button,
     Card,
     TranslateModule,
@@ -43,7 +47,7 @@ import { BarcodeService } from '@shared/services/barcode.service';
   templateUrl: './manage-barcode.component.html',
   styleUrl: './manage-barcode.component.scss'
 })
-export class ManageBarcodeComponent implements OnInit {
+export class ManageBarcodeComponent implements OnInit, OnDestroy {
   
   loading = false;
   saveLoading = false;
@@ -53,12 +57,14 @@ export class ManageBarcodeComponent implements OnInit {
   printers: PrintDevice[] = [];
   formats: string[] = [];
   printReq: PrintBarcodeRequest = new PrintBarcodeRequest();
+  private scannerSub$!: Subscription;
   
   constructor(
     private productService: ProductService,
     private translate: TranslateService,
     private printService: PrintService,
     private barcodeService: BarcodeService,
+    private barcodeScanner: BarcodeScannerService,
     private toast: ToastService,
     private confirm: ConfirmService
   ) {}
@@ -66,6 +72,7 @@ export class ManageBarcodeComponent implements OnInit {
   ngOnInit(): void {
     this.getPrinters();
     this.getBarcodeFormats();
+    this.listenForBarcodesScanner();
   }
 
   getPrinters() {
@@ -78,6 +85,12 @@ export class ManageBarcodeComponent implements OnInit {
         .subscribe(res => this.formats = res);
   }
 
+  listenForBarcodesScanner() {
+    this.scannerSub$ = this.barcodeScanner.scan$.subscribe(barcode => {
+      this.findProductByBarcode(barcode);
+    })
+  }
+
   findProductByBarcode(barcode: string) {
     this.loading = true;
     this.productService.getProductByBarcode(barcode)
@@ -86,7 +99,7 @@ export class ManageBarcodeComponent implements OnInit {
         this.addProduct(res.data)
         this.barcode = '';
       } else {
-        const msg = this.translate.instant('PRINT_CUSTOM_BARCODE_ALERT');
+        const msg = this.translate.instant('PRINT_CUSTOM_BARCODE_ALERT', {barcode: barcode});
         this.confirm.dialogAlert(msg, ()=> {
         this.addCustomBarcode(barcode);
       })
@@ -145,6 +158,10 @@ export class ManageBarcodeComponent implements OnInit {
   removeAll() {
     this.products = [];
     this.customBarcodes = [];
+  }
+
+  ngOnDestroy(): void {
+    this.scannerSub$.unsubscribe();
   }
 
 }

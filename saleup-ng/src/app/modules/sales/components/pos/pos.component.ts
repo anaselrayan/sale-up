@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DataView } from 'primeng/dataview';
 import { Tag } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -14,7 +14,7 @@ import { CardModule } from 'primeng/card';
 import { PosSaleDetailsComponent } from "../pos-sale-details/pos-sale-details.component";
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { CartService } from '@module/sales/services/cart.service';
-import { debounceTime, finalize, switchMap } from 'rxjs';
+import { debounceTime, finalize, Subscription, switchMap } from 'rxjs';
 import { PaginatorModule } from 'primeng/paginator';
 import { Page } from '@shared/models/page-response.mdel';
 import { Tooltip } from 'primeng/tooltip';
@@ -24,6 +24,8 @@ import { Skeleton } from 'primeng/skeleton';
 import { ToastService } from '@shared/services/toast.service';
 import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { BarcodeScannerService } from '@shared/services/barcode-scanner.service';
+import { Message } from 'primeng/message';
 
 
 @Component({
@@ -41,6 +43,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     CardModule,
     PosSaleDetailsComponent,
     PaginatorModule,
+    Message,
     Tooltip,
     SCurrencyPipe,
     Skeleton,
@@ -50,7 +53,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.scss'
 })
-export class PosComponent {
+export class PosComponent implements OnInit, OnDestroy {
+
   globalSearchControl = new FormControl('');
   pageReq = new PageRequest(0, 8);
   pageDetails?: Page;
@@ -58,11 +62,14 @@ export class PosComponent {
   loading = false;
   searching = false;
 
+  private sacnnerSub$!: Subscription;
+  
   constructor(
     private productService: ProductService,
     private cartService: CartService,
     private lasyoutService: LayoutService,
     private translate: TranslateService,
+    private barcodeScanner: BarcodeScannerService,
     private toast: ToastService
   ) {}
 
@@ -70,6 +77,7 @@ export class PosComponent {
     this.subscribeForGlobalSearch();
     this.getProducts();
     this.hideSideBar();
+    this.listenForBarcodesScanner();
   }
 
   hideSideBar() {
@@ -78,20 +86,18 @@ export class PosComponent {
     }
   }
 
-  onValueChanges(value: any) {
-    if (this.searching)
-      return;
-    this.searching = true;
-    const barcode = value.codeResult.code.trim();
-    this.productService.getProductByBarcode(barcode)
-      .subscribe(res => {
-        if (res.success) {
-          this.cartService.addProductSubject.next(res.data);
-        } else {
-          this.toast.showError(this.translate.instant('PRODUCT_NOT_FOUND'));
-          this.searching = false;
-        }
-      })
+  listenForBarcodesScanner() {
+    this.sacnnerSub$ = this.barcodeScanner.scan$.subscribe(barcode => {
+      this.productService.getProductByBarcode(barcode)
+        .subscribe(res => {
+          if (res.success) {
+            this.cartService.addProductSubject.next(res.data);
+          } else {
+            this.toast.showWarn(this.translate.instant('PRODUCT_NOT_FOUND'));
+            this.searching = false;
+          }
+        })
+    })
   }
 
   subscribeForGlobalSearch() {
@@ -143,6 +149,10 @@ export class PosComponent {
 
   orderSuccess(e: any) {
     this.getProducts();
+  }
+
+  ngOnDestroy(): void {
+    this.sacnnerSub$.unsubscribe();
   }
   
 }

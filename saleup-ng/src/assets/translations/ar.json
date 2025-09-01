@@ -262,7 +262,7 @@
     "REMOVE_ALL": "إزالة الكل",
     "BARCODE_ALREADEY_ADDED": "الباركود موجود في القائمة",
     "CUSTOM_BARCODE": "باركود مخصص",
-    "PRINT_CUSTOM_BARCODE_ALERT": "لا يوجد منتج مسجل بهذا الباركود! هل تريد إضافته علي أي حال؟",
+    "PRINT_CUSTOM_BARCODE_ALERT": "لا يوجد منتج مسجل بهذا الباركود {{barcode}} هل تريد إضافته علي أي حال؟",
     "SCAN_ADD_BARCODE_HINT": "قم بمسح/إضافة الباركود للطباعة",
     "EDIT_RECEIPT": "تعديل الفاتورة",
     "SAVE_CHANGES": "حفظ التغييرات",
@@ -330,5 +330,7 @@
     "FILTER_RESULTS": "فلترة النتائج",
     "APPLY": "تطبيق",
     "REMOVE_FILTERS": "إزالة الفلاتر",
-    "DELETE_SELECTED_ALERT": "هل أنت متأكد من حذف ({{count}}) : {{names}}"
+    "DELETE_SELECTED_ALERT": "هل أنت متأكد من حذف ({{count}}) : {{names}}",
+    "PRODUCT_SCAN_CART_HINT": "يمكنك مسح الباركود الخاص بالمنتج وسيتم إضافته للسلة تلقائيا",
+    "PRODUCT_SCAN_DETAILS_HINT": "يمكنك مسح الباركود الخاص بالمنتج لتحميل بياناته"
 }
