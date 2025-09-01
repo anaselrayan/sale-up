@@ -41,7 +41,7 @@ export class SaleService {
     }
 
     public deleteAll(sales: number[]): Observable<ApiResponse<any>> {
-        return this.http.post<any>(`${this.baseUrl}/multi-delete`, {IDs: sales});
+        return this.http.delete<any>(`${this.baseUrl}/multi-delete`, { body: sales });
     }
 
     public previewSaleReceipt(sale: Sale) {

@@ -224,4 +224,12 @@ public class SaleService {
         }
     }
 
+    public ApiResponse deleteMultipleSales(List<Long> iDs) {
+        if (iDs == null || iDs.isEmpty()) {
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid sale list");
+        }
+        iDs.forEach(this::deleteSale);
+        return new ApiResponse(true, StatusCode.OK, "Sales have been deleted");
+    }
+
 }

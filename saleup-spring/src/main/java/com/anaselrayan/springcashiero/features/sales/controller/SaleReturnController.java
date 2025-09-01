@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.API_URL;
 
 @RestController
@@ -50,6 +52,13 @@ public class SaleReturnController {
     @DeleteMapping("{saleReturnId}")
     public ResponseEntity<ApiResponse> deleteSaleReturn(@PathVariable Long saleReturnId) {
         ApiResponse res = saleReturnService.deleteSaleReturn(saleReturnId);
+        return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.delete.sale-return')")
+    @DeleteMapping("/multi-delete")
+    public ResponseEntity<ApiResponse> deleteMultipleSaleReturns(@RequestBody List<Long> IDs) {
+        ApiResponse res = saleReturnService.deleteMultipleSaleReturns(IDs);
         return ResponseEntity.ok(res);
     }
 

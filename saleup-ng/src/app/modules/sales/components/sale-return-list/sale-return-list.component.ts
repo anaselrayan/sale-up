@@ -52,7 +52,7 @@ export class SaleReturnListComponent {
   pageDetails?: Page;
   returnList: SaleReturn[] = [];
   sale!: Partial<Sale>;
-  selectedSales!: Sale[] | null;
+  selectedSaleReturns!: SaleReturn[] | null;
   cols!: any[];
   tableHeader = '';
 
@@ -130,6 +130,23 @@ export class SaleReturnListComponent {
     })
   }
 
+  deleteSelectedSales() {
+    if (this.selectedSaleReturns && this.selectedSaleReturns.length > 0) {
+      const names = this.selectedSaleReturns.map(s => s.barcode).join(', ');
+      const msg = this.translate.instant("DELETE_SELECTED_ALERT", { count: this.selectedSaleReturns.length, names: names });
+      this.confirmService.dialogAlert(msg, () => {
+        this.saleReturnService.deleteAll(this.selectedSaleReturns!.map(s => s.saleReturnId))
+            .subscribe(res => {
+              if (res.success) {
+                this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+                this.getSaleReturnsPage();
+              }
+            })
+      });
+    } else {
+      this.toast.showWarn(this.translate.instant("NO_SELECTED_ITEMS"));
+    }
+  }
 
   fetchSaleDetails() {
     this.loading = true;

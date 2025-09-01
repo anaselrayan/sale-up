@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -198,6 +199,14 @@ public class SaleReturnService {
             log.error(ex.getMessage());
             return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
         }
+    }
+
+    public ApiResponse deleteMultipleSaleReturns(List<Long> iDs) {
+        if (iDs == null || iDs.isEmpty()) {
+            return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid sale return list");
+        }
+        iDs.forEach(this::deleteSaleReturn);
+        return new ApiResponse(true, StatusCode.OK, "Sale returns have been deleted");
     }
 
 }

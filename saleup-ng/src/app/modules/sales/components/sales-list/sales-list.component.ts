@@ -119,7 +119,23 @@ export class SalesListComponent {
     })
   }
 
-  deleteSelectedSales() {}
+  deleteSelectedSales() {
+    if (this.selectedSales && this.selectedSales.length > 0) {
+      const names = this.selectedSales.map(s => s.barcode).join(', ');
+      const msg = this.translate.instant("DELETE_SELECTED_ALERT", { count: this.selectedSales.length, names: names });
+      this.confirmService.dialogAlert(msg, () => {
+        this.saleService.deleteAll(this.selectedSales!.map(s => s.saleId))
+            .subscribe(res => {
+              if (res.success) {
+                this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+                this.getSalesPage();
+              }
+            })
+      });
+    } else {
+      this.toast.showWarn(this.translate.instant("NO_SELECTED_ITEMS"));
+    }
+  }
 
   downloadReceipt(sale: Sale) {
     this.saleService.previewSaleReceipt(sale);

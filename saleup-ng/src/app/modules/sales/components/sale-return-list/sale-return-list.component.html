@@ -2,7 +2,7 @@
     <ng-template #start>
         <div class="flex items-center gap-2">
             <p-button [label]="'ADD' | translate" icon="pi pi-plus" severity="secondary" class="mr-2" />
-            <p-button severity="secondary" [label]="'DELETE' | translate" icon="pi pi-trash" outlined [disabled]="!selectedSales || !selectedSales.length" />
+            <p-button severity="secondary" [label]="'DELETE' | translate" icon="pi pi-trash" (onClick)="deleteSelectedSales()" outlined [disabled]="!selectedSaleReturns || !selectedSaleReturns.length" />
         </div>
     </ng-template>
 
@@ -19,9 +19,9 @@
     [loading]="loading"
     [globalFilterFields]="['barcode', 'customer.fullName', 'createdBy']"
     [tableStyle]="{ 'min-width': '75rem' }"
-    [(selection)]="selectedSales"
+    [(selection)]="selectedSaleReturns"
     [rowHover]="true"
-    dataKey="saleId">
+    dataKey="saleReturnId">
     <ng-template #caption>
         <div class="flex items-center justify-between">
             <h5 class="m-0">{{ tableHeader }}</h5>
