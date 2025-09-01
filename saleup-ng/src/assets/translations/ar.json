@@ -332,5 +332,6 @@
     "REMOVE_FILTERS": "إزالة الفلاتر",
     "DELETE_SELECTED_ALERT": "هل أنت متأكد من حذف ({{count}}) : {{names}}",
     "PRODUCT_SCAN_CART_HINT": "يمكنك مسح الباركود الخاص بالمنتج وسيتم إضافته للسلة تلقائيا",
-    "PRODUCT_SCAN_DETAILS_HINT": "يمكنك مسح الباركود الخاص بالمنتج لتحميل بياناته"
+    "PRODUCT_SCAN_DETAILS_HINT": "يمكنك مسح الباركود الخاص بالمنتج لتحميل بياناته",
+    "TABLE_PAGE_RESULT": "عرض النتائج من {first} الي {last} إجمالي {totalRecords}"
 }

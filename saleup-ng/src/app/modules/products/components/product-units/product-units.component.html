@@ -23,7 +23,7 @@
     [rowHover]="true"
     dataKey="unitOfMeasureId"
     paginator="true"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} units"
+    [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate"
     [showCurrentPageReport]="true"
     [rowsPerPageOptions]="[10, 20, 30]">
     <ng-template #caption>

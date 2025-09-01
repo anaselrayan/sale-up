@@ -264,5 +264,6 @@
   "SCAN_ADD_BARCODE_HINT": "Scan/Add barcode to print",
   "EDIT_RECEIPT": "Edit Receipt",
   "SAVE_CHANGES": "Save Changes",
-  "pos.receipt.maxDiscount": "Maximum Discount"
+  "pos.receipt.maxDiscount": "Maximum Discount",
+  "TABLE_PAGE_RESULT": "Showing {first} to {last} of {totalRecords} categories"
 }

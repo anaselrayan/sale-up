@@ -111,7 +111,7 @@
     [totalRecords]="pageDetails?.totalElements || 0"
     [showCurrentPageReport]="true"
     [showJumpToPageDropdown]="false"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
+    [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate" />
 
 <p-dialog [(visible)]="userDialog" [style]="{ 'min-width': '20rem', 'width': '40%' }" [header]="dialogHeader" [modal]="true">
     <form *ngIf="userForm" [formGroup]="userForm" (ngSubmit)="onSaveUser()">

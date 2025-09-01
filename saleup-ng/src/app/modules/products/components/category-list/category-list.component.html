@@ -23,7 +23,7 @@
     [(selection)]="selectedCategories"
     [rowHover]="true"
     dataKey="productCategoryId"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
+    [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate"
     [showCurrentPageReport]="true"
     [rowsPerPageOptions]="[10, 20, 30]"
 >

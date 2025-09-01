@@ -143,7 +143,7 @@
         [tableStyle]="{ 'min-width': '75rem' }"
         [rowHover]="true"
         dataKey="barcode"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} rows"
+        [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate"
         [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[10, 20, 50, 100]">
 

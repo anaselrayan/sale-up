@@ -23,7 +23,7 @@
     [rowHover]="true"
     dataKey="roleId"
     paginator="true"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} roles"
+    [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate"
     [showCurrentPageReport]="true"
     [rowsPerPageOptions]="[10, 20, 30]">
     <ng-template #caption>

@@ -26,7 +26,7 @@
     [(selection)]="selectedProducts"
     [rowHover]="true"
     dataKey="productId"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+    [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate"
     [showCurrentPageReport]="true"
     [rowsPerPageOptions]="[10, 20, 30]">
 
@@ -154,7 +154,7 @@
             [showCurrentPageReport]="true"
             [showJumpToPageDropdown]="false"
             [rowsPerPageOptions]="[10, 20, 50]"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" />
+            [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate" />
 </p-card>
 
 <app-product-discount-create *ngIf="discountDialog" [product]="product"
