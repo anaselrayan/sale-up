@@ -1,6 +1,8 @@
 package com.anaselrayan.springcashiero.features.sales.controller;
 
 import com.anaselrayan.springcashiero.features.sales.dto.SaleReceiptOptions;
+import com.anaselrayan.springcashiero.features.sales.model.Sale;
+import com.anaselrayan.springcashiero.features.sales.repository.SaleRepository;
 import com.anaselrayan.springcashiero.features.sales.request.SaleRequest;
 import com.anaselrayan.springcashiero.features.sales.service.SaleReceiptService;
 import com.anaselrayan.springcashiero.features.sales.service.SaleService;
@@ -8,6 +10,8 @@ import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,7 @@ import static com.anaselrayan.springcashiero.infrastructure.constatnts.Endpoint.
 public class SaleController {
 
     private final SaleService saleService;
+    private final SaleRepository saleRepository;
     private final SaleReceiptService saleReceiptService;
 
     @PreAuthorize("hasAuthority('perm.create.sale')")
@@ -61,9 +66,17 @@ public class SaleController {
     }
 
     @PreAuthorize("hasAuthority('perm.access.sale')")
-    @GetMapping("/receipt/{saleId}")
-    public ResponseEntity<Resource> getSaleReceipt(@PathVariable Long saleId) {
-        return saleReceiptService.getSaleReceipt(saleId);
+    @GetMapping("/{id}/receipt")
+    public ResponseEntity<byte[]> getSaleReceipt(@PathVariable Long id) {
+        var sale = saleRepository.findById(id);
+        if (sale.isEmpty())
+            return ResponseEntity.ofNullable(null);
+
+        byte[] pdfBytes = saleReceiptService.generateSaleReceipt(sale.get());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=receipt.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
 
     @PreAuthorize("hasAuthority('perm.delete.sale')")

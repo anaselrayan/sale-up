@@ -66,7 +66,6 @@ public class SaleService {
             this.updateQuantityAfterSale(savedItems, false);
             savedSale.setSaleItems(savedItems);
             saleRepository.save(savedSale);
-            this.saleReceiptService.generateSaleReceipt(savedSale);
             return new ApiResponse(SaleConverter.convert(savedSale), StatusCode.CREATED);
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -125,7 +124,6 @@ public class SaleService {
                 saleItemRepository.save(oi);
             });
             Sale saved = saleRepository.save(saleToEdit);
-            saleReceiptService.generateSaleReceipt(saved);
             return new ApiResponse(SaleConverter.convert(saved), StatusCode.CREATED);
         } catch (Exception ex) {
             log.error(ex.getMessage());

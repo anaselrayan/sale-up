@@ -38,7 +38,7 @@ export class SaleService {
     }
 
     public getSaleReceipt(saleId: number): Observable<any> {
-        return this.http.get(`${this.baseUrl}/receipt/${saleId}`, { responseType: 'blob' });
+        return this.http.get(`${this.baseUrl}/${saleId}/receipt`, { responseType: 'blob' });
     }
 
     public deleteSale(saleId: number): Observable<ApiResponse<any>> {
@@ -51,15 +51,11 @@ export class SaleService {
 
     public previewSaleReceipt(sale: Sale) {
         this.getSaleReceipt(sale.saleId)
-            .subscribe(res => {
-            const blob = new Blob([res], { type: 'application/pdf' });
-            const pdfUrl = URL.createObjectURL(blob);
-            const printWindow = window.open(pdfUrl, '_blank');
-            if (printWindow) {
-                printWindow.onload = () => {
-                printWindow.print();
-                };
-            }
+            .subscribe(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const receiptWin = window.open(url);
+            console.log(receiptWin)
+            receiptWin?.print();
         })
     }
 

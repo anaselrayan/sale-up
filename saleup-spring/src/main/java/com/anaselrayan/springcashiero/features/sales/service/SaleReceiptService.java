@@ -41,18 +41,61 @@ public class SaleReceiptService {
     public static final String RECEIPT_REPORT_PATH = "/report/receipt.jasper";
     private static final String NO_CUSTOMER_FOLDER = "NOT_REGISTERED";
 
-    public String generateSaleReceipt(Sale sale) {
-        try {
-            String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/";
-            receiptPath += (sale.getCustomer() == null ? NO_CUSTOMER_FOLDER : sale.getCustomer().getPhone());
-            String companyName = settingService.getSetting("company.name").getValue();
+//    public String generateSaleReceipt(Sale sale) {
+//        try {
+//            String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/";
+//            receiptPath += (sale.getCustomer() == null ? NO_CUSTOMER_FOLDER : sale.getCustomer().getPhone());
+//            String companyName = settingService.getSetting("company.name").getValue();
+//
+//            Files.createDirectories(Paths.get(receiptPath));
+//
+//            ClassPathResource reportPath = new ClassPathResource(RECEIPT_REPORT_PATH);
+//            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(reportPath.getInputStream());
+//
+//            List<ReceiptItemRequest> productList = sale.getSaleItems().stream().map(ReceiptItemRequest::new).toList();
+//
+//            Map<String, Object> params = new HashMap<>();
+//            params.put("PRODUCT_LIST", new JRBeanCollectionDataSource(productList));
+//            params.put("companyName", companyName);
+//            params.put("companyTel", getCompanyPhone());
+//            params.put("companyAddr", getCompanyAddress());
+//            params.put("customerName", getCustomer(sale));
+//            params.put("staffName", getSeller(sale));
+//            params.put("subTotal", Math.round(sale.getSubTotal() * 100) / 100.0);
+//            params.put("total", Math.round(sale.getGrandTotal() * 100) / 100.0);
+//            params.put("discount", Math.round(sale.getDiscount() * 100) / 100.0);
+//            params.put("billFooter", getReceiptFooter());
+//            params.put("logoImage", getLogoImageBytes());
+//            params.put("barcode", sale.getBarcode());
+//            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+//            params.put("currentDate", timestamp);
+//
+//            List<String> dummyList = new ArrayList<>();
+//            dummyList.add("dummy");
+//            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dummyList);
+//
+//            JasperPrint jp = JasperFillManager.fillReport(jasperReport, params, dataSource);
+//            String receiptFilePath = receiptPath + "/" + sale.getBarcode() + ".pdf";
+//            JasperExportManager.exportReportToPdfFile(jp, receiptFilePath);
+//            log.info("Receipt exported successfully to path: " + receiptFilePath);
+//            return receiptFilePath;
+//        } catch (Exception ex) {
+//            log.error("Couldn't export the receipt: " + ex.getMessage());
+//            return null;
+//        }
+//    }
 
-            Files.createDirectories(Paths.get(receiptPath));
+    public byte[] generateSaleReceipt(Sale sale) {
+        try {
+            String companyName = settingService.getSetting("company.name").getValue();
 
             ClassPathResource reportPath = new ClassPathResource(RECEIPT_REPORT_PATH);
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(reportPath.getInputStream());
 
-            List<ReceiptItemRequest> productList = sale.getSaleItems().stream().map(ReceiptItemRequest::new).toList();
+            List<ReceiptItemRequest> productList = sale.getSaleItems()
+                    .stream()
+                    .map(ReceiptItemRequest::new)
+                    .toList();
 
             Map<String, Object> params = new HashMap<>();
             params.put("PRODUCT_LIST", new JRBeanCollectionDataSource(productList));
@@ -67,20 +110,17 @@ public class SaleReceiptService {
             params.put("billFooter", getReceiptFooter());
             params.put("logoImage", getLogoImageBytes());
             params.put("barcode", sale.getBarcode());
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-            params.put("currentDate", timestamp);
+            params.put("currentDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 
-            List<String> dummyList = new ArrayList<>();
-            dummyList.add("dummy");
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dummyList);
+            // dummy datasource
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(List.of("dummy"));
 
             JasperPrint jp = JasperFillManager.fillReport(jasperReport, params, dataSource);
-            String receiptFilePath = receiptPath + "/" + sale.getBarcode() + ".pdf";
-            JasperExportManager.exportReportToPdfFile(jp, receiptFilePath);
-            log.info("Receipt exported successfully to path: " + receiptFilePath);
-            return receiptFilePath;
+
+            return JasperExportManager.exportReportToPdf(jp);
+
         } catch (Exception ex) {
-            log.error("Couldn't export the receipt: " + ex.getMessage());
+            log.error("Couldn't export the receipt: {}", ex.getMessage());
             return null;
         }
     }
