@@ -81,7 +81,6 @@ export class SaleReturnCreateComponent {
             if (res.success) {
               this.sale = res.data;
               this.returnCart = new SaleReturnCart(this.sale);
-              console.log(this.sale)
             } else {
               this.router.navigate(['/notfound'])
             }

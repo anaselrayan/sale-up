@@ -63,7 +63,6 @@ export class SystemSettingsComponent {
     this.settingService.getSettingsByCategory(this.settingCategory.toString())
     .subscribe(res => {
       if (res.success) {
-        console.log(res)
         this.settings = res.data;
       }
       this.loading = false;
@@ -71,7 +70,6 @@ export class SystemSettingsComponent {
   }
 
   settingChange(setting: Setting) {
-    console.log(setting)
     const payload = this.payloads.find(p => p.key === setting.key);
     if (payload) {
       payload.value = setting.value;

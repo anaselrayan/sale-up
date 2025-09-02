@@ -81,7 +81,6 @@ export class SalesReportComponent {
         from: fromDate, to: toDate
       })
       .subscribe(res => {
-        console.log(res)
         this.salesData = res.data;
         this.loading = false;
       })

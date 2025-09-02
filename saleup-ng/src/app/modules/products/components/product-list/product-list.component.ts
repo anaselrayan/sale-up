@@ -337,7 +337,6 @@ export class ProductListComponent implements OnInit {
             } else {
               this.toast.showError(res.message)
             }
-            console.log(res)
             this.importLoading = false;
             this.hideImportDialog();
       })

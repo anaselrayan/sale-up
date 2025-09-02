@@ -71,7 +71,6 @@ export class SaleReturnDetailsComponent {
             } else {
               this.router.navigate(['/notfound'])
             }
-            console.log(res)
             this.loading = false;
           })
       }

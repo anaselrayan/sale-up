@@ -54,7 +54,6 @@ export class SaleService {
             .subscribe(blob => {
             const url = window.URL.createObjectURL(blob);
             const receiptWin = window.open(url);
-            console.log(receiptWin)
             receiptWin?.print();
         })
     }

@@ -83,7 +83,6 @@ export class SalesListComponent implements OnInit, OnDestroy {
 
   listenForBarcodesScanner() {
     this.scannerSub$ = this.barcodeScanner.scan$.subscribe(barcode => {
-      console.log(barcode)
       this.saleService.getSaleIdByBarcode(barcode)
         .subscribe(res => {
           if (res.success) {
