@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,6 +21,11 @@ import { Router, RouterModule } from '@angular/router';
 import { DateFtPipe } from "@shared/pipes/date-ft.pipe";
 import { ToastService } from '@shared/services/toast.service';
 import { ConfirmService } from '@shared/services/confirm.service';
+import { SaleReceiptOptions } from '@module/sales/models/sale-receipt';
+import { SaleReceiptPreviewComponent } from "@shared/components/sale-receipt-preview/sale-receipt-preview.component";
+import { Message } from 'primeng/message';
+import { Subscription } from 'rxjs';
+import { BarcodeScannerService } from '@shared/services/barcode-scanner.service';
 
 @Component({
   selector: 'app-sales-list',
@@ -35,37 +40,59 @@ import { ConfirmService } from '@shared/services/confirm.service';
     IconField,
     InputIcon,
     Menu,
+    Message,
     Paginator,
     SCurrencyPipe,
     RouterModule,
-    DateFtPipe
+    DateFtPipe,
+    SaleReceiptPreviewComponent
 ],
   templateUrl: './sales-list.component.html',
   styleUrl: './sales-list.component.scss'
 })
-export class SalesListComponent {
+export class SalesListComponent implements OnInit, OnDestroy {
 
   loading = false;
   pageReq = new PageRequest(0, 10);
   pageDetails?: Page;
   salesList: Sale[] = [];
-  sale!: Partial<Sale>;
+  sale!: Sale;
   selectedSales!: Sale[] | null;
   cols!: any[];
 
   mode!: 'create' | 'update';
   menuItems: MenuItem[] = []
+  showReceiptPreview = false;
+  receiptOptions!: SaleReceiptOptions;
+  private scannerSub$!: Subscription;
 
   constructor(
     private saleService: SaleService,
     private translate: TranslateService,
     private toast: ToastService,
     private confirmService: ConfirmService,
+    private barcodeScanner: BarcodeScannerService,
     private router: Router
   ) {}
 
   ngOnInit() {
     this.getSalesPage();
+    this.getSaleReceiptOptions();
+    this.listenForBarcodesScanner();
+  }
+
+  listenForBarcodesScanner() {
+    this.scannerSub$ = this.barcodeScanner.scan$.subscribe(barcode => {
+      console.log(barcode)
+      this.saleService.getSaleIdByBarcode(barcode)
+        .subscribe(res => {
+          if (res.success) {
+            this.router.navigate(['sales/detail', res.data])
+          } else {
+            this.toast.showWarn(this.translate.instant('RECEIPT_NOT_FOUND'))
+          }
+        })
+    })
   }
 
   getSalesPage() {
@@ -96,7 +123,12 @@ export class SalesListComponent {
       { label: this.translate.instant('PRINT_RECEIPT'), icon: 'pi pi-print', command: () => { this.saleService.previewSaleReceipt(sale) } },
       { label: this.translate.instant('EDIT'), icon: 'pi pi-pen-to-square', disabled: sale.partiallyReturned || sale.totallyReturned, command: () => { this.editSale(sale) } },
       { label: this.translate.instant('RETURN_SALE'), icon: 'pi pi-arrow-right-arrow-left', disabled: sale.totallyReturned, command: ()=> { this.saleReturn(sale) } },
-      { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: () => { this.deleteSale(sale) } }
+      { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: () => { this.deleteSale(sale) } },
+      {
+        label: `${this.translate.instant('RECEIPT_OVERVIEW')} <span> (${this.translate.instant('BETA')}) </span>`,
+        escape: false,
+        icon: 'pi pi-receipt', command: () => { this.previewReceipt(sale) } 
+      },
     ];
   }
 
@@ -147,6 +179,22 @@ export class SalesListComponent {
 
   saleReturn(sale: Sale) {
     this.router.navigate(['sales/sale-return/create', sale.saleId])
+  }
+
+  previewReceipt(sale: Sale) {
+    this.sale = sale;
+    this.showReceiptPreview = true;
+  }
+
+  getSaleReceiptOptions() {
+    this.saleService.getReceiptOptions()
+        .subscribe(res => {
+          this.receiptOptions = res;
+        })
+  }
+
+  ngOnDestroy(): void {
+    this.scannerSub$.unsubscribe();
   }
 
 }

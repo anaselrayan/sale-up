@@ -11,7 +11,7 @@ import { SaleService } from '@module/sales/services/sale.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Sale } from '@module/sales/models/sale.model';
 import { NgxBarcode6Module } from 'ngx-barcode6';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TableModule } from 'primeng/table';
 import { Skeleton } from 'primeng/skeleton';
 import { Tooltip } from 'primeng/tooltip';
@@ -19,6 +19,8 @@ import { SubstringPipe } from "@shared/pipes/substring.pipe";
 import { DateFtPipe } from "@shared/pipes/date-ft.pipe";
 import { ProductUtils } from 'src/app/utils/product.utils';
 import { Product } from '@module/products/models/product.model';
+import { ToastService } from '@shared/services/toast.service';
+import { ConfirmService } from '@shared/services/confirm.service';
 
 @Component({
   selector: 'app-sale-details',
@@ -51,6 +53,9 @@ export class SaleDetailsComponent {
   constructor(
     private saleService: SaleService,
     private route: ActivatedRoute,
+    private toast: ToastService,
+    private confirm: ConfirmService,
+    private translate: TranslateService,
     private router: Router
   ) {}
 
@@ -87,6 +92,25 @@ export class SaleDetailsComponent {
 
   getProductImageSrc(product: Product) {
       return ProductUtils.getFirstImageSrc(product)
+  }
+
+  returnSale() {
+    this.router.navigate(['/sales/sale-return/create', this.sale.saleId])
+  }
+
+  deleteSale() {
+    const msg = this.translate.instant("DELETE_ALERT", { name: this.sale.barcode })
+    this.confirm.dialogAlert(msg, ()=> {
+      this.saleService.deleteSale(this.sale.saleId)
+      .subscribe(res => {
+        if (res.success) {
+          this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+          this.router.navigate(['/sales/list'])
+        } else {
+          this.toast.showError(res.message);
+        }
+      })
+    })
   }
 
 }

@@ -1,5 +1,6 @@
 package com.anaselrayan.springcashiero.features.sales.controller;
 
+import com.anaselrayan.springcashiero.features.sales.dto.SaleReceiptOptions;
 import com.anaselrayan.springcashiero.features.sales.request.SaleRequest;
 import com.anaselrayan.springcashiero.features.sales.service.SaleReceiptService;
 import com.anaselrayan.springcashiero.features.sales.service.SaleService;
@@ -53,6 +54,13 @@ public class SaleController {
     }
 
     @PreAuthorize("hasAuthority('perm.access.sale')")
+    @GetMapping("/barcode/{barcode}")
+    public ResponseEntity<ApiResponse> getSaleIdByBarcode(@PathVariable String barcode) {
+        var res = saleService.getSaleIdByBarcode(barcode);
+        return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.access.sale')")
     @GetMapping("/receipt/{saleId}")
     public ResponseEntity<Resource> getSaleReceipt(@PathVariable Long saleId) {
         return saleReceiptService.getSaleReceipt(saleId);
@@ -70,6 +78,11 @@ public class SaleController {
     public ResponseEntity<ApiResponse> deleteMultipleSales(@RequestBody List<Long> IDs) {
         ApiResponse res = saleService.deleteMultipleSales(IDs);
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/receipt-options")
+    public ResponseEntity<SaleReceiptOptions> getReceiptOptions() {
+        return ResponseEntity.ok(saleReceiptService.getSaleReceiptOptions());
     }
 
 }

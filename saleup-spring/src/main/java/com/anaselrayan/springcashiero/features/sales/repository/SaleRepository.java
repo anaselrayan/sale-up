@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SaleRepository extends JpaRepository<Sale, Long> {
@@ -30,4 +31,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     SalesKpiResponse getSalesKPIsInRange(@Param("from") LocalDateTime from,
                                          @Param("to") LocalDateTime to);
 
+    @Query("SELECT s.id FROM Sale s WHERE s.barcode = :barcode")
+    Optional<Long> findSaleIdByBarcode(@Param("barcode") String barcode);
 }

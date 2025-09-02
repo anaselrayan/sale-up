@@ -232,4 +232,11 @@ public class SaleService {
         return new ApiResponse(true, StatusCode.OK, "Sales have been deleted");
     }
 
+    public ApiResponse getSaleIdByBarcode(String barcode) {
+        var id = saleRepository.findSaleIdByBarcode(barcode);
+        if (id.isPresent())
+            return new ApiResponse(id.get(), StatusCode.OK);
+        return new ApiResponse(false, StatusCode.NOT_FOUND, "Sale barcode doesn't exist");
+    }
+
 }

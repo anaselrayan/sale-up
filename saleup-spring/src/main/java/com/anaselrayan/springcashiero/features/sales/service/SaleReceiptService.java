@@ -1,5 +1,6 @@
 package com.anaselrayan.springcashiero.features.sales.service;
 
+import com.anaselrayan.springcashiero.features.sales.dto.SaleReceiptOptions;
 import com.anaselrayan.springcashiero.infrastructure.constatnts.Upload;
 import com.anaselrayan.springcashiero.features.sales.model.Sale;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleRepository;
@@ -140,6 +141,23 @@ public class SaleReceiptService {
         if ("true".equals(settingService.getSetting("pos.receipt.showCompanyAddress").getValue()))
             return settingService.getSetting("company.address").getValue();
         else return null;
+    }
+
+    public SaleReceiptOptions getSaleReceiptOptions() {
+        return SaleReceiptOptions.builder()
+                .companyName(settingService.getSetting("company.name").getValue())
+                .companyAddress(settingService.getSetting("company.address").getValue())
+                .companyLogo(settingService.getSetting("app.logo").getValue())
+                .companyPhone(settingService.getSetting("company.phone").getValue())
+                .receiptFooter(settingService.getSetting("pos.receipt.footer").getValue())
+                .showBarcode(settingService.getSetting("pos.receipt.showBarcode").getValue().equals("true"))
+                .showCustomer(settingService.getSetting("pos.receipt.showCustomer").getValue().equals("true"))
+                .showCompanyAddress(settingService.getSetting("pos.receipt.showCompanyAddress").getValue().equals("true"))
+                .showCompanyPhone(settingService.getSetting("pos.receipt.showCompanyPhone").getValue().equals("true"))
+                .showSeller(settingService.getSetting("pos.receipt.showSeller").getValue().equals("true"))
+                .showLogo(settingService.getSetting("pos.receipt.showLogo").getValue().equals("true"))
+                .showFooter(settingService.getSetting("pos.receipt.showFooter").getValue().equals("true"))
+                .build();
     }
 
 }

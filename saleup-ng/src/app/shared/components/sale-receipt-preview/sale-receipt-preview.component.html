@@ -1,0 +1,96 @@
+<p-dialog (onHide)="hide.emit($event)" header="Sale Receipt" [(visible)]="visible" [modal]="true" [closable]="true">
+
+    <div *ngIf="sale" class="receipt-container" id="receipt-content">
+        
+        <div class="flex justify-center">
+            <img width="80px" [src]="getAppLogoSrc()"/>
+        </div>
+        <div class="font-bold text-center text-4xl mb-4">
+            {{ 'CASH_RECEIPT' | translate }}
+        </div>
+                                
+        <div class="font-bold text-xl text-center">
+            {{ opt.companyName }}
+        </div>
+        <p class="mb-1">
+            {{ opt.companyAddress }}<br>{{ 'PHONE' | translate }}: {{ opt.companyPhone}}
+        </p>
+
+        <div class="dashed-line mb-1"></div>
+        <div class="dashed-line"></div>
+
+        <div class="sale-info mt-3 mb-3">
+            <div class="flex gap-2 mb-2 justify-between">
+                <strong>{{ 'RECEIPT_NUMBER' | translate }} #:</strong> {{ sale.barcode }}
+            </div>
+            <div *ngIf="sale?.createdAt" class="flex gap-2 mb-2 justify-between">
+                <strong>{{'DATE' | translate }}:</strong> {{ sale!.createdAt | dateFt:'short' }}
+            </div>
+            <div *ngIf="sale?.createdAt" class="flex gap-2 mb-2 justify-between">
+                <strong>{{'TIMESTAMP' | translate }}:</strong> {{ sale!.createdAt | dateFt:'time' }}
+            </div>
+            <div class="flex gap-2 mb-2 justify-between">
+                <strong>{{ 'CASHEIR' | translate }}:</strong> {{ sale.createdBy }}
+            </div>
+            <div class="flex gap-2 mb-2 justify-between">
+                <strong>{{ 'CUSTOMER' | translate }}:</strong>
+                <div *ngIf="sale.customer">
+                    {{ sale.customer.fullName | translate }} [{{ sale.customer.phone }}]
+                </div>
+                <div *ngIf="!sale.customer">
+                    {{ 'NOT_REGISTERED_CUSTOMER' | translate }}
+                </div>
+            </div>
+        </div>
+
+        <div class="dashed-line mb-1"></div>
+        <div class="dashed-line"></div>
+
+        <table class="items mt-3 mb-3">
+            <thead>
+                <tr>
+                    <th>{{ 'QTY' | translate }}</th>
+                    <th>{{ 'PRODUCT_NAME' | translate }}</th>
+                    <th>{{ 'UNIT_PRICE' | translate}}</th>
+                    <th>{{ 'SUB_TOTAL' | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of sale?.saleItems">
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.basicDetails.productName }}</td>
+                    <td>{{ item.unitPrice }}</td>
+                    <td>{{ item.subTotal | sCurrency }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="dashed-line mb-1"></div>
+        <div class="dashed-line"></div>
+
+        <div class="totals mt-4 mb-3 flex flex-col gap-2">
+            <div>{{'SUB_TOTAL' | translate}}: {{ sale.subTotal | sCurrency }}</div>
+            <div>{{'DISCOUNT' | translate}}: - {{ sale.discount | sCurrency }}</div>
+            <div class="font-bold text-lg">{{'GRAND_TOTAL' | translate}}: {{ sale.grandTotal | sCurrency }}</div>
+        </div>
+
+        <p class="footer-text text-center mt-2">{{ opt.receiptFooter}}</p>
+
+        <div class="flex items-center flex-col">
+            <ngx-barcode6
+                [bc-width]="1.4"
+                [bc-height]="30"
+                [bc-format]="'CODE128'"
+                [bc-value]="sale.barcode"/>
+            <div>
+                {{ sale.barcode }}
+            </div>
+        </div>
+    </div>
+    <ng-template #footer>
+        <div class="flex">
+            <p-button [label]="'DOWNLOAD' | translate" icon="pi pi-save" class="p-button-success" (onClick)="saveReceipt()"></p-button>
+            <p-button [label]="'PRINT' | translate" icon="pi pi-print" class="p-button-success" (onClick)="printReceipt()"></p-button>
+        </div>
+    </ng-template>
+</p-dialog>

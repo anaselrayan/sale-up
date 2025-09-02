@@ -10,7 +10,7 @@
         <p-button [label]="'EXPORT' | translate" icon="pi pi-upload" severity="secondary" />
     </ng-template>
 </p-toolbar>
-
+<p-message class="mb-2" icon="pi pi-lightbulb" severity="info" closable>{{ 'RECEIPT_SCAN_DETAILS_HINT' | translate }}</p-message>
 <p-table
     #dt
     [value]="salesList"
@@ -127,3 +127,8 @@
     [showCurrentPageReport]="true"
     [showJumpToPageDropdown]="false"
     [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate" />
+
+<app-sale-receipt-preview
+    [sale]="sale" [receiptOptions]="receiptOptions"
+    [visible]="showReceiptPreview" (onHide)="showReceiptPreview = false"
+></app-sale-receipt-preview>

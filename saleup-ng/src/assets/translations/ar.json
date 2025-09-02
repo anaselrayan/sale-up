@@ -333,5 +333,13 @@
     "DELETE_SELECTED_ALERT": "هل أنت متأكد من حذف ({{count}}) : {{names}}",
     "PRODUCT_SCAN_CART_HINT": "يمكنك مسح الباركود الخاص بالمنتج وسيتم إضافته للسلة تلقائيا",
     "PRODUCT_SCAN_DETAILS_HINT": "يمكنك مسح الباركود الخاص بالمنتج لتحميل بياناته",
-    "TABLE_PAGE_RESULT": "عرض النتائج من {first} الي {last} إجمالي {totalRecords}"
+    "TABLE_PAGE_RESULT": "عرض النتائج من {first} الي {last} إجمالي {totalRecords}",
+    "RECEIPT_NUMBER": "رقم الفاتورة",
+    "CASHEIR": "كاشير",
+    "CASH_RECEIPT": "فاتـــورة بيـــع",
+    "QTY": "كمية",
+    "RECEIPT_OVERVIEW": "عرض الفاتورة",
+    "BETA": "تجريبي",
+    "RECEIPT_SCAN_DETAILS_HINT": "يمكنك مسح الباركود الموجود علي الفاتورة للبحث عنها",
+    "RECEIPT_NOT_FOUND": "تعذر العثور علي الفاتورة"
 }

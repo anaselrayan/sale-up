@@ -1,4 +1,4 @@
-<p-dialog (visibleChange)="onVisibleChange($event)" [visible]="true" [style]="{ 'min-width': '20rem', 'width': '40%' }" [header]="dialogHeader" [modal]="true">
+<p-dialog (visibleChange)="onVisibleChange($event)" [style]="{ 'min-width': '20rem', 'width': '40%' }" [header]="dialogHeader" [modal]="true">
     <form [formGroup]="customerForm" (ngSubmit)="onSaveCustomer()">
         <div class="flex items-center gap-4 mb-4">
             <label for="phone" class="font-semibold w-24">{{'PHONE' | translate }}<span class="text-red-500"> * </span></label>

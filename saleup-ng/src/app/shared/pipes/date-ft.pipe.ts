@@ -8,7 +8,7 @@ import { Injectable, Pipe, PipeTransform } from '@angular/core';
 })
 export class DateFtPipe implements PipeTransform {
 
-  transform(value: Date, size: 'short' | 'medium' | 'long' = 'medium'): unknown {
+  transform(value: Date, size: 'short' | 'medium' | 'long' | 'time' = 'medium'): unknown {
     const lang = this.getLang();
     const locales = lang === 'ar' ? ['ar', 'ar-u-nu-latn'] : ['en'];
   
@@ -20,6 +20,14 @@ export class DateFtPipe implements PipeTransform {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
+        };
+        break;
+
+      case 'time':
+        options = {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
         };
         break;
   

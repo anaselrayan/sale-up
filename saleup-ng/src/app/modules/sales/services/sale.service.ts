@@ -7,6 +7,7 @@ import { Observable } from "rxjs";
 import { ApiResponse } from "@shared/models/api-response";
 import { PageResponse } from "@shared/models/page-response.mdel";
 import { Sale } from "../models/sale.model";
+import { SaleReceiptOptions } from "../models/sale-receipt";
 
 @Injectable({
     providedIn: 'root'
@@ -30,6 +31,10 @@ export class SaleService {
 
     public getSaleById(saleId: number): Observable<ApiResponse<Sale>> {
         return this.http.get<any>(`${this.baseUrl}/${saleId}`)
+    }
+
+    public getSaleIdByBarcode(barcode: string): Observable<ApiResponse<number>> {
+        return this.http.get<any>(`${this.baseUrl}/barcode/${barcode}`)
     }
 
     public getSaleReceipt(saleId: number): Observable<any> {
@@ -56,6 +61,10 @@ export class SaleService {
                 };
             }
         })
+    }
+
+    public getReceiptOptions(): Observable<SaleReceiptOptions> {
+        return this.http.get<any>(`${this.baseUrl}/receipt-options`)
     }
 
 }
