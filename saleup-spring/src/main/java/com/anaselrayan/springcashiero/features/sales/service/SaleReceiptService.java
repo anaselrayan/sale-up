@@ -1,11 +1,10 @@
 package com.anaselrayan.springcashiero.features.sales.service;
 
 import com.anaselrayan.springcashiero.features.sales.dto.SaleReceiptOptions;
-import com.anaselrayan.springcashiero.infrastructure.constatnts.Upload;
 import com.anaselrayan.springcashiero.features.sales.model.Sale;
-import com.anaselrayan.springcashiero.features.sales.repository.SaleRepository;
 import com.anaselrayan.springcashiero.features.sales.request.ReceiptItemRequest;
 import com.anaselrayan.springcashiero.features.settings.service.SettingService;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.Upload;
 import com.anaselrayan.springcashiero.shared.UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,53 +33,8 @@ public class SaleReceiptService {
 
     private final SettingService settingService;
     private final UploadService uploadService;
-    private final SaleRepository saleRepository;
     public static final String RECEIPT_REPORT_PATH = "/report/receipt.jasper";
     private static final String NO_CUSTOMER_FOLDER = "NOT_REGISTERED";
-
-//    public String generateSaleReceipt(Sale sale) {
-//        try {
-//            String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/";
-//            receiptPath += (sale.getCustomer() == null ? NO_CUSTOMER_FOLDER : sale.getCustomer().getPhone());
-//            String companyName = settingService.getSetting("company.name").getValue();
-//
-//            Files.createDirectories(Paths.get(receiptPath));
-//
-//            ClassPathResource reportPath = new ClassPathResource(RECEIPT_REPORT_PATH);
-//            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(reportPath.getInputStream());
-//
-//            List<ReceiptItemRequest> productList = sale.getSaleItems().stream().map(ReceiptItemRequest::new).toList();
-//
-//            Map<String, Object> params = new HashMap<>();
-//            params.put("PRODUCT_LIST", new JRBeanCollectionDataSource(productList));
-//            params.put("companyName", companyName);
-//            params.put("companyTel", getCompanyPhone());
-//            params.put("companyAddr", getCompanyAddress());
-//            params.put("customerName", getCustomer(sale));
-//            params.put("staffName", getSeller(sale));
-//            params.put("subTotal", Math.round(sale.getSubTotal() * 100) / 100.0);
-//            params.put("total", Math.round(sale.getGrandTotal() * 100) / 100.0);
-//            params.put("discount", Math.round(sale.getDiscount() * 100) / 100.0);
-//            params.put("billFooter", getReceiptFooter());
-//            params.put("logoImage", getLogoImageBytes());
-//            params.put("barcode", sale.getBarcode());
-//            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-//            params.put("currentDate", timestamp);
-//
-//            List<String> dummyList = new ArrayList<>();
-//            dummyList.add("dummy");
-//            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dummyList);
-//
-//            JasperPrint jp = JasperFillManager.fillReport(jasperReport, params, dataSource);
-//            String receiptFilePath = receiptPath + "/" + sale.getBarcode() + ".pdf";
-//            JasperExportManager.exportReportToPdfFile(jp, receiptFilePath);
-//            log.info("Receipt exported successfully to path: " + receiptFilePath);
-//            return receiptFilePath;
-//        } catch (Exception ex) {
-//            log.error("Couldn't export the receipt: " + ex.getMessage());
-//            return null;
-//        }
-//    }
 
     public byte[] generateSaleReceipt(Sale sale) {
         try {
@@ -123,13 +74,6 @@ public class SaleReceiptService {
             log.error("Couldn't export the receipt: {}", ex.getMessage());
             return null;
         }
-    }
-
-    public ResponseEntity<Resource> getSaleReceipt(Long saleId) {
-        Sale sale = saleRepository.findById(saleId).orElseThrow();
-        String receiptPath = Upload.UPLOAD_RECEIPT_PATH + "/";
-        receiptPath += (sale.getCustomer() == null ? NO_CUSTOMER_FOLDER : sale.getCustomer().getPhone());
-        return uploadService.downloadResource(receiptPath, sale.getBarcode() + ".pdf");
     }
 
     private ByteArrayInputStream getLogoImageBytes() {

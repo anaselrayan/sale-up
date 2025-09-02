@@ -1,14 +1,12 @@
 package com.anaselrayan.springcashiero.features.sales.controller;
 
 import com.anaselrayan.springcashiero.features.sales.dto.SaleReceiptOptions;
-import com.anaselrayan.springcashiero.features.sales.model.Sale;
 import com.anaselrayan.springcashiero.features.sales.repository.SaleRepository;
 import com.anaselrayan.springcashiero.features.sales.request.SaleRequest;
 import com.anaselrayan.springcashiero.features.sales.service.SaleReceiptService;
 import com.anaselrayan.springcashiero.features.sales.service.SaleService;
 import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
