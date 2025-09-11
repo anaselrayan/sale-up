@@ -24,6 +24,7 @@ export class SaleCart {
 }
 
 export class CartItem {
+    saleItemId?: number;
     product?: Product;
     quantity?: number;
 

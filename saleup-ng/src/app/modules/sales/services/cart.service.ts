@@ -4,6 +4,7 @@ import { Injectable } from "@angular/core";
 import { ReplaySubject, Subject } from "rxjs";
 import { SoundUtils } from "src/app/utils/sound.utils";
 import { SaleItemRequest, SaleRequest } from "../models/sale-request";
+import { Sale, SaleItem } from "../models/sale.model";
 
 @Injectable({
     providedIn: 'root'
@@ -36,7 +37,7 @@ export class CartService {
     public increaseQty(product: Product, cart: SaleCart) {
         const item = this.getItem(product, cart);
         if (item && item.quantity && item.quantity < product.basicDetails.quantity) {
-            item.quantity++
+            item.quantity++;
             this.updateAmout(cart);
         }
     }
@@ -44,7 +45,7 @@ export class CartService {
     public decreaseQty(product: Product, cart: SaleCart) {
         const item = this.getItem(product, cart);
         if (item && item.quantity && item.quantity > 1) {
-            item.quantity--
+            item.quantity--;
             this.updateAmout(cart);
         }
     }
@@ -58,6 +59,14 @@ export class CartService {
             return false;
         }
         return false;
+    }
+
+    public increaseQtyForSaleItem(product: Product, cart: SaleCart, saleItem: SaleItem) {
+        const item = this.getItem(product, cart);
+        if (item && item.quantity && (item.quantity - saleItem.quantity) < product.basicDetails.quantity) {
+            item.quantity++;
+            this.updateAmout(cart);
+        }
     }
 
     public removeItem(product: Product, cart: SaleCart): void {
@@ -123,6 +132,7 @@ export class CartService {
         const saleItems: SaleItemRequest[] = [];
         for (const item of items) {
             const req = new SaleItemRequest();
+            req.saleItemId = item.saleItemId;
             req.productId = item.product?.productId;
             req.quantity = item.quantity;
             saleItems.push(req)

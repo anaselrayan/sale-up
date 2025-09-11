@@ -1,8 +1,5 @@
 package com.anaselrayan.springcashiero.features.sales.service;
 
-import com.anaselrayan.springcashiero.features.settings.service.SettingService;
-import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
-import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import com.anaselrayan.springcashiero.features.customers.repository.CustomerRepository;
 import com.anaselrayan.springcashiero.features.products.model.Product;
 import com.anaselrayan.springcashiero.features.products.repository.ProductRepository;
@@ -17,6 +14,10 @@ import com.anaselrayan.springcashiero.features.sales.repository.SaleReturnReposi
 import com.anaselrayan.springcashiero.features.sales.request.SaleItemRequest;
 import com.anaselrayan.springcashiero.features.sales.request.SaleRequest;
 import com.anaselrayan.springcashiero.features.sales.util.SaleUtil;
+import com.anaselrayan.springcashiero.features.settings.service.SettingService;
+import com.anaselrayan.springcashiero.infrastructure.constatnts.ActionType;
+import com.anaselrayan.springcashiero.infrastructure.response.ApiResponse;
+import com.anaselrayan.springcashiero.infrastructure.response.StatusCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +46,7 @@ public class SaleService {
 
     public ApiResponse createSale(@Valid SaleRequest request) {
         try {
-            ApiResponse validateSaleRes = validateSale(request);
+            ApiResponse validateSaleRes = validateSale(request, ActionType.CREATE);
             if (!validateSaleRes.getSuccess())
                 return validateSaleRes;
 
@@ -80,7 +80,7 @@ public class SaleService {
                 return new ApiResponse(false, StatusCode.NOT_FOUND, "Sale doesn't exist!");
             if (saleReturnRepository.countBySaleId(request.getSaleId()) > 0)
                 return new ApiResponse(false, StatusCode.BAD_REQUEST, "Can't edit sale with returns!");
-            ApiResponse validateSaleRes = validateSale(request);
+            ApiResponse validateSaleRes = validateSale(request, ActionType.UPDATE);
             if (!validateSaleRes.getSuccess())
                 return validateSaleRes;
 
@@ -102,12 +102,25 @@ public class SaleService {
                     .filter(oi -> newItems.stream().noneMatch(ni -> Objects.equals(ni.getProductId(), oi.getProduct().getId())))
                     .toList();
             saleItemRepository.deleteAll(itemsToDelete);
+            // Update Stock
+            itemsToDelete.forEach(item -> {
+                var product = item.getProduct();
+                int oldStock = product.getProductBasic().getQuantity();
+                product.getProductBasic().setQuantity(oldStock + item.getQuantity());
+                productRepository.save(product);
+            });
             oldItems.removeAll(itemsToDelete);
 
             // Save the new items
             newItems.forEach(ni -> {
-                if (oldItems.stream().noneMatch(oi -> Objects.equals(oi.getProduct().getId(), ni.getProductId())))
-                    oldItems.add(saveSaleItem(ni, saleToEdit));
+                if (oldItems.stream().noneMatch(oi -> Objects.equals(oi.getProduct().getId(), ni.getProductId()))) {
+                    saveSaleItem(ni, saleToEdit);
+                    // Update Stock
+                    var product = productRepository.findById(ni.getProductId()).orElseThrow();
+                    int oldStock = product.getProductBasic().getQuantity();
+                    product.getProductBasic().setQuantity(oldStock - ni.getQuantity());
+                    productRepository.save(product);
+                }
             });
 
             // Update the common items
@@ -116,6 +129,14 @@ public class SaleService {
                         .findFirst()
                         .orElse(null);
                 assert itemReq != null;
+
+                // Update Stock
+                var product = oi.getProduct();
+                int oldStock = product.getProductBasic().getQuantity();
+                product.getProductBasic().setQuantity(oldStock - (itemReq.getQuantity() -  oi.getQuantity()));
+                productRepository.save(product);
+
+                // Update the existed item
                 Double unitPrice = ProductUtils.getProductPriceWithDiscount(oi.getProduct().getProductPrice());
                 oi.setQuantity(itemReq.getQuantity());
                 oi.setUnitPrice(unitPrice);
@@ -123,6 +144,7 @@ public class SaleService {
                 oi.setSubTotal(itemReq.getQuantity() * unitPrice);
                 saleItemRepository.save(oi);
             });
+
             Sale saved = saleRepository.save(saleToEdit);
             return new ApiResponse(SaleConverter.convert(saved), StatusCode.CREATED);
         } catch (Exception ex) {
@@ -156,20 +178,39 @@ public class SaleService {
         }
     }
 
-    private ApiResponse validateSale(SaleRequest request) {
+    private ApiResponse validateSale(SaleRequest request, ActionType actionType) {
         // Validate Sale discount
         Double discountLimit = Double.parseDouble(settingService.getSetting("pos.receipt.maxDiscount").getValue());
         if (request.getDiscount() > discountLimit)
             return new ApiResponse(false, StatusCode.BAD_REQUEST, "Maximum allowed discount is " + discountLimit);
         // Validate Items quantities
         Double total = 0.0;
-        for (SaleItemRequest req : request.getSaleItems()) {
-            if (!productRepository.existsById(req.getProductId()))
-                return new ApiResponse(false, StatusCode.BAD_REQUEST, "product with id (" + req.getProductId() + " not found");
-            Product product = productRepository.getReferenceById(req.getProductId());
-            if (req.getQuantity() > product.getProductBasic().getQuantity())
-                return new ApiResponse(false, StatusCode.BAD_REQUEST, "product with id (" + req.getProductId() + ") quantity isn't enough");
-            total += ProductUtils.getProductPriceWithDiscount(product.getProductPrice()) * req.getQuantity();
+        if (ActionType.CREATE.equals(actionType)) {
+            for (SaleItemRequest req : request.getSaleItems()) {
+                if (!productRepository.existsById(req.getProductId()))
+                    return new ApiResponse(false, StatusCode.BAD_REQUEST, "product with id: " + req.getProductId() + " not found");
+                Product product = productRepository.getReferenceById(req.getProductId());
+                if (req.getQuantity() > product.getProductBasic().getQuantity())
+                    return new ApiResponse(false, StatusCode.BAD_REQUEST, "product (" + product.getProductBasic().getProductName() + ") quantity isn't enough");
+                total += ProductUtils.getProductPriceWithDiscount(product.getProductPrice()) * req.getQuantity();
+            }
+        } else if (ActionType.UPDATE.equals(actionType)) {
+            for (SaleItemRequest req : request.getSaleItems()) {
+                var product =  productRepository.findById(req.getProductId()).orElseThrow();
+                if (req.getSaleItemId() == null) {
+                    // New Item should be created
+                    if (product.getProductBasic().getQuantity() < req.getQuantity())
+                        return new ApiResponse(false, StatusCode.BAD_REQUEST, "product (" + product.getProductBasic().getProductName() + ") quantity isn't enough");
+                } else {
+                    // Just updating the quantity of the item
+                    if (!saleItemRepository.existsById(req.getSaleItemId()))
+                        return new ApiResponse(false, StatusCode.BAD_REQUEST, "Sale item with id: " + req.getSaleItemId() + " not found");
+                    SaleItem oldItem = saleItemRepository.findById(req.getSaleItemId()).orElseThrow();
+                    if (product.getProductBasic().getQuantity() < (req.getQuantity() - oldItem.getQuantity()))
+                        return new ApiResponse(false, StatusCode.BAD_REQUEST, "product (" + product.getProductBasic().getProductName() + ") quantity isn't enough");
+                }
+                total += ProductUtils.getProductPriceWithDiscount(product.getProductPrice()) * req.getQuantity();
+            }
         }
         // Validate subTotal
         if (!total.equals(request.getSubTotal())) {

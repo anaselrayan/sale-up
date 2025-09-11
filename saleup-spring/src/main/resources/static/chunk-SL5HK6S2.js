@@ -1,1 +1,0 @@
-import{a as r}from"./chunk-7KP7EQA2.js";var s=class{static getUserImageSrc(e){return e.imageUrl?r.apiBaseUrl+"/user/image/"+e.userId+"/"+e.imageUrl:"assets/images/users/placeholder.png"}static getUserImage(e){return e&&r.apiBaseUrl+"/user/image/"+e||"assets/images/users/placeholder.png"}};export{s as a};

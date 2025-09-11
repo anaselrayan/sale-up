@@ -95,7 +95,11 @@ export class PosSaleDetailsComponent implements OnInit, OnDestroy {
               this.cart.discount = this.saleToEdit.discount;
               this.cart.subTotal = this.saleToEdit.subTotal;
               this.cart.grandTotal = this.saleToEdit.grandTotal;
-              this.cart.items = this.saleToEdit.saleItems.map(item => new CartItem(item.product, item.quantity))
+              this.cart.items = this.saleToEdit.saleItems.map(item => {
+                const cartItem = new CartItem(item.product, item.quantity);
+                cartItem.saleItemId = item.saleItemId;
+                return cartItem;
+              })
             } else {
               this.router.navigate(['/notfound'])
             }
@@ -114,8 +118,15 @@ export class PosSaleDetailsComponent implements OnInit, OnDestroy {
     return ProductUtils.getFirstImageSrc(product)
   }
 
-  increaseQty(item: CartItem) {
-    this.cartService.increaseQty(item.product!, this.cart)
+  increaseQty(cartItem: CartItem) {
+    if (this.saleToEdit) {
+      const oldItem = this.saleToEdit.saleItems.find(si => si.saleItemId == cartItem.saleItemId);
+      if (oldItem) {
+        this.cartService.increaseQtyForSaleItem(cartItem.product!, this.cart, oldItem);
+      } else {
+        this.cartService.increaseQty(cartItem.product!, this.cart);
+      }
+    }
   }
 
   decreaseQty(item: CartItem) {
