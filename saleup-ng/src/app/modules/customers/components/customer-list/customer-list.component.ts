@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
@@ -19,6 +19,9 @@ import { Avatar } from 'primeng/avatar';
 import { CustomerCreateDialogComponent } from "../customer-create-dialog/customer-create-dialog.component";
 import { Tooltip } from 'primeng/tooltip';
 import { ConfirmService } from '@shared/services/confirm.service';
+import { debounceTime, finalize, switchMap } from 'rxjs';
+import { Page } from '@shared/models/page-response.mdel';
+import { Paginator } from "primeng/paginator";
 
 
 @Component({
@@ -38,7 +41,8 @@ import { ConfirmService } from '@shared/services/confirm.service';
     TranslateModule,
     Avatar,
     Tooltip,
-    CustomerCreateDialogComponent
+    CustomerCreateDialogComponent,
+    Paginator
 ],
   templateUrl: './customer-list.component.html',
   styleUrl: './customer-list.component.scss'
@@ -49,12 +53,16 @@ export class CustomerListComponent {
   dialogHeader = '';
   loading = false;
   pageReq = new PageRequest(0, 10);
+  pageDetails?: Page;
   customerList: Customer[] = [];
   customer: Customer | undefined;
   selectedCustomers!: Customer[] | null;
   cols!: any[];
 
   mode!: 'create' | 'update';
+
+  searchKey: string = '';
+  globalSearchControl = new FormControl('');
 
   constructor(
     private customerService: CustomerService,
@@ -64,19 +72,41 @@ export class CustomerListComponent {
   ) {}
 
   ngOnInit() {
-    this.getCustomersPage();
+    this.subscribeForQuickSearch();
+    this.quickSearch();
   }
 
-  getCustomersPage() {
+  quickSearch() {
     this.loading = true;
-    this.customerService.getCustomersPage(this.pageReq)
-      .subscribe(res => {
-        if (res.success) {
-          this.customerList = res.data.content
-          this.loading = false;
-        }
-      })
+    this.customerService.filterCustomers(this.searchKey, this.pageReq)
+        .subscribe(res => {
+          if (res.success) {
+            this.customerList = res.data.content
+            this.pageDetails = res.data.page
+          }
+          this.loading = false
+        })
   }
+
+  subscribeForQuickSearch() {
+      this.loading = true;
+      this.globalSearchControl.valueChanges.pipe(
+        debounceTime(300),
+        switchMap((searchTerm) => {
+          this.searchKey = searchTerm || '';
+          this.pageReq.page = 0;
+          return this.customerService.filterCustomers(searchTerm || '', this.pageReq)
+            .pipe(finalize(() => this.loading = false));
+        }
+      )
+      ).subscribe(res => {
+        if (res.success) {
+          this.customerList = res.data.content;
+          this.pageDetails = res.data.page;
+        }
+        this.loading = false;
+      });
+    }
 
   openNew() {
     this.customer = undefined;
@@ -96,7 +126,7 @@ export class CustomerListComponent {
         .subscribe(res => {
           if (res.success) {
             this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
-            this.getCustomersPage();
+            this.quickSearch();
           } else {
             this.toast.showError(res.message);
           }
@@ -114,4 +144,10 @@ export class CustomerListComponent {
     this.customerDialog = show;
   }
   
+  onPageChange(e: any) {
+    this.pageReq.page = e.page;
+    this.pageReq.size = e.rows;
+    this.quickSearch();
+  }
+
 }

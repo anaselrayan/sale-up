@@ -19,6 +19,8 @@ import { ProductUtils } from 'src/app/utils/product.utils';
 import { Tag } from 'primeng/tag';
 import { Tooltip } from 'primeng/tooltip';
 import { Select } from 'primeng/select';
+import { ConfirmService } from '@shared/services/confirm.service';
+import { ToastService } from '@shared/services/toast.service';
 
 @Component({
   selector: 'app-product-details',
@@ -55,14 +57,14 @@ export class ProductDetailsComponent {
 
   responsiveOptions: any[] = [
     {
-        breakpoint: '1300px',
-        numVisible: 4
+      breakpoint: '1300px',
+      numVisible: 4
     },
     {
-        breakpoint: '575px',
-        numVisible: 1
+      breakpoint: '575px',
+      numVisible: 1
     }
-  ] ;
+  ];
 
   ngOnInit() {
     this.fetchProductDetails();
@@ -73,15 +75,17 @@ export class ProductDetailsComponent {
     private productService: ProductService,
     private route: ActivatedRoute,
     private translate: TranslateService,
+    private confirmService: ConfirmService,
+    private toast: ToastService,
     private router: Router
-  ) {}
+  ) { }
 
   initOptions() {
     this.stOptions = [
-      {label: this.translate.instant('TODAY'), value: 'day'},
-      {label: this.translate.instant('LAST_WEEK'), value: 'week'},
-      {label: this.translate.instant('LAST_MONTH'), value: 'month'},
-      {label: this.translate.instant('LAST_YEAR'), value: 'year'},
+      { label: this.translate.instant('TODAY'), value: 'day' },
+      { label: this.translate.instant('LAST_WEEK'), value: 'week' },
+      { label: this.translate.instant('LAST_MONTH'), value: 'month' },
+      { label: this.translate.instant('LAST_YEAR'), value: 'year' },
     ]
   }
 
@@ -135,6 +139,19 @@ export class ProductDetailsComponent {
   onChangeCriteria(option: any) {
     this.stRange = option.value;
     this.getProductStatistics();
+  }
+
+  deleteProduct() {
+    const msg = this.translate.instant("DELETE_ALERT", { name: this.product.basicDetails.productName })
+    this.confirmService.dialogAlert(msg, () => {
+      this.productService.deleteProduct(this.product.productId)
+        .subscribe(res => {
+          if (res.success) {
+            this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
+            this.router.navigate(['/products/list'])
+          }
+        })
+    })
   }
 
 }

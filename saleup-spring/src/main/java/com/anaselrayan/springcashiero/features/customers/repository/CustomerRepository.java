@@ -18,4 +18,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     boolean existsByPhoneAndDeletedFalse(String phone);
 
     Page<Customer> findAllByDeletedFalse(Pageable pageable);
+
+    @Query("SELECT c FROM Customer c WHERE c.deleted = false AND (c.phone LIKE %:keyword% OR c.fullName LIKE %:keyword%)")
+    Page<Customer> filterByKeyword(String keyword, Pageable pageable);
 }

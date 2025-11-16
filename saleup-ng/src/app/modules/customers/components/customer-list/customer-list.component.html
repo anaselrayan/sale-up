@@ -17,22 +17,18 @@
     [rows]="10"
     [columns]="cols"
     [loading]="loading"
-    [paginator]="true"
     [globalFilterFields]="['phone', 'fullName']"
     [tableStyle]="{ 'min-width': '75rem' }"
     [(selection)]="selectedCustomers"
     [rowHover]="true"
     dataKey="customerId"
-    [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate"
-    [showCurrentPageReport]="true"
-    [rowsPerPageOptions]="[10, 20, 30]"
 >
     <ng-template #caption>
         <div class="flex items-center justify-between">
             <h5 class="m-0">{{'CUSTOMERS'| translate}}</h5>
             <p-iconfield>
                 <p-inputicon styleClass="pi pi-search" />
-                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" [placeholder]="'SEARCH_PACEHOLDER' | translate" />
+                <input pInputText type="text" [formControl]="globalSearchControl" (input)="onGlobalFilter(dt, $event)" [placeholder]="'SEARCH_PACEHOLDER' | translate" />
             </p-iconfield>
         </div>
     </ng-template>
@@ -99,6 +95,15 @@
         </tr>
     </ng-template>
 </p-table>
+<p-paginator
+    (onPageChange)="onPageChange($event)"
+    [first]="pageReq.page * pageReq.size"
+    [rows]="pageReq.size"
+    [totalRecords]="pageDetails?.totalElements || 0"
+    [showCurrentPageReport]="true"
+    [showJumpToPageDropdown]="false"
+    [rowsPerPageOptions]="[10, 20, 50]"
+    [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate" />
 
 <app-customer-create-dialog [customer]="customer" *ngIf="customerDialog" (visibleChange)="toggleDialog($event)">
 </app-customer-create-dialog>

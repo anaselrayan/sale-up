@@ -62,6 +62,8 @@ export class PosComponent implements OnInit, OnDestroy {
   loading = false;
   searching = false;
 
+  searchKey: string = '';
+
   private sacnnerSub$!: Subscription;
   
   constructor(
@@ -74,8 +76,8 @@ export class PosComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.subscribeForGlobalSearch();
-    this.getProducts();
+    this.subscribeForQuickSearch();
+    this.quickSearch();
     this.hideSideBar();
     this.listenForBarcodesScanner();
   }
@@ -100,13 +102,28 @@ export class PosComponent implements OnInit, OnDestroy {
     })
   }
 
-  subscribeForGlobalSearch() {
-    this.pageReq = new PageRequest(0, 8);
+  quickSearch() {
+    this.loading = true;
+    this.productService.searchByKeyword(this.searchKey, this.pageReq)
+        .subscribe(res => {
+          if (res.success) {
+            this.products = res.data.content
+            this.pageDetails = res.data.page
+          }
+          this.loading = false
+        })
+  }
+
+  subscribeForQuickSearch() {
     this.loading = true;
     this.globalSearchControl.valueChanges.pipe(
       debounceTime(300),
-      switchMap((searchTerm) => this.productService.searchByKeyword(searchTerm || '', this.pageReq)
-      .pipe(finalize(() => this.loading = false))
+      switchMap((searchTerm) => {
+        this.searchKey = searchTerm || '';
+        this.pageReq.page = 0;
+        return this.productService.searchByKeyword(searchTerm || '', this.pageReq)
+          .pipe(finalize(() => this.loading = false));
+      }
     )
     ).subscribe(res => {
       if (res.success) {
@@ -115,18 +132,6 @@ export class PosComponent implements OnInit, OnDestroy {
       }
       this.loading = false;
     });
-  }
-  
-  getProducts() {
-    this.loading = true;
-    this.productService.getProductsPage(this.pageReq)
-    .subscribe(res => {
-      if (res.success) {
-        this.products = res.data.content;
-        this.pageDetails = res.data.page;
-      }
-      this.loading = false;
-    })
   }
 
   getQuantitySeverity(p: Product) {
@@ -144,11 +149,11 @@ export class PosComponent implements OnInit, OnDestroy {
   onPageChange(e: any) {
     this.pageReq.page = e.page;
     this.pageReq.size = e.rows;
-    this.getProducts();
+    this.quickSearch();
   }
 
   orderSuccess(e: any) {
-    this.getProducts();
+    this.quickSearch();
   }
 
   ngOnDestroy(): void {

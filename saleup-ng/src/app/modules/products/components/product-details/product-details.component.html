@@ -33,7 +33,7 @@
                     </div>
                     <div class="flex gap-1 justify-between">
                         <p-button [routerLink]="['/products/edit', product.productId]" tooltipPosition="top" [pTooltip]="'EDIT' | translate" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="success" />
-                        <p-button tooltipPosition="top" [pTooltip]="'DELETE' | translate" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" />
+                        <p-button tooltipPosition="top" [pTooltip]="'DELETE' | translate" icon="pi pi-trash" (onClick)="deleteProduct()" [rounded]="true" [text]="true" severity="danger" />
                     </div>
                 </div>
                 <div class="text-lg font-bold">

@@ -27,7 +27,11 @@ export class CustomerService {
     }
 
     public filterCustomersByPhone(keyword: string): Observable<ApiResponse<Customer[]>> {
-        return this.http.get<any>(`${this.baseUrl}/filter?key=${keyword}`);
+        return this.http.get<any>(`${this.baseUrl}/filter/phone?key=${keyword}`);
+    }
+
+    public filterCustomers(keyword: string, pr: PageRequest): Observable<ApiResponse<PageResponse<Customer>>> {
+        return this.http.get<any>(`${this.baseUrl}/filter?key=${keyword}&page=${pr.page}&size=${pr.size}`);
     }
 
     public deleteCustomer(id: number): Observable<ApiResponse<Customer>> {

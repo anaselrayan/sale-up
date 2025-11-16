@@ -103,10 +103,25 @@ public class CustomerService {
         }
     }
 
-    public ApiResponse filterCustomers(String keyword) {
+    public ApiResponse filterCustomersByPhone(String keyword) {
         try {
             List<Customer> list = customerRepository.findByDeletedFalseAndPhoneLike(keyword);
             return new ApiResponse(CustomerConverter.convert(list), StatusCode.OK);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
+        }
+    }
+
+    public ApiResponse filterCustomersByKeyword(String keyword, PageRequest pr) {
+        try {
+            Page<Customer> customerPage = customerRepository.filterByKeyword(keyword, pr);
+            PageImpl<CustomerDTO> dtoPage = new PageImpl<>(
+                    customerPage.getContent().stream().map(CustomerConverter::convert).toList(),
+                    customerPage.getPageable(),
+                    customerPage.getTotalElements()
+            );
+            return new ApiResponse(dtoPage, StatusCode.OK);
         } catch (Exception ex) {
             log.error(ex.getMessage());
             return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());

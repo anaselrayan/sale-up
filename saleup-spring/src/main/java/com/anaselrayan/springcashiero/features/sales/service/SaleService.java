@@ -41,7 +41,6 @@ public class SaleService {
     private final SaleItemRepository saleItemRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
-    private final SaleReceiptService saleReceiptService;
     private final SettingService settingService;
 
     public ApiResponse createSale(@Valid SaleRequest request) {

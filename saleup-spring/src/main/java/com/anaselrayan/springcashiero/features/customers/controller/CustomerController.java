@@ -41,9 +41,18 @@ public class CustomerController {
     }
 
     @PreAuthorize("hasAuthority('perm.access.customer')")
+    @GetMapping("/filter/phone")
+    public ResponseEntity<ApiResponse> filterCustomersByPhone(@RequestParam String key) {
+        ApiResponse res = customerService.filterCustomersByPhone(key);
+        return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.access.customer')")
     @GetMapping("/filter")
-    public ResponseEntity<ApiResponse> filterCustomers(@RequestParam String key) {
-        ApiResponse res = customerService.filterCustomers(key);
+    public ResponseEntity<ApiResponse> filterCustomers(@RequestParam Integer page,
+                                                       @RequestParam Integer size,
+                                                       @RequestParam String key) {
+        ApiResponse res = customerService.filterCustomersByKeyword(key, PageRequest.of(page, size));
         return ResponseEntity.ok(res);
     }
 
