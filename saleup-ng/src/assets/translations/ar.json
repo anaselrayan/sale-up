@@ -341,5 +341,12 @@
     "RECEIPT_OVERVIEW": "عرض الفاتورة",
     "BETA": "تجريبي",
     "RECEIPT_SCAN_DETAILS_HINT": "يمكنك مسح الباركود الموجود علي الفاتورة للبحث عنها",
-    "RECEIPT_NOT_FOUND": "تعذر العثور علي الفاتورة"
+    "RECEIPT_NOT_FOUND": "تعذر العثور علي الفاتورة",
+    "DELIVERY_SERVICE": "خدمة التوصيل",
+    "ADD_NOTE": "أضف ملاحظة",
+    "NOTES": "ملاحظات",
+    "REMAINING_STOCK_QTY": "إجمالي القطع المتبقية",
+    "REMAINING_STOCK_COST": "تكلفة القطع المتبقية",
+    "REMAINING_STOCK_SALES_VALUE": "قيمة المبيعات المتبقية",
+    "REMAINING_STOCK_REVENUE": "الربح من الكمية المتبقية"
 }

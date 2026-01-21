@@ -18,6 +18,8 @@ public class SaleConverter {
                 .grandTotal(from.getGrandTotal())
                 .subTotal(from.getSubTotal())
                 .discount(from.getDiscount())
+                .deliveryAmount(from.getDeliveryAmount())
+                .notes(from.getNotes())
                 .barcode(from.getBarcode())
                 .partiallyReturned(from.isPartiallyReturned())
                 .totallyReturned(from.isTotallyReturned())

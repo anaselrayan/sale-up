@@ -22,6 +22,10 @@ export class DashboardService {
         return this.http.get<any>(`${this.baseUrl}/snapshot`);
     }
 
+    public getProductKpis(): Observable<ApiResponse<any>> {
+        return this.http.get<any>(`${this.baseUrl}/product-kpi`);
+    }
+
     public getTopSellingProducts(type: string): Observable<ApiResponse<BestSellingProductResponse[]>> {
         return this.http.get<any>(`${this.baseUrl}/top-selling?type=${type}`);
     }

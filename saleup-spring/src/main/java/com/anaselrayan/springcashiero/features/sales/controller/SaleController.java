@@ -50,6 +50,15 @@ public class SaleController {
     }
 
     @PreAuthorize("hasAuthority('perm.access.sale')")
+    @GetMapping("/filter")
+    public ResponseEntity<ApiResponse> filterSales(@RequestParam String keyword,
+                                                   @RequestParam Integer page,
+                                                   @RequestParam Integer size) {
+        ApiResponse res = saleService.filterSales(keyword, PageRequest.of(page, size));
+        return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.access.sale')")
     @GetMapping("/{saleId}")
     public ResponseEntity<ApiResponse> getSaleById(@PathVariable Long saleId) {
         ApiResponse res = saleService.getSaleById(saleId);
@@ -94,6 +103,13 @@ public class SaleController {
     @GetMapping("/receipt-options")
     public ResponseEntity<SaleReceiptOptions> getReceiptOptions() {
         return ResponseEntity.ok(saleReceiptService.getSaleReceiptOptions());
+    }
+
+    @PreAuthorize("hasAuthority('perm.delete.sale')")
+    @GetMapping("/export-receipts")
+    public ResponseEntity<?> printAllReceipts() {
+        this.saleService.exportAllReceipts();
+        return ResponseEntity.ok(true);
     }
 
 }

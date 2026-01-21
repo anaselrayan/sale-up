@@ -1,123 +1,153 @@
 <p-toolbar styleClass="mb-6">
     <ng-template #start>
         <div class="flex items-center gap-2">
-            <p-button [label]="'ADD' | translate" icon="pi pi-plus" severity="secondary" class="mr-2" />
-            <p-button severity="secondary" [label]="'DELETE' | translate" icon="pi pi-trash" outlined (onClick)="deleteSelectedSales()" [disabled]="!selectedSales || !selectedSales.length" />
+            <p-button
+                [label]="'ADD' | translate"
+                icon="pi pi-plus"
+                severity="secondary"
+                class="mr-2" />
+
+            <p-button
+                severity="secondary"
+                [label]="'DELETE' | translate"
+                icon="pi pi-trash"
+                outlined
+                (onClick)="deleteSelectedSales()"
+                [disabled]="!selectedSales || !selectedSales.length" />
         </div>
     </ng-template>
 
     <ng-template #end>
-        <p-button [label]="'EXPORT' | translate" icon="pi pi-upload" severity="secondary" />
+        <p-button
+            [label]="'EXPORT' | translate"
+            icon="pi pi-upload"
+            [loading]="loading"
+            (onClick)="exportAllReceipts()"
+            severity="secondary" />
     </ng-template>
 </p-toolbar>
-<p-message class="mb-2" icon="pi pi-lightbulb" severity="info" closable>{{ 'RECEIPT_SCAN_DETAILS_HINT' | translate }}</p-message>
+
+<p-message
+    class="mb-2"
+    icon="pi pi-lightbulb"
+    severity="info"
+    closable>
+    {{ 'RECEIPT_SCAN_DETAILS_HINT' | translate }}
+</p-message>
+
 <p-table
-    #dt
     [value]="salesList"
-    [rows]="10"
-    [columns]="cols"
+    [rows]="pageReq.size"
     [loading]="loading"
-    [globalFilterFields]="['barcode', 'customer.fullName', 'createdBy']"
-    [tableStyle]="{ 'min-width': '75rem' }"
-    [(selection)]="selectedSales"
     [rowHover]="true"
-    dataKey="saleId">
+    dataKey="saleId"
+    [(selection)]="selectedSales"
+    [tableStyle]="{ 'min-width': '75rem' }">
+
     <ng-template #caption>
         <div class="flex items-center justify-between">
-            <h5 class="m-0">{{'SALE_HISTORY' | translate }}</h5>
+            <h5 class="m-0">{{ 'SALE_HISTORY' | translate }}</h5>
+
             <p-iconfield>
                 <p-inputicon styleClass="pi pi-search" />
-                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" [placeholder]="'SEARCH_PACEHOLDER' | translate" />
+                <input
+                    pInputText
+                    type="text"
+                    [(ngModel)]="searchKeyword"
+                    (input)="onSearchChange()"
+                    [placeholder]="'SEARCH_PACEHOLDER' | translate" />
             </p-iconfield>
         </div>
     </ng-template>
+
     <ng-template #header>
         <tr>
             <th style="width: 3rem">
                 <p-tableHeaderCheckbox />
             </th>
-            <th>
-                {{ 'BARCODE' | translate }}
-            </th>
-            <th pSortableColumn="createdAt">
-                {{'DATE'| translate}}
-                <p-sortIcon field="createdAt" />
-            </th>
-            <th pSortableColumn="customer">
-                {{'CUSTOMER'| translate}}
-                <p-sortIcon field="customer" />
-            </th>
-            <th pSortableColumn="grandTotal">
-                {{'GRAND_TOTAL'| translate}}
-                <p-sortIcon field="grandTotal" />
-            </th>
-            <th pSortableColumn="discount">
-                {{'RECEIPT_DISCOUNT'| translate}}
-                <p-sortIcon field="discount" />
-            </th>
-            <th>
-                {{'SALE_RETURN_STATUS'| translate}}
-            </th>
-            <th pSortableColumn="createdBy">
-                {{'SOLD_BY'| translate}}
-                <p-sortIcon field="createdBy" />
-            </th>
+            <th>{{ 'BARCODE' | translate }}</th>
+            <th>{{ 'DATE' | translate }}</th>
+            <th>{{ 'CUSTOMER' | translate }}</th>
+            <th>{{ 'GRAND_TOTAL' | translate }}</th>
+            <th>{{ 'RECEIPT_DISCOUNT' | translate }}</th>
+            <th>{{ 'DELIVERY_SERVICE' | translate }}</th>
+            <th>{{ 'SALE_RETURN_STATUS' | translate }}</th>
+            <th>{{ 'SOLD_BY' | translate }}</th>
             <th>{{ 'OPTIONS' | translate }}</th>
         </tr>
     </ng-template>
+
     <ng-template #body let-sale>
         <tr>
             <td>
                 <p-tableCheckbox [value]="sale" />
             </td>
+
             <td>
-                <a [routerLink]="['/sales/detail', sale.saleId]" class="text-primary">{{ sale.barcode }}</a>
+                <a
+                    [routerLink]="['/sales/detail', sale.saleId]"
+                    class="text-primary">
+                    {{ sale.barcode }}
+                </a>
             </td>
-            <td>
-                {{ sale.createdAt | dateFt:'long' }}
-            </td>
+
+            <td>{{ sale.createdAt | dateFt:'long' }}</td>
+
             <td>
                 {{ sale.customer?.fullName }}
                 <div *ngIf="!sale.customer" class="text-muted-color">
                     {{ 'NOT_REGISTERED_CUSTOMER' | translate }}
                 </div>
             </td>
+
+            <td>{{ sale.grandTotal | sCurrency }}</td>
+
             <td>
-                {{ sale.grandTotal | sCurrency }}
-            </td>
-            <td>
-                <div *ngIf="sale.discount">
+                <span *ngIf="sale.discount; else noDiscount">
                     {{ sale.discount | sCurrency }}
-                </div>
-                <div *ngIf="!sale.discount" class="text-muted-color">
-                     {{ 'NO_EXIST' | translate }}
-                </div>
+                </span>
+                <ng-template #noDiscount>
+                    <span class="text-muted-color">{{ 'NO_EXIST' | translate }}</span>
+                </ng-template>
             </td>
+
             <td>
-                <div class="flex gap-2 mb-2" *ngIf="sale.totallyReturned">
-                    <i class="pi pi-arrow-right-arrow-left text-muted-color"></i>
-                    <div class="text-red-500">{{'SALE_TOTALLY_RETURNED' | translate}}</div>
-                </div>
-                <div class="flex gap-2 mb-2" *ngIf="sale.partiallyReturned">
-                    <i class="pi pi-arrow-right-arrow-left text-muted-color"></i>
-                    <div class="text-orange-500">{{'SALE_PARTIALLY_RETURNED' | translate}}</div>
-                </div>
-                <div class="flex gap-2" *ngIf="!sale.partiallyReturned && !sale.totallyReturned">
-                    <div class="text-blue-500 dark:text-blue-300">{{'SALE_HAS_NO_RETURNS' | translate}}</div>
-                </div>
-                <a *ngIf="sale.totallyReturned || sale.partiallyReturned" [routerLink]="['/sales/sale-return/list']" [queryParams]="{saleId: sale.saleId}" 
-                class="text-muted-color dark:text-surface-400 hover:underline">{{ 'SHOW_SALE_RETURNS' | translate }}</a>
+                <span *ngIf="sale.deliveryAmount; else noDilevery">
+                    {{ sale.deliveryAmount | sCurrency }}
+                </span>
+                <ng-template #noDilevery>
+                    <span class="text-muted-color">{{ 'NO_EXIST' | translate }}</span>
+                </ng-template>
             </td>
+
             <td>
-                {{ sale.createdBy }}
+                <div *ngIf="sale.totallyReturned" class="text-red-500">
+                    {{ 'SALE_TOTALLY_RETURNED' | translate }}
+                </div>
+                <div *ngIf="sale.partiallyReturned" class="text-orange-500">
+                    {{ 'SALE_PARTIALLY_RETURNED' | translate }}
+                </div>
+                <div *ngIf="!sale.totallyReturned && !sale.partiallyReturned"
+                     class="text-blue-500">
+                    {{ 'SALE_HAS_NO_RETURNS' | translate }}
+                </div>
             </td>
+
+            <td>{{ sale.createdBy }}</td>
+
             <td>
                 <p-menu #menu [popup]="true" appendTo="body" [model]="menuItems"></p-menu>
-                <button pButton icon="pi pi-ellipsis-v" class="p-button-text" (click)="getMenuItems(sale); menu.toggle($event)"></button>
+                <button
+                    pButton
+                    icon="pi pi-ellipsis-v"
+                    class="p-button-text"
+                    (click)="getMenuItems(sale); menu.toggle($event)">
+                </button>
             </td>
         </tr>
     </ng-template>
 </p-table>
+
 <p-paginator
     (onPageChange)="onPageChange($event)"
     [first]="pageReq.page * pageReq.size"
@@ -125,10 +155,12 @@
     [totalRecords]="pageDetails?.totalElements || 0"
     [rowsPerPageOptions]="[10, 20, 30]"
     [showCurrentPageReport]="true"
-    [showJumpToPageDropdown]="false"
-    [currentPageReportTemplate]=" 'TABLE_PAGE_RESULT' | translate" />
+    [currentPageReportTemplate]="'TABLE_PAGE_RESULT' | translate">
+</p-paginator>
 
 <app-sale-receipt-preview
-    [sale]="sale" [receiptOptions]="receiptOptions"
-    [visible]="showReceiptPreview" (onHide)="showReceiptPreview = false"
-></app-sale-receipt-preview>
+    [sale]="sale"
+    [receiptOptions]="receiptOptions"
+    [visible]="showReceiptPreview"
+    (onHide)="showReceiptPreview = false">
+</app-sale-receipt-preview>

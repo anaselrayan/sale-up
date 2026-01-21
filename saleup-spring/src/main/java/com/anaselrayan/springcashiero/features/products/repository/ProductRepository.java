@@ -1,6 +1,7 @@
 package com.anaselrayan.springcashiero.features.products.repository;
 
 import com.anaselrayan.springcashiero.features.products.model.Product;
+import com.anaselrayan.springcashiero.features.reports.ProductKpiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,10 +26,19 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     @Query("""
     SELECT p FROM Product p
-    WHERE p.productBasic.quantity <= p.productBasic.lowStockPoint
+    WHERE p.productBasic.quantity <= p.productBasic.lowStockPoint AND p.deleted = false
     ORDER BY p.productBasic.lowStockPoint
     """)
     List<Product> findMinStockProducts(Pageable pageable);
 
     Page<Product> findAllByDeletedFalse(Pageable pageable);
+    List<Product> findAllByDeletedFalse();
+
+    @Query("""
+    SELECT sum(p.productBasic.quantity) as remainingTotalQty, sum(p.productPrice.costPrice) * p.productBasic.quantity as remainingTotalCost,
+         sum(p.productPrice.sellingPrice) * p.productBasic.quantity as remainingTotalSales,
+         (sum(p.productPrice.sellingPrice) - sum(p.productPrice.costPrice)) * p.productBasic.quantity as remainingTotalRevenue
+         FROM Product p WHERE p.deleted = false
+    """)
+    ProductKpiResponse getProductKpis();
 }

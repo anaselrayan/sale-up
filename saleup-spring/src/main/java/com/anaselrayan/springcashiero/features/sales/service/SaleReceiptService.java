@@ -8,10 +8,7 @@ import com.anaselrayan.springcashiero.infrastructure.constatnts.Upload;
 import com.anaselrayan.springcashiero.shared.UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.core.io.ClassPathResource;
@@ -20,10 +17,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -34,6 +35,8 @@ public class SaleReceiptService {
     private final SettingService settingService;
     private final UploadService uploadService;
     public static final String RECEIPT_REPORT_PATH = "/report/receipt.jasper";
+    public static final String RECEIPT_FILE_PREFIX = "receipt-";
+    public static final String RECEIPT_EXTENSION = ".pdf";
     private static final String NO_CUSTOMER_FOLDER = "NOT_REGISTERED";
 
     public byte[] generateSaleReceipt(Sale sale) {
@@ -57,12 +60,15 @@ public class SaleReceiptService {
             params.put("staffName", getSeller(sale));
             params.put("subTotal", Math.round(sale.getSubTotal() * 100) / 100.0);
             params.put("total", Math.round(sale.getGrandTotal() * 100) / 100.0);
-            params.put("discount", Math.round(sale.getDiscount() * 100) / 100.0);
+            params.put("discount", sale.getDiscount() == null ? 0.0 : Math.round(sale.getDiscount() * 100) / 100.0);
+            params.put("deliveryAmount", sale.getDeliveryAmount() == null ? 0.0 : Math.round(sale.getDeliveryAmount() * 100) / 100.0);
             params.put("billFooter", getReceiptFooter());
             params.put("logoImage", getLogoImageBytes());
             params.put("barcode", sale.getBarcode());
             params.put("currentDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 
+            Locale locale = new Locale( "en", "US" );
+            params.put( JRParameter.REPORT_LOCALE, locale );
             // dummy datasource
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(List.of("dummy"));
 
@@ -74,6 +80,46 @@ public class SaleReceiptService {
             log.error("Couldn't export the receipt: {}", ex.getMessage());
             return null;
         }
+    }
+
+    public void saveSaleReceipt(Sale sale) {
+        byte[] pdfBytes = generateSaleReceipt(sale);
+        if (pdfBytes == null || pdfBytes.length == 0) {
+            return;
+        }
+
+        try {
+            String customerFolder = resolveCustomerFolder(sale);
+            Path targetDir = Paths.get(Upload.UPLOAD_RECEIPT_PATH, customerFolder);
+            Files.createDirectories(targetDir);
+
+            String fileName = buildReceiptFileName(sale);
+            Path receiptPath = targetDir.resolve(fileName);
+
+            Files.write(receiptPath, pdfBytes);
+            log.info("Receipt saved at {}", receiptPath);
+
+        } catch (Exception ex) {
+            log.error("Failed to save receipt to disk: {}", ex.getMessage(), ex);
+        }
+    }
+
+    private String resolveCustomerFolder(Sale sale) {
+        if (sale.getCustomer() == null || sale.getCustomer().getPhone() == null) {
+            return NO_CUSTOMER_FOLDER;
+        }
+        return sale.getCustomer().getPhone();
+    }
+
+    private String buildReceiptFileName(Sale sale) {
+        String timestamp = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
+
+        String barcodePart = sale.getBarcode() != null
+                ? sale.getBarcode()
+                : "NO_BARCODE";
+
+        return RECEIPT_FILE_PREFIX + barcodePart + "-" + timestamp + RECEIPT_EXTENSION;
     }
 
     private ByteArrayInputStream getLogoImageBytes() {

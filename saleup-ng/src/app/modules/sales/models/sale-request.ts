@@ -3,10 +3,11 @@ export class SaleRequest {
     customerId?: number;
     saleItems?: SaleItemRequest[];
     subTotal?: number;
-    grandTotal?: number;
     discount?: number;
+    deliveryAmount?: number;
+    grandTotal?: number;
+    notes?: string;
 }
-
 export class SaleItemRequest {
     saleItemId?: number;
     saleId?: number;

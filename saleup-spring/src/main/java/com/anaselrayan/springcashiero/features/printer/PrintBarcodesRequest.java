@@ -24,22 +24,20 @@ public class PrintBarcodesRequest {
     private String printer;
 
     @NotNull(message = "barcode size can't be null")
-    @Min(value = 50, message = "barcode width should be at least 50")
+    @Min(value = 10, message = "barcode width should be at least 50")
     @Max(value = 500, message = "barcode width should be at most 500")
     private Integer width;
 
     @NotNull(message = "barcode size can't be null")
-    @Min(value = 10, message = "barcode height should be at least 10")
+    @Min(value = 5, message = "barcode height should be at least 10")
     @Max(value = 500, message = "barcode height should be at most 500")
     private Integer height;
 
     @NotNull(message = "margin can't be null")
-    @Min(value = 0, message = "margin should be at least 0")
     @Max(value = 100, message = "margin should be at most 100")
     private Integer marginLeft;
 
     @NotNull(message = "margin can't be null")
-    @Min(value = 0, message = "margin should be at least 0")
     @Max(value = 100, message = "margin should be at most 100")
     private Integer marginTop;
 

@@ -1,23 +1,65 @@
-<p-card [style]="{ minWidth: '40rem', overflow: 'hidden'}">
+<p-card [style]="{ minWidth: '40rem', position: 'relative'}">
+    
     <div *ngIf="saleToEdit" class="mb-4 text-center">
-        <p-message severity="warn"> {{ 'EDIT_RECEIPT' | translate}} {{ saleToEdit.barcode }} </p-message>
+        <p-message severity="warn">
+            {{ 'EDIT_RECEIPT' | translate}} {{ saleToEdit.barcode }}
+        </p-message>
     </div>
+
+    <!-- CUSTOMER -->
     <div class="search-customers mb-8">
-        <div class="flex flex-col gap-2 mb-4">
+        <div class="flex justify-between">
             <div class="text-lg">{{'CUSTOMER_DETAILS' | translate }}</div>
-            <p-autocomplete [style]="{width: '100%'}" [dropdown]="true" optionLabel="phone" [(ngModel)]="cart.customer"
-                [suggestions]="customers" (completeMethod)="searchCustomers($event)">
+            <!-- Notes Icon -->
+            <div class="relative">
+                <i
+                    class="pi text-xl cursor-pointer"
+                    [ngClass]="cart.notes ? 'pi-file-edit text-primary' : 'pi-file-plus text-surface-500'"
+                    (click)="toggleNotes()">
+                </i>
+
+                <!-- Floating Notes Input -->
+                <div *ngIf="showNotes"
+                    class="absolute surface-card shadow-4 border border-round"
+                    style="width: 25rem; z-index: 1000;"
+                    (mouseleave)="showNotes = false">
+
+                    <textarea
+                        pInputTextarea
+                        rows="5"
+                        [(ngModel)]="cart.notes"
+                        placeholder="{{ 'ADD_NOTE' | translate }}"
+                        class="w-full p-2 border-round border-1 border-primary focus:border-primary">
+                    </textarea>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col gap-2 mb-4">
+            <p-autocomplete
+                [style]="{width: '100%'}"
+                [dropdown]="true"
+                optionLabel="phone"
+                [(ngModel)]="cart.customer"
+                [suggestions]="customers"
+                (completeMethod)="searchCustomers($event)">
                 <ng-template let-item pTemplate="item">
                     <div class="flex gap-2 items-center">
                         <p-avatar [label]="item.fullName.toUpperCase()[0]" shape="circle" />
-                        <div>{{ item.phone }}</div><span class="font-sm"> {{ item.fullName }} </span>
+                        <div>{{ item.phone }}</div>
+                        <span class="font-sm">{{ item.fullName }}</span>
                     </div>
                 </ng-template>
             </p-autocomplete>
         </div>
-        <p-button (onClick)="customerDialog = true" [style]="{width: '100%', border: '1px dashed'}"
-            [label]="'ADD_CUSTOMER' | translate" icon="pi pi-plus" outlined="true" />
+
+        <p-button
+            (onClick)="customerDialog = true"
+            [style]="{width: '100%', border: '1px dashed'}"
+            [label]="'ADD_CUSTOMER' | translate"
+            icon="pi pi-plus"
+            outlined="true" />
     </div>
+
     <div class="order-details">
         <div class="mb-4 text-lg flex justify-between">
             <span>{{'ORDER_DETAILS' | translate }}</span>
@@ -72,32 +114,64 @@
             </div>
         </div>
         <div class="total">
-            <div class="flex justify-between">
-                <div class="mb-4 text-surface-400"> {{'SUB_TOTAL' | translate }} </div>
-                <span>{{ cart.subTotal | sCurrency }}</span>
-            </div>
-            <div class="flex justify-between">
-                <div class="mb-4 text-surface-400"> {{'DISCOUNT' | translate }} </div>
-                <p-inputnumber id="discount" [disabled]="!this.cart.items.length" (onInput)="updateDiscount()"
-                    [(ngModel)]="cart.discount" mode="currency" currency="USD" showButtons></p-inputnumber>
-            </div>
-            <hr class="border-dashed" />
-            <div class="flex justify-between">
-                <div class="mb-4 font-bold text-lg"> {{'TOTAL_AMOUNT' | translate }} </div>
-                <span class="text-lg text-primary">{{ cart.grandTotal | sCurrency}}</span>
-            </div>
+
+        <div class="flex justify-between">
+            <div class="mb-4 text-surface-400">{{ 'SUB_TOTAL' | translate }}</div>
+            <span>{{ cart.subTotal | sCurrency }}</span>
         </div>
+
+        <!-- DELIVERY -->
+        <div class="flex justify-between mb-2">
+            <div class="mb-4 text-surface-400">{{ 'DELIVERY_SERVICE' | translate }}</div>
+            <p-inputnumber
+                [(ngModel)]="cart.deliveryAmount"
+                [disabled]="!cart.items.length"
+                mode="currency"
+                currency="USD"
+                (onInput)="updateTotals()">
+            </p-inputnumber>
+        </div>
+
+        <!-- DISCOUNT -->
+        <div class="flex justify-between">
+            <div class="mb-4 text-surface-400">{{ 'DISCOUNT' | translate }}</div>
+            <p-inputnumber
+                [(ngModel)]="cart.discount"
+                [disabled]="!cart.items.length"
+                mode="currency"
+                currency="USD"
+                (onInput)="updateTotals()">
+            </p-inputnumber>
+        </div>
+
+        <hr class="border-dashed" />
+
+        <div class="flex justify-between">
+            <div class="mb-4 font-bold text-lg">{{ 'TOTAL_AMOUNT' | translate }}</div>
+            <span class="text-lg text-primary">
+                {{ cart.grandTotal | sCurrency }}
+            </span>
+        </div>
+    </div>
     </div>
 
     <ng-template #footer>
-        <div class="payment text-lg">
-            <p-button *ngIf="saleToEdit" (onClick)="editSale()" [loading]="orderLoading" [style]="{width: '100%'}"
-                [label]="'SAVE_CHANGES' | translate" [disabled]="!cart.items || !cart.items.length" />
-            <p-button *ngIf="!saleToEdit" (onClick)="submitOrder()" [loading]="orderLoading" [style]="{width: '100%'}"
-                [label]="'SUBMIT_ORDER' | translate" [disabled]="!cart.items || !cart.items.length" />
-        </div>
+        <p-button
+            *ngIf="!saleToEdit"
+            (onClick)="submitOrder()"
+            [loading]="orderLoading"
+            [style]="{width: '100%'}"
+            [label]="'SUBMIT_ORDER' | translate"
+            [disabled]="!cart.items.length" />
+
+        <p-button
+            *ngIf="saleToEdit"
+            (onClick)="editSale()"
+            [loading]="orderLoading"
+            [style]="{width: '100%'}"
+            [label]="'SAVE_CHANGES' | translate"
+            [disabled]="!cart.items.length" />
     </ng-template>
 </p-card>
-
 <app-customer-create-dialog *ngIf="customerDialog" (visibleChange)="toggleDialog($event)">
 </app-customer-create-dialog>

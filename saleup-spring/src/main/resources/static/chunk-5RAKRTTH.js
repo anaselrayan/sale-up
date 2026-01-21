@@ -1,1 +1,0 @@
-import{b as i}from"./chunk-CRBKXCTN.js";import{j as n}from"./chunk-2UCLQBXJ.js";import{da as t}from"./chunk-VNNEODSX.js";var h=(o,s)=>{let e=t(i),r=t(n);if(!e.isLoggedIn())return r.navigate(["/auth/login"]),!1;let a=o.data.perms;return a&&!e.hasPermissions(a)?(r.navigate(["/auth/access"]),!1):!0};export{h as a};

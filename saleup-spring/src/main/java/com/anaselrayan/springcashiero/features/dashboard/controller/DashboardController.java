@@ -27,6 +27,13 @@ public class DashboardController {
     }
 
     @PreAuthorize("hasAuthority('perm.access.dashboard')")
+    @GetMapping("/product-kpi")
+    public ResponseEntity<ApiResponse> getProductKpis() {
+        ApiResponse res = dashboardService.getProductKpis();
+        return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.access.dashboard')")
     @GetMapping("/top-selling")
     public ResponseEntity<ApiResponse> getTopSoldProducts(@RequestParam(required = false) String type) {
         ApiResponse res = dashboardService.getTopSellingProducts(type);

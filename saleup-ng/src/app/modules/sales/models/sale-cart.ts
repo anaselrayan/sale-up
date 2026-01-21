@@ -3,23 +3,20 @@ import { Product } from "@module/products/models/product.model";
 
 export class SaleCart {
     customer?: Customer;
-    items: CartItem[];
-    subTotal: number;
-    discount: number;
-    grandTotal: number;
+    items: CartItem[] = [];
+    subTotal = 0;
+    discount = 0;
+    deliveryAmount = 0;
+    grandTotal = 0;
+    notes?: string;
 
-    constructor() {
+    empty() {
         this.items = [];
-        this.subTotal = 0.0;
-        this.discount = 0.0;
-        this.grandTotal = 0.0;
-    }
-
-    public empty() {
-        this.items = [];
-        this.subTotal = 0.0;
-        this.discount = 0.0;
-        this.grandTotal = 0.0;
+        this.subTotal = 0;
+        this.discount = 0;
+        this.deliveryAmount = 0;
+        this.grandTotal = 0;
+        this.notes = undefined;
     }
 }
 

@@ -3,7 +3,6 @@ package com.anaselrayan.springcashiero.features.sales.repository;
 import com.anaselrayan.springcashiero.features.products.dto.ProductStatisticsSummaryDTO;
 import com.anaselrayan.springcashiero.features.reports.ProductReportResponse;
 import com.anaselrayan.springcashiero.features.reports.SaleSummaryResponse;
-import com.anaselrayan.springcashiero.features.reports.SalesKpiResponse;
 import com.anaselrayan.springcashiero.features.sales.model.SaleItem;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

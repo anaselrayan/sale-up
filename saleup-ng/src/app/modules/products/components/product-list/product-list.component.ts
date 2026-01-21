@@ -371,9 +371,12 @@ export class ProductListComponent implements OnInit {
 
   confirmExport() {
     this.exportLoading = true;
-    ExportUtils.exportDataToExcel(this.products, this.selectedExportColumns, 'product_list');
-    this.hideExportDialog();
-    this.exportLoading = false;
+    this.productService.getAllProducts()
+      .subscribe(res => {
+        ExportUtils.exportDataToExcel(res.data, this.selectedExportColumns, 'product_list');
+        this.hideExportDialog();
+        this.exportLoading = false;
+      })
   }
 
   onFiltersApplied(criteria: FilterCriteria) {

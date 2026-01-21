@@ -22,6 +22,10 @@ export class ProductService {
         return this.http.get<any>(`${this.baseUrl}?page=${pr.page}&size=${pr.size}`)
     }
 
+    public getAllProducts(): Observable<ApiResponse<Product[]>> {
+        return this.http.get<any>(`${this.baseUrl}/all`)
+    }
+
     public searchByKeyword(keyword: string, pr: PageRequest): Observable<ApiResponse<PageResponse<Product>>> {
         return this.http.get<any>(`${this.baseUrl}/filter?keyword=${keyword}&page=${pr.page}&size=${pr.size}`)
     }

@@ -2,6 +2,8 @@ package com.anaselrayan.springcashiero.features.sales.repository;
 
 import com.anaselrayan.springcashiero.features.reports.SalesKpiResponse;
 import com.anaselrayan.springcashiero.features.sales.model.Sale;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,4 +35,11 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 
     @Query("SELECT s.id FROM Sale s WHERE s.barcode = :barcode")
     Optional<Long> findSaleIdByBarcode(@Param("barcode") String barcode);
+
+    @Query("""
+    SELECT s FROM Sale s WHERE s.barcode LIKE %:keyword% OR s.customer.fullName LIKE %:keyword%
+        OR s.customer.phone LIKE %:keyword% ORDER BY s.createdAt DESC
+    """)
+    Page<Sale> filterSales(String keyword, Pageable page);
+
 }

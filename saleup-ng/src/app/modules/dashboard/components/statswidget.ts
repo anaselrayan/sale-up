@@ -75,11 +75,97 @@ import { SCurrencyPipe } from '@shared/pipes/s-currency.pipe';
                 <span class="text-muted-color">newly registered</span> -->
             </div>
         </div>
+
+        <!-- ================= PRODUCT KPI CARDS ================= -->
+
+        <p-skeleton *ngIf="loadingKpis" class="col-span-12 lg:col-span-6 xl:col-span-3" height="10rem" />
+        <div *ngIf="!loadingKpis" class="col-span-12 lg:col-span-6 xl:col-span-3">
+            <div class="card mb-0">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="block text-muted-color font-medium mb-4">
+                            {{ 'REMAINING_STOCK_QTY' | translate }}
+                        </span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">
+                            {{ productKpis?.remainingTotalQty }}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center bg-indigo-100 dark:bg-indigo-400/10 rounded-border"
+                        style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-box text-indigo-500 !text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p-skeleton *ngIf="loadingKpis" class="col-span-12 lg:col-span-6 xl:col-span-3" height="10rem" />
+        <div *ngIf="!loadingKpis" class="col-span-12 lg:col-span-6 xl:col-span-3">
+            <div class="card mb-0">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="block text-muted-color font-medium mb-4">
+                            {{ 'REMAINING_STOCK_COST' | translate }}
+                        </span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">
+                            {{ productKpis?.remainingTotalCost | sCurrency }}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center bg-red-100 dark:bg-red-400/10 rounded-border"
+                        style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-wallet text-red-500 !text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p-skeleton *ngIf="loadingKpis" class="col-span-12 lg:col-span-6 xl:col-span-3" height="10rem" />
+        <div *ngIf="!loadingKpis" class="col-span-12 lg:col-span-6 xl:col-span-3">
+            <div class="card mb-0">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="block text-muted-color font-medium mb-4">
+                            {{ 'REMAINING_STOCK_SALES_VALUE' | translate }}
+                        </span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">
+                            {{ productKpis?.remainingTotalSales | sCurrency }}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border"
+                        style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-chart-line text-green-500 !text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p-skeleton *ngIf="loadingKpis" class="col-span-12 lg:col-span-6 xl:col-span-3" height="10rem" />
+        <div *ngIf="!loadingKpis" class="col-span-12 lg:col-span-6 xl:col-span-3">
+            <div class="card mb-0">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="block text-muted-color font-medium mb-4">
+                            {{ 'REMAINING_STOCK_REVENUE' | translate }}
+                        </span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">
+                            {{ productKpis?.remainingTotalRevenue | sCurrency }}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center bg-teal-100 dark:bg-teal-400/10 rounded-border"
+                        style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-money-bill text-teal-500 !text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     `
 })
 export class StatsWidget {
     model?: DashboardSnapshotResponse;
     loading = false;
+
+    productKpis!: any;
+    loadingKpis = false;
 
     constructor(private dashboardService: DashboardService) {}
 
@@ -95,6 +181,12 @@ export class StatsWidget {
                     this.model = res.data
                 }
                 this.loading = false;
+            })
+        this.dashboardService.getProductKpis()
+            .subscribe(res => {
+                if (res.success) {
+                    this.productKpis = res.data;
+                }
             })
     }
 }

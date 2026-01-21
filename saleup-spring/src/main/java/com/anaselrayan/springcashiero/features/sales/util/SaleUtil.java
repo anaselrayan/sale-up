@@ -4,6 +4,8 @@ import com.anaselrayan.springcashiero.features.sales.model.Sale;
 import com.anaselrayan.springcashiero.features.sales.model.SaleItem;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class SaleUtil {
 
@@ -18,7 +20,8 @@ public class SaleUtil {
     }
 
     public static String generateBarcode(Sale sale) {
-        DecimalFormat formatter = new DecimalFormat("000000");
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat formatter = new DecimalFormat("000000", symbols);
         return  "SL_" + formatter.format(sale.getId());
     }
 

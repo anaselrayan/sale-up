@@ -27,4 +27,8 @@ public class SaleRequest {
 
     private Double discount;
 
+    private Double deliveryAmount;
+
+    private String notes;
+
 }

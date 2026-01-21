@@ -77,7 +77,7 @@ public class PrintingService {
             g2d.drawImage(barcodeImage, 0, 0, printableWidth, height, null);
 
             g2d.setColor(Color.BLACK);
-            g2d.setFont(new Font("Arial", Font.PLAIN, 14));
+            g2d.setFont(new Font("Arial", Font.PLAIN, 10));
             FontMetrics metrics = g2d.getFontMetrics();
             int textWidth = metrics.stringWidth(barcodeText);
             int x = (printableWidth - textWidth) / 2;

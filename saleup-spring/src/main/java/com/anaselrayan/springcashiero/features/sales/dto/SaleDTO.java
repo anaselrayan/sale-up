@@ -23,6 +23,10 @@ public class SaleDTO {
 
     private Double discount;
 
+    private Double deliveryAmount;
+
+    private String notes;
+
     private String barcode;
 
     private LocalDateTime createdAt;

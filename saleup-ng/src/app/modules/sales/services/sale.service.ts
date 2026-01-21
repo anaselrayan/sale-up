@@ -37,6 +37,10 @@ export class SaleService {
         return this.http.get<any>(`${this.baseUrl}/barcode/${barcode}`)
     }
 
+    public filterSales(keyword: string, pr: PageRequest): Observable<ApiResponse<PageResponse<Sale>>> {
+        return this.http.get<any>(`${this.baseUrl}/filter?keyword=${keyword}&page=${pr.page}&size=${pr.size}`)
+    }
+
     public getSaleReceipt(saleId: number): Observable<any> {
         return this.http.get(`${this.baseUrl}/${saleId}/receipt`, { responseType: 'blob' });
     }
@@ -60,6 +64,10 @@ export class SaleService {
 
     public getReceiptOptions(): Observable<SaleReceiptOptions> {
         return this.http.get<any>(`${this.baseUrl}/receipt-options`)
+    }
+
+    public exportAllReceipts(): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/export-receipts`)
     }
 
 }

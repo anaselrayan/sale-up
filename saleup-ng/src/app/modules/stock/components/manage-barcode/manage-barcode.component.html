@@ -67,20 +67,20 @@
         </div>
         <div class="mb-4 flex items-center gap-2">
             <label for="width">{{ 'WIDTH' | translate }}</label>
-            <p-inputnumber [allowEmpty]="false" [min]="50" [max]="500" id="width" [(ngModel)]="printReq.width" showButtons mode="decimal"></p-inputnumber>
+            <p-inputnumber [allowEmpty]="false" [min]="10" [max]="500" id="width" [(ngModel)]="printReq.width" showButtons mode="decimal"></p-inputnumber>
         </div>
         <div class="mb-4 flex items-center gap-2">
             <label for="height">{{ 'HEIGHT' | translate }}</label>
-            <p-inputnumber [allowEmpty]="false" [min]="10" [max]="500" id="height" [(ngModel)]="printReq.height" showButtons mode="decimal"></p-inputnumber>
+            <p-inputnumber [allowEmpty]="false" [min]="5" [max]="500" id="height" [(ngModel)]="printReq.height" showButtons mode="decimal"></p-inputnumber>
         </div>
         <div class="mb-4 flex items-center gap-4">
             <div class="flex items-center gap-2">
                 <label for="marginLeft">{{ 'MARGIN_LEFT' | translate }}</label>
-                <p-inputnumber [allowEmpty]="false" [min]="0" [max]="100" id="marginLeft" [(ngModel)]="printReq.marginLeft" showButtons mode="decimal"></p-inputnumber>
+                <p-inputnumber [allowEmpty]="false" [max]="100" id="marginLeft" [(ngModel)]="printReq.marginLeft" showButtons mode="decimal"></p-inputnumber>
             </div>
             <div class="flex items-center gap-2">
                 <label for="marginTop">{{ 'MARGIN_TOP' | translate }}</label>
-                <p-inputnumber [allowEmpty]="false" [min]="0" [max]="100" id="marginTop" [(ngModel)]="printReq.marginTop" showButtons mode="decimal"></p-inputnumber>
+                <p-inputnumber [allowEmpty]="false" [max]="100" id="marginTop" [(ngModel)]="printReq.marginTop" showButtons mode="decimal"></p-inputnumber>
             </div>
         </div>
         <div class="mb-4 flex items-center gap-2">

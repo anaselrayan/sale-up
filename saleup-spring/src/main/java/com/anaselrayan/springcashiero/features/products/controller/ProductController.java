@@ -50,6 +50,13 @@ public class ProductController {
     }
 
     @PreAuthorize("hasAuthority('perm.access.product')")
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getAllProduct() {
+        ApiResponse res = productService.getAllProducts();
+        return ResponseEntity.status(res.getCode()).body(res);
+    }
+
+    @PreAuthorize("hasAuthority('perm.access.product')")
     @GetMapping("/filter")
     public ResponseEntity<ApiResponse> filterProducts(@RequestParam String keyword,
                                                       @RequestParam Integer page,

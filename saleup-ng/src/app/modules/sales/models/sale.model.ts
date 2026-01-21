@@ -8,7 +8,9 @@ export interface Sale {
     subTotal: number;
     grandTotal: number;
     discount: number;
+    deliveryAmount: number;
     barcode: string;
+    notes: string;
     partiallyReturned: boolean;
     totallyReturned: boolean;
     createdAt: Date;

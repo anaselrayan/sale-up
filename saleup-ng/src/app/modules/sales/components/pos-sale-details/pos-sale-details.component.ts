@@ -44,7 +44,7 @@ import { Subscription } from 'rxjs';
     Tooltip,
     SCurrencyPipe,
     TranslateModule,
-],
+  ],
   templateUrl: './pos-sale-details.component.html',
   styleUrl: './pos-sale-details.component.scss'
 })
@@ -58,6 +58,8 @@ export class PosSaleDetailsComponent implements OnInit, OnDestroy {
   @Output("success") success = new EventEmitter<boolean>();
   private productSub$!: Subscription;
 
+  showNotes = false;
+
   constructor(
     public cartService: CartService,
     private customerService: CustomerService,
@@ -66,7 +68,7 @@ export class PosSaleDetailsComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cart = new SaleCart();
@@ -76,9 +78,9 @@ export class PosSaleDetailsComponent implements OnInit, OnDestroy {
 
   subscribeForProducts() {
     this.productSub$ = this.cartService.addProductSubject
-        .subscribe(next => {
-          this.cartService.addItem(next, this.cart)
-        })
+      .subscribe(next => {
+        this.cartService.addItem(next, this.cart)
+      })
   }
 
   fetchSaleDetails() {
@@ -111,7 +113,7 @@ export class PosSaleDetailsComponent implements OnInit, OnDestroy {
 
   searchCustomers(event: any) {
     this.customerService.filterCustomersByPhone(event.query)
-        .subscribe(res => this.customers = res.data)
+      .subscribe(res => this.customers = res.data)
   }
 
   getProductImageSrc(product: Product) {
@@ -167,7 +169,7 @@ export class PosSaleDetailsComponent implements OnInit, OnDestroy {
           this.success.emit(true);
           this.router.navigate(['/sales/list'])
           this.saleService.previewSaleReceipt(res.data);
-        } 
+        }
         else this.toast.showError(res.message);
         this.orderLoading = false;
       }, err => {
@@ -186,6 +188,14 @@ export class PosSaleDetailsComponent implements OnInit, OnDestroy {
 
   getDiscountAmount(product: Product) {
     return ProductUtils.getDiscountLabel(product);
+  }
+
+  toggleNotes() {
+    this.showNotes = !this.showNotes;
+  }
+
+  updateTotals() {
+    this.cartService.updateTotals(this.cart);
   }
 
   ngOnDestroy(): void {

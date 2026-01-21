@@ -249,4 +249,15 @@ public class ProductService {
         return new ApiResponse(true, StatusCode.OK);
     }
 
+    public ApiResponse getAllProducts() {
+        try {
+            var products = productRepository.findAllByDeletedFalse()
+                    .stream().map(ProductConverter::convert);
+            return new ApiResponse(products, StatusCode.OK);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
+        }
+    }
+
 }

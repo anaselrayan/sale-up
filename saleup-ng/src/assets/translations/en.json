@@ -341,5 +341,12 @@
   "RECEIPT_OVERVIEW": "Receipt Overview",
   "BETA": "Beta",
   "RECEIPT_SCAN_DETAILS_HINT": "You can scan the receipt barcode to search for it",
-  "RECEIPT_NOT_FOUND": "Receipt Not Found"
+  "RECEIPT_NOT_FOUND": "Receipt Not Found",
+  "DELIVERY_SERVICE": "Delivery Fees",
+  "ADD_NOTE": "Add Note",
+  "NOTES": "Notes",
+  "REMAINING_STOCK_QTY": "Remaining Stock Quantity",
+  "REMAINING_STOCK_COST": "Remaining Stock Cost",
+  "REMAINING_STOCK_SALES_VALUE": "Remaining Stock Sales Value",
+  "REMAINING_STOCK_REVENUE": "Remaining Stock Revenue"
 }

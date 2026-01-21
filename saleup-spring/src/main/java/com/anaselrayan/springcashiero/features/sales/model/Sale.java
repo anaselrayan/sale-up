@@ -33,6 +33,10 @@ public class Sale extends BaseModel {
 
     private Double discount;
 
+    private Double deliveryAmount;
+
+    private String notes;
+
     private String barcode;
 
     private boolean partiallyReturned = false;

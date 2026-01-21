@@ -37,6 +37,7 @@ import java.util.Objects;
 public class SaleService {
 
     private final SaleRepository saleRepository;
+    private final SaleReceiptService saleReceiptService;
     private final SaleReturnRepository saleReturnRepository;
     private final SaleItemRepository saleItemRepository;
     private final CustomerRepository customerRepository;
@@ -53,6 +54,8 @@ public class SaleService {
                     .subTotal(request.getSubTotal())
                     .grandTotal(request.getGrandTotal())
                     .discount(request.getDiscount())
+                    .deliveryAmount(request.getDeliveryAmount())
+                    .notes(request.getNotes())
                     .build();
             if (request.getCustomerId() != null) {
                 toSave.setCustomer(customerRepository.getReferenceById(request.getCustomerId()));
@@ -65,6 +68,7 @@ public class SaleService {
             this.updateQuantityAfterSale(savedItems, false);
             savedSale.setSaleItems(savedItems);
             saleRepository.save(savedSale);
+            saleReceiptService.saveSaleReceipt(savedSale);
             return new ApiResponse(SaleConverter.convert(savedSale), StatusCode.CREATED);
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -145,6 +149,7 @@ public class SaleService {
             });
 
             Sale saved = saleRepository.save(saleToEdit);
+            saleReceiptService.saveSaleReceipt(saved);
             return new ApiResponse(SaleConverter.convert(saved), StatusCode.CREATED);
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -155,6 +160,21 @@ public class SaleService {
     public ApiResponse getSalePage(PageRequest pr) {
         try {
             Page<Sale> salePage = saleRepository.findAll(pr.withSort(Sort.Direction.DESC, "createdAt"));
+            PageImpl<SaleDTO> dtoPage = new PageImpl<>(
+                    salePage.getContent().stream().map(SaleConverter::convert).toList(),
+                    salePage.getPageable(),
+                    salePage.getTotalElements()
+            );
+            return new ApiResponse(dtoPage, StatusCode.CREATED);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return new ApiResponse(false, StatusCode.INTERNAL_ERROR, ex.getMessage());
+        }
+    }
+
+    public ApiResponse filterSales(String keyword, PageRequest pr) {
+        try {
+            Page<Sale> salePage = saleRepository.filterSales(keyword, pr);
             PageImpl<SaleDTO> dtoPage = new PageImpl<>(
                     salePage.getContent().stream().map(SaleConverter::convert).toList(),
                     salePage.getPageable(),
@@ -216,7 +236,7 @@ public class SaleService {
             return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid sub total, should be: " + total);
         }
         // Validate grandTotal
-        Double grandTotal = total - request.getDiscount();
+        Double grandTotal = total + request.getDeliveryAmount() - request.getDiscount();
         if (!grandTotal.equals(request.getGrandTotal())) {
             return new ApiResponse(false, StatusCode.BAD_REQUEST, "Invalid grand total, should be: " + grandTotal);
         }
@@ -275,6 +295,10 @@ public class SaleService {
         if (id.isPresent())
             return new ApiResponse(id.get(), StatusCode.OK);
         return new ApiResponse(false, StatusCode.NOT_FOUND, "Sale barcode doesn't exist");
+    }
+
+    public void exportAllReceipts() {
+        this.saleRepository.findAll().forEach(saleReceiptService::saveSaleReceipt);
     }
 
 }

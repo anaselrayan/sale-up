@@ -98,4 +98,8 @@ public class DashboardService {
         return new ApiResponse(ProductConverter.convert(list), StatusCode.OK);
     }
 
+    public ApiResponse getProductKpis() {
+        return new ApiResponse(productRepository.getProductKpis(), StatusCode.OK);
+    }
+
 }

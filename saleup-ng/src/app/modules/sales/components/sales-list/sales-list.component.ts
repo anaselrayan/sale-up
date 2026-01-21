@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
-import { Table, TableModule } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Sale } from '@module/sales/models/sale.model';
 import { SaleService } from '@module/sales/services/sale.service';
@@ -26,6 +26,8 @@ import { SaleReceiptPreviewComponent } from "@shared/components/sale-receipt-pre
 import { Message } from 'primeng/message';
 import { Subscription } from 'rxjs';
 import { BarcodeScannerService } from '@shared/services/barcode-scanner.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sales-list',
@@ -46,25 +48,29 @@ import { BarcodeScannerService } from '@shared/services/barcode-scanner.service'
     RouterModule,
     DateFtPipe,
     SaleReceiptPreviewComponent
-],
+  ],
   templateUrl: './sales-list.component.html',
   styleUrl: './sales-list.component.scss'
 })
 export class SalesListComponent implements OnInit, OnDestroy {
 
   loading = false;
+
   pageReq = new PageRequest(0, 10);
   pageDetails?: Page;
-  salesList: Sale[] = [];
-  sale!: Sale;
-  selectedSales!: Sale[] | null;
-  cols!: any[];
 
-  mode!: 'create' | 'update';
-  menuItems: MenuItem[] = []
+  salesList: Sale[] = [];
+  selectedSales!: Sale[] | null;
+
+  sale!: Sale;
+  menuItems: MenuItem[] = [];
+
   showReceiptPreview = false;
   receiptOptions!: SaleReceiptOptions;
+
+  searchKeyword = '';           // 🔥 NEW
   private scannerSub$!: Subscription;
+  private searchSubject = new Subject<string>();
 
   constructor(
     private saleService: SaleService,
@@ -73,127 +79,186 @@ export class SalesListComponent implements OnInit, OnDestroy {
     private confirmService: ConfirmService,
     private barcodeScanner: BarcodeScannerService,
     private router: Router
-  ) {}
+  ) { }
 
-  ngOnInit() {
-    this.getSalesPage();
+  ngOnInit(): void {
+    this.loadSales();
     this.getSaleReceiptOptions();
     this.listenForBarcodesScanner();
+
+    this.searchSubject
+      .pipe(
+        debounceTime(400),           // ⏱ delay typing
+        distinctUntilChanged()
+      )
+      .subscribe(keyword => {
+        this.searchKeyword = keyword;
+        this.pageReq.page = 0;
+        this.loadSales();
+      });
   }
 
-  listenForBarcodesScanner() {
-    this.scannerSub$ = this.barcodeScanner.scan$.subscribe(barcode => {
-      this.saleService.getSaleIdByBarcode(barcode)
-        .subscribe(res => {
-          if (res.success) {
-            this.router.navigate(['sales/detail', res.data])
-          } else {
-            this.toast.showWarn(this.translate.instant('RECEIPT_NOT_FOUND'))
-          }
-        })
-    })
-  }
+  /* =========================
+     CORE DATA LOADING
+     ========================= */
 
-  getSalesPage() {
+  loadSales(): void {
     this.loading = true;
-    this.saleService.getSalesPage(this.pageReq)
-      .subscribe(res => {
-        if (res.success) {
-          this.salesList = res.data.content;
-          this.pageDetails = res.data.page;
-          this.loading = false;
-        }
-      })
+
+    const request$ = this.searchKeyword
+      ? this.saleService.filterSales(this.searchKeyword, this.pageReq)
+      : this.saleService.getSalesPage(this.pageReq);
+
+    request$.subscribe(res => {
+      if (res.success) {
+        this.salesList = res.data.content;
+        this.pageDetails = res.data.page;
+      }
+      this.loading = false;
+    });
   }
 
-  onPageChange(e: any) {
-    this.pageReq.page = e.page;
-    this.pageReq.size = e.rows;
-    this.getSalesPage();
+  onSearchChange(): void {
+    this.searchSubject.next(this.searchKeyword);
   }
 
-  onGlobalFilter(table: Table, event: Event) {
-      table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  onPageChange(event: any): void {
+    this.pageReq.page = event.page;
+    this.pageReq.size = event.rows;
+    this.loadSales();
   }
 
-  getMenuItems(sale: Sale) {
-    this.menuItems =  [
-      { label: this.translate.instant('SHOW_DETAILS'), icon: 'pi pi-eye', command: ()=> { this.saleDetails(sale) } },
-      { label: this.translate.instant('PRINT_RECEIPT'), icon: 'pi pi-print', command: () => { this.saleService.previewSaleReceipt(sale) } },
-      { label: this.translate.instant('EDIT'), icon: 'pi pi-pen-to-square', disabled: sale.partiallyReturned || sale.totallyReturned, command: () => { this.editSale(sale) } },
-      { label: this.translate.instant('RETURN_SALE'), icon: 'pi pi-arrow-right-arrow-left', disabled: sale.totallyReturned, command: ()=> { this.saleReturn(sale) } },
-      { label: this.translate.instant('DELETE'), icon: 'pi pi-trash', command: () => { this.deleteSale(sale) } },
+  /* =========================
+     MENU ACTIONS
+     ========================= */
+
+  getMenuItems(sale: Sale): void {
+    this.menuItems = [
       {
-        label: `${this.translate.instant('RECEIPT_OVERVIEW')} <span> (${this.translate.instant('BETA')}) </span>`,
-        escape: false,
-        icon: 'pi pi-receipt', command: () => { this.previewReceipt(sale) } 
+        label: this.translate.instant('SHOW_DETAILS'),
+        icon: 'pi pi-eye',
+        command: () => this.saleDetails(sale)
       },
+      {
+        label: this.translate.instant('PRINT_RECEIPT'),
+        icon: 'pi pi-print',
+        command: () => this.saleService.previewSaleReceipt(sale)
+      },
+      {
+        label: this.translate.instant('EDIT'),
+        icon: 'pi pi-pen-to-square',
+        disabled: sale.partiallyReturned || sale.totallyReturned,
+        command: () => this.editSale(sale)
+      },
+      {
+        label: this.translate.instant('RETURN_SALE'),
+        icon: 'pi pi-arrow-right-arrow-left',
+        disabled: sale.totallyReturned,
+        command: () => this.saleReturn(sale)
+      },
+      {
+        label: this.translate.instant('DELETE'),
+        icon: 'pi pi-trash',
+        command: () => this.deleteSale(sale)
+      }
     ];
   }
 
-  editSale(sale: Sale) {
-    this.router.navigate(['sales/edit', sale.saleId])
+  editSale(sale: Sale): void {
+    this.router.navigate(['sales/edit', sale.saleId]);
   }
 
-  deleteSale(sale: Sale) {
-    const msg = this.translate.instant("DELETE_ALERT", { name: sale.barcode })
-    this.confirmService.dialogAlert(msg, ()=> {
-      this.saleService.deleteSale(sale.saleId)
-      .subscribe(res => {
+  saleDetails(sale: Sale): void {
+    this.router.navigate(['sales/detail', sale.saleId]);
+  }
+
+  saleReturn(sale: Sale): void {
+    this.router.navigate(['sales/sale-return/create', sale.saleId]);
+  }
+
+  /* =========================
+     DELETE
+     ========================= */
+
+  deleteSale(sale: Sale): void {
+    const msg = this.translate.instant('DELETE_ALERT', { name: sale.barcode });
+
+    this.confirmService.dialogAlert(msg, () => {
+      this.saleService.deleteSale(sale.saleId).subscribe(res => {
         if (res.success) {
-          this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
-          this.getSalesPage();
-        } else {
-          this.toast.showError(res.message);
+          this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+          this.loadSales();
         }
-      })
-    })
-  }
-
-  deleteSelectedSales() {
-    if (this.selectedSales && this.selectedSales.length > 0) {
-      const names = this.selectedSales.map(s => s.barcode).join(', ');
-      const msg = this.translate.instant("DELETE_SELECTED_ALERT", { count: this.selectedSales.length, names: names });
-      this.confirmService.dialogAlert(msg, () => {
-        this.saleService.deleteAll(this.selectedSales!.map(s => s.saleId))
-            .subscribe(res => {
-              if (res.success) {
-                this.toast.showSuccess(this.translate.instant("SAVE_SUCCESS"))
-                this.getSalesPage();
-              }
-            })
       });
-    } else {
-      this.toast.showWarn(this.translate.instant("NO_SELECTED_ITEMS"));
+    });
+  }
+
+  deleteSelectedSales(): void {
+    if (!this.selectedSales?.length) {
+      this.toast.showWarn(this.translate.instant('NO_SELECTED_ITEMS'));
+      return;
     }
+
+    const msg = this.translate.instant('DELETE_SELECTED_ALERT', {
+      count: this.selectedSales.length
+    });
+
+    this.confirmService.dialogAlert(msg, () => {
+      this.saleService
+        .deleteAll(this.selectedSales!.map(s => s.saleId))
+        .subscribe(res => {
+          if (res.success) {
+            this.toast.showSuccess(this.translate.instant('SAVE_SUCCESS'));
+            this.loadSales();
+          }
+        });
+    });
   }
 
-  downloadReceipt(sale: Sale) {
-    this.saleService.previewSaleReceipt(sale);
+  /* =========================
+     BARCODE SCANNER
+     ========================= */
+
+  listenForBarcodesScanner(): void {
+    this.scannerSub$ = this.barcodeScanner.scan$.subscribe(barcode => {
+      this.saleService.getSaleIdByBarcode(barcode).subscribe(res => {
+        if (res.success) {
+          this.router.navigate(['sales/detail', res.data]);
+        } else {
+          this.toast.showWarn(this.translate.instant('RECEIPT_NOT_FOUND'));
+        }
+      });
+    });
   }
 
-  saleDetails(sale: Sale) {
-    this.router.navigate(['sales/detail', sale.saleId])
-  }
+  /* =========================
+     RECEIPT
+     ========================= */
 
-  saleReturn(sale: Sale) {
-    this.router.navigate(['sales/sale-return/create', sale.saleId])
-  }
-
-  previewReceipt(sale: Sale) {
+  previewReceipt(sale: Sale): void {
     this.sale = sale;
     this.showReceiptPreview = true;
   }
 
-  getSaleReceiptOptions() {
-    this.saleService.getReceiptOptions()
-        .subscribe(res => {
-          this.receiptOptions = res;
-        })
+  getSaleReceiptOptions(): void {
+    this.saleService.getReceiptOptions().subscribe(res => {
+      this.receiptOptions = res;
+    });
   }
 
   ngOnDestroy(): void {
-    this.scannerSub$.unsubscribe();
+    this.scannerSub$?.unsubscribe();
+    this.searchSubject.complete();
+  }
+
+  exportAllReceipts(): void {
+    this.confirmService.dialogAlert('This will replace all the receipt PDFs', ()=> {
+      this.loading = true;
+      this.saleService.exportAllReceipts()
+        .subscribe(res => {
+          this.loading = false;
+        })
+    })
   }
 
 }
